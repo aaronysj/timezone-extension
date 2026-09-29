@@ -135,6 +135,7 @@ function general(): HTMLElement {
       h('div', {}, languageSelect('settings-language', config.language, (language) => stage({ ...config, language })),
         h('p', { className: 'muted' }, t('languageSaveHint')))),
     retainedRules(),
+    h('p', { className: 'muted' }, t('coverageNote')),
   );
 }
 

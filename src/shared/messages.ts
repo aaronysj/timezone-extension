@@ -1,14 +1,12 @@
 import type { Resolution } from './resolve';
 
-export type Request = { type: 'getStatus'; tabId: number } | { type: 'resume'; tabId: number };
+export type Request = { type: 'getStatus'; tabId: number } | { type: 'retry'; tabId: number };
 
 export interface TabStatus {
   /** What the current config says this tab should run under. */
   desired: Resolution | null;
-  /** Timezone actually pushed to the tab via CDP, null if not attached. */
+  /** Timezone observed through the current page's Intl API. */
   applied: string | null;
-  /** User dismissed the debugger infobar for this tab; we stay away until resumed. */
-  suppressed: boolean;
   error?: string;
 }
 

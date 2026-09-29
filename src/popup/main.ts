@@ -70,7 +70,7 @@ async function retryApply() {
   if (tab?.id === undefined) return;
   actionError = '';
   try {
-    const res = await sendRequest<{ error?: string } | null>({ type: 'resume', tabId: tab.id });
+    const res = await sendRequest<{ error?: string } | null>({ type: 'retry', tabId: tab.id });
     if (res?.error) actionError = res.error;
   } catch { actionError = t('popupBackendRetry'); }
   statusKey = '';
@@ -78,8 +78,8 @@ async function retryApply() {
   (document.getElementById('retry-apply') ?? document.getElementById('site-scope') ?? document.getElementById(`mode-${config.mode}`))?.focus();
 }
 
-function errorHelp(error: string): string {
-  return t(/debugger|attached|调试|デバッガ|디버거/i.test(error) ? 'errHelpDebugger' : 'errHelpGeneric');
+function errorHelp(): string {
+  return t('errHelpGeneric');
 }
 
 async function refreshStatus() {
@@ -97,20 +97,19 @@ async function refreshStatus() {
   shownZone = (known && res.applied) || systemTimezone();
   const effective = config.mode === 'rules' ? ruleForHost(host, config.rules) : undefined;
   const error = actionError || res.error;
-  const applied = known && editor.state !== 'error' && !!res.applied && res.applied === desired && !error && !res.suppressed;
-  const label = t(!known ? 'statusUnknown' : editor.state === 'error' ? 'statusUnsaved' : res.suppressed ? 'statusPaused' : error ? 'statusFailed' : applied ? 'statusApplied' : res.applied !== desired ? 'statusApplying' : 'statusSystem');
+  const applied = known && editor.state !== 'error' && !!res.applied && res.applied === desired && !error;
+  const label = t(!known ? 'statusUnknown' : editor.state === 'error' ? 'statusUnsaved' : error ? 'statusFailed' : applied ? 'statusApplied' : res.applied !== desired ? 'statusApplying' : 'statusSystem');
   const key = JSON.stringify([bundleLocale(), label, shownZone, effective, error, config.mode]);
   if (key !== statusKey) {
     statusKey = key;
     now.className = `now${applied ? '' : ' is-system'}`;
     const state = h('div', { className: 'now-status', role: 'status', ariaLive: 'polite' },
       h('span', { className: `state ${error || !known ? 'err' : applied ? 'ok' : 'muted'}` }, label),
-      !known || error || (known && res.suppressed)
-        ? h('button', { id: 'retry-apply', className: 'link', textContent: t(known && res.suppressed ? 'actionResume' : 'actionRetry'), onclick: () => void retryApply() }) : null);
+      !known || error
+        ? h('button', { id: 'retry-apply', className: 'link', textContent: t('actionRetry'), onclick: () => void retryApply() }) : null);
     const explanation = !known ? t('explainUnknown')
       : editor.state === 'error' ? t('explainUnsaved')
-      : error ? (res.applied ? t('explainStillZone', cityLabel(shownZone), errorHelp(error)) : t('explainStillSystem', errorHelp(error)))
-      : res.suppressed ? t('explainPaused')
+      : error ? (res.applied ? t('explainStillZone', cityLabel(shownZone), errorHelp()) : t('explainStillSystem', errorHelp()))
       : '';
     replaceKeepingFocus(now, [
       h('div', { className: 'now-top' }, h('div', { className: 'now-host', title: host }, host), state),

@@ -1,11 +1,11 @@
 {
   "name": "timezone-extension",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite build --watch --mode development",
-    "build": "npm run check:i18n && tsc --noEmit && vite build",
+    "dev": "npm run build && node scripts/dev.mjs",
+    "build": "npm run check:i18n && tsc --noEmit && vite build && node scripts/build-content.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "e2e": "npm run build && node e2e/run.mjs",

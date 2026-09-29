@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="280" viewBox="0 0 440 280"><defs><linearGradient id="paper" x2="1" y2="1"><stop stop-color="#13374a"/><stop offset="1" stop-color="#09272e"/></linearGradient></defs><rect width="440" height="280" fill="url(#paper)"/><g fill="none" stroke="#24b8aa" opacity=".35"><ellipse cx="220" cy="134" rx="195" ry="70"/><ellipse cx="220" cy="134" rx="155" ry="112"/><path d="M24 134H416"/></g><g fill="#53d2c6"><circle cx="56" cy="94" r="6"/><circle cx="368" cy="181" r="6"/><circle cx="320" cy="52" r="4"/></g><svg x="160" y="74" width="120" height="120" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1ec6b8"/>
+      <stop offset="1" stop-color="#0b8a82"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
+  <g fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round">
+    <path d="M14 50A36 36 0 1 1 86 50A36 36 0 1 1 14 50Z" fill="#fff" fill-opacity=".38" stroke="none"/>
+    <circle cx="50" cy="50" r="36"/>
+    <ellipse cx="50" cy="50" rx="15" ry="36"/>
+    <path d="M14 50H86"/>
+  </g>
+  <circle cx="88" cy="88" r="36" fill="url(#bg)"/>
+  <circle cx="88" cy="88" r="28" fill="#fff"/>
+  <path d="M88 88V70M88 88L101 95" fill="none" stroke="#0b8a82" stroke-width="7" stroke-linecap="round"/>
+</svg>
+<text x="220" y="234" text-anchor="middle" fill="#eefafb" font-size="22" font-weight="600" font-family="Arial">Timezone Override</text></svg>

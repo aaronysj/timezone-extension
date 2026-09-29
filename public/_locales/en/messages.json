@@ -104,20 +104,11 @@
   "scopeSuffix": {
     "message": "$1 and subdomains"
   },
-  "errTabBusy": {
-    "message": "This tab is in use by another extension or debugger"
-  },
-  "errInvalidTimezone": {
-    "message": "Invalid timezone: $1"
-  },
   "popupBackendRetry": {
     "message": "Can't reach the extension background. Reopen the popup and try again."
   },
   "popupBackendUnreachable": {
     "message": "Can't reach the extension background"
-  },
-  "errHelpDebugger": {
-    "message": "Another debugger may be using this tab. Close DevTools or other debugging extensions for this page and try again."
   },
   "errHelpGeneric": {
     "message": "Couldn't apply the change. Try again; if it still fails, reopen this page."
@@ -131,9 +122,6 @@
   "statusUnsaved": {
     "message": "Not saved"
   },
-  "statusPaused": {
-    "message": "Paused"
-  },
   "statusFailed": {
     "message": "Failed"
   },
@@ -145,9 +133,6 @@
   },
   "statusSystem": {
     "message": "System timezone"
-  },
-  "actionResume": {
-    "message": "Resume"
   },
   "actionRetry": {
     "message": "Retry"
@@ -163,9 +148,6 @@
   },
   "explainStillSystem": {
     "message": "Still using the system timezone. $1"
-  },
-  "explainPaused": {
-    "message": "Changes are paused for this tab. Click Resume to apply them again."
   },
   "techDetails": {
     "message": "Technical details"
@@ -637,5 +619,8 @@
   },
   "rulesPendingInputs": {
     "message": "There are unfinished site edits. Complete them in By rules or discard them before saving."
+  },
+  "coverageNote": {
+    "message": "Applies to page Date and Intl APIs, including frames matched by their own URL. Workers and previously cached native APIs or Intl formatters keep their original timezone. Reload an existing page for consistent results."
   }
 }

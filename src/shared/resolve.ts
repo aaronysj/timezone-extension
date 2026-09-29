@@ -41,7 +41,7 @@ export function ruleMatches(rule: Rule, host: string): boolean {
 }
 
 /** Exact beats suffix; among suffixes the longest pattern wins; ties go to the earlier rule. */
-function specificity(rule: Rule): number {
+export function ruleSpecificity(rule: Rule): number {
   return (rule.match === 'exact' ? 1e6 : 0) + normalizePattern(rule.pattern).length;
 }
 
@@ -51,7 +51,7 @@ export function ruleForHost(host: string, rules: Rule[]): Rule | undefined {
   for (const rule of rules) {
     if (!rule.enabled || !ruleMatches(rule, host)) continue;
     if (!best || (rule.action === 'exclude' && best.action !== 'exclude') ||
-      (rule.action === best.action && specificity(rule) > specificity(best))) best = rule;
+      (rule.action === best.action && ruleSpecificity(rule) > ruleSpecificity(best))) best = rule;
   }
   return best;
 }

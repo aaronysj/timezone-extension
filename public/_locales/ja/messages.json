@@ -104,20 +104,11 @@
   "scopeSuffix": {
     "message": "$1 とサブドメイン"
   },
-  "errTabBusy": {
-    "message": "このタブは別の拡張機能またはデバッガーが使用中です"
-  },
-  "errInvalidTimezone": {
-    "message": "無効なタイムゾーン: $1"
-  },
   "popupBackendRetry": {
     "message": "拡張機能のバックグラウンドに接続できません。ポップアップを開き直して再試行してください。"
   },
   "popupBackendUnreachable": {
     "message": "拡張機能のバックグラウンドに接続できません"
-  },
-  "errHelpDebugger": {
-    "message": "別のデバッガーがこのタブを使用している可能性があります。このページの DevTools や他のデバッグ用拡張機能を閉じてから再試行してください。"
   },
   "errHelpGeneric": {
     "message": "変更を適用できませんでした。再試行し、それでも失敗する場合はこのページを開き直してください。"
@@ -131,9 +122,6 @@
   "statusUnsaved": {
     "message": "未保存"
   },
-  "statusPaused": {
-    "message": "一時停止中"
-  },
   "statusFailed": {
     "message": "失敗"
   },
@@ -145,9 +133,6 @@
   },
   "statusSystem": {
     "message": "システムのタイムゾーン"
-  },
-  "actionResume": {
-    "message": "再開"
   },
   "actionRetry": {
     "message": "再試行"
@@ -163,9 +148,6 @@
   },
   "explainStillSystem": {
     "message": "現在もシステムのタイムゾーンを使用しています。$1"
-  },
-  "explainPaused": {
-    "message": "このタブの変更は一時停止中です。「再開」をクリックすると再適用します。"
   },
   "techDetails": {
     "message": "技術的な詳細"
@@ -637,5 +619,8 @@
   },
   "rulesPendingInputs": {
     "message": "未完了のサイト編集があります。「ルール別」で完了するか、編集を破棄してから保存してください。"
+  },
+  "coverageNote": {
+    "message": "ページの Date と Intl API に適用し、iframe は自身の URL でルールを判定します。Worker、保存済みのネイティブ API、既存の Intl フォーマッターは元のタイムゾーンを使用します。開いているページは再読み込みしてください。"
   }
 }

@@ -41,8 +41,8 @@ beforeEach(() => {
     }, onChanged: { addListener: (fn: typeof listeners[number]) => listeners.push(fn) } },
     runtime: { openOptionsPage: vi.fn(), sendMessage: async () => {
       const desired = resolveTimezone(site, stored);
-      return { desired, applied: appliedOverride ?? (statusFailure ? null : desired?.timezone ?? null), suppressed: false,
-        ...(statusFailure ? { error: 'Another debugger is already attached to the tab' } : {}) };
+      return { desired, applied: appliedOverride ?? (statusFailure ? null : desired?.timezone ?? null),
+        ...(statusFailure ? { error: 'Cannot access contents of the page. Extension host permission is withheld.' } : {}) };
     } },
   });
   Element.prototype.scrollIntoView = vi.fn();
@@ -158,7 +158,7 @@ describe('popup regressions', () => {
     await import('../src/popup/main');
     expect(text()).toContain('修改失败');
     expect(text()).toContain('当前仍使用系统时区');
-    expect(text()).toContain('DevTools');
+    expect(text()).toContain('Cannot access contents of the page');
     expect(input('retry-apply')).toBeTruthy();
     expect(text()).not.toContain('已生效');
   });

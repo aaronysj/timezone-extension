@@ -2,16 +2,17 @@
 
 ## Commands
 - `npm run build` — typecheck (`tsc --noEmit`) + Vite build into `dist/` (load `dist/` as unpacked extension).
-- `npm run dev` — `vite build --watch` (unminified, sourcemaps); reload the extension in chrome://extensions after changes.
-- `npm test` — Vitest unit tests (`tests/`), covers rule resolution and config parsing.
+- `npm run dev` — watches both UI/background and the MAIN-world engine (unminified, sourcemaps); reload the extension in chrome://extensions after changes.
+- `npm test` — Vitest unit tests (`tests/`), including native Date comparisons in separate timezone processes.
 - `npm run e2e` — builds, then drives a real Chromium via raw CDP (`e2e/run.mjs`). Requires `CHROMIUM=/path/to/binary`
-  (Chromium or Chrome for Testing; branded Chrome ignores `--load-extension`). Do NOT drive the test tab with
-  Playwright/Puppeteer: their own auto-attach deadlocks OOPIF loading once the extension's debugger auto-attaches too.
+  (Chromium or Chrome for Testing; branded Chrome ignores `--load-extension`). Tests use an isolated profile.
 
 ## Architecture
 - `src/shared/resolve.ts` — pure `resolveTimezone(url, config)`: the single source of truth for which tz a URL gets.
-- `src/background/overrider.ts` — owns all `chrome.debugger` sessions; `Emulation.setTimezoneOverride` on the tab,
-  flat auto-attach (`waitForDebuggerOnStart`) to push the override into OOPIFs before they run.
+- `src/background/registrations.ts` — compiles resolver precedence into mutually exclusive persistent MAIN-world `document_start` content scripts.
+- `src/background/overrider.ts` — registers those scripts and applies configuration changes to existing frame documents.
+- `src/content/timezone.ts` — self-contained Date/Intl shim; Chrome serializes it for live updates. Keep all runtime dependencies inside the function.
+- `scripts/build-content.mjs` — builds the standalone engine and bundled per-zone bootstraps. Runtime script registration uses package files rather than remote/generated executable code.
 - `src/background/index.ts` — wiring: navigation/tab events -> resolve -> `overrider.apply`.
 - `src/popup`, `src/options` — vanilla TS DOM UI, helpers in `src/ui/dom.ts`. Config lives in `chrome.storage.local` key `config`.
 - Toolbar icon reflects `config.mode` globally (`off` grey / `global` teal / `rules` indigo; `updateIcon` in
@@ -29,9 +30,9 @@
   Chinese city names show only in a Chinese UI but stay searchable everywhere.
 - Tests stub `chrome.i18n` with the zh_CN catalog (`tests/i18n-mock.ts`), so UI assertions use Chinese copy.
 
-## CDP facts verified by e2e (don't regress)
-- Timezone override is renderer-process wide: dedicated workers inherit it. Only set it on `iframe` children;
-  setting it on workers leaves stale per-process overrides ("Timezone override is already in effect").
-- Emulation state persists across navigations of an attached tab, including cross-process ones.
-- A fresh attach can lose the race against fast navigations; `reloadIfLate` reloads once if the new document
-  already has `<script>` elements.
+## Page API coverage verified by tests
+- Product versions use `chrome.scripting` and HTTP(S) host permissions. The user requires no debugger banner; keep the product free of `chrome.debugger`.
+- Registered scripts run before page scripts, including under strict page CSP. Iframes follow their own URL rules; inherited-origin frames use Chrome's origin fallback.
+- Date local constructors, parsing, getters/setters and default Intl formatting follow the selected zone, including DST folds/gaps. UTC APIs and explicit Intl timezones stay unchanged.
+- Workers retain their native timezone. Cached native methods and already-created Intl formatters may retain their original behavior. Keep this limitation visible in Settings and store descriptions.
+- Config changes update open documents; Off restores native behavior. Refresh existing pages for consistent results when their scripts cached old APIs.

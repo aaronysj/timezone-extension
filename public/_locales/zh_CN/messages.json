@@ -104,20 +104,11 @@
   "scopeSuffix": {
     "message": "$1 及子域名"
   },
-  "errTabBusy": {
-    "message": "该标签页已被其他扩展/调试器占用"
-  },
-  "errInvalidTimezone": {
-    "message": "无效时区: $1"
-  },
   "popupBackendRetry": {
     "message": "无法联系扩展后台，请重新打开弹窗后重试。"
   },
   "popupBackendUnreachable": {
     "message": "无法联系扩展后台"
-  },
-  "errHelpDebugger": {
-    "message": "另一个调试器可能占用了此标签页。关闭该页面的 DevTools 或其他调试扩展后重试。"
   },
   "errHelpGeneric": {
     "message": "无法完成修改，请重试；仍失败时重新打开此网页。"
@@ -131,9 +122,6 @@
   "statusUnsaved": {
     "message": "修改未保存"
   },
-  "statusPaused": {
-    "message": "已暂停"
-  },
   "statusFailed": {
     "message": "修改失败"
   },
@@ -145,9 +133,6 @@
   },
   "statusSystem": {
     "message": "系统时区"
-  },
-  "actionResume": {
-    "message": "恢复修改"
   },
   "actionRetry": {
     "message": "重试"
@@ -163,9 +148,6 @@
   },
   "explainStillSystem": {
     "message": "当前仍使用系统时区。$1"
-  },
-  "explainPaused": {
-    "message": "此标签页已暂停修改，点击恢复后重新应用。"
   },
   "techDetails": {
     "message": "技术详情"
@@ -637,5 +619,8 @@
   },
   "rulesPendingInputs": {
     "message": "还有未完成的网站编辑。请切回「按规则」完成，或放弃这些编辑后再保存。"
+  },
+  "coverageNote": {
+    "message": "修改网页 Date 和 Intl API 的时区；iframe 按自身网址匹配规则。Worker、已缓存的原生 API 和已有 Intl 格式化器仍使用原时区。已打开的网页建议刷新后使用。"
   }
 }

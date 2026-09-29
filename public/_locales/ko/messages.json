@@ -104,20 +104,11 @@
   "scopeSuffix": {
     "message": "$1 및 하위 도메인"
   },
-  "errTabBusy": {
-    "message": "이 탭은 다른 확장 프로그램 또는 디버거가 사용 중입니다"
-  },
-  "errInvalidTimezone": {
-    "message": "잘못된 시간대: $1"
-  },
   "popupBackendRetry": {
     "message": "확장 프로그램 백그라운드에 연결할 수 없습니다. 팝업을 다시 열고 다시 시도하세요."
   },
   "popupBackendUnreachable": {
     "message": "확장 프로그램 백그라운드에 연결할 수 없습니다"
-  },
-  "errHelpDebugger": {
-    "message": "다른 디버거가 이 탭을 사용 중일 수 있습니다. 이 페이지의 DevTools 또는 다른 디버깅 확장 프로그램을 닫고 다시 시도하세요."
   },
   "errHelpGeneric": {
     "message": "변경을 적용하지 못했습니다. 다시 시도하고, 계속 실패하면 이 페이지를 다시 여세요."
@@ -131,9 +122,6 @@
   "statusUnsaved": {
     "message": "저장 안 됨"
   },
-  "statusPaused": {
-    "message": "일시 중지됨"
-  },
   "statusFailed": {
     "message": "실패"
   },
@@ -145,9 +133,6 @@
   },
   "statusSystem": {
     "message": "시스템 시간대"
-  },
-  "actionResume": {
-    "message": "다시 시작"
   },
   "actionRetry": {
     "message": "다시 시도"
@@ -163,9 +148,6 @@
   },
   "explainStillSystem": {
     "message": "아직 시스템 시간대를 사용 중입니다. $1"
-  },
-  "explainPaused": {
-    "message": "이 탭의 변경이 일시 중지되었습니다. 다시 시작을 눌러 다시 적용하세요."
   },
   "techDetails": {
     "message": "기술 세부 정보"
@@ -637,5 +619,8 @@
   },
   "rulesPendingInputs": {
     "message": "미완료 사이트 편집이 있습니다. 규칙별 모드에서 완료하거나 편집을 취소한 후 저장하세요."
+  },
+  "coverageNote": {
+    "message": "페이지의 Date 및 Intl API에 적용되며 iframe은 자체 URL의 규칙을 따릅니다. Worker, 이미 저장된 네이티브 API와 기존 Intl 포맷터는 원래 시간대를 유지합니다. 열린 페이지는 새로고침하세요."
   }
 }
