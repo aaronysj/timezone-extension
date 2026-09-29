@@ -2,7 +2,11 @@
 
 ## 当前状态
 
-用户要求先提交代码并等待 review，商店操作已暂停。0.1.0 的审核已撤回，0.2.0 ZIP 已上传为草稿，尚未重新提交审核。商店说明、权限理由和审核测试说明仍需按 `listing.md`、`privacy.json` 更新并保存，review 通过后再继续。新版英文说明的最后一次编辑未确认保存。
+0.2.0 已于 2026-09-29（America/Los_Angeles）成功提交 Chrome Web Store 审核，当前状态为“待审核”，已勾选审核通过后自动发布；尚未上架。用户完成代码 review 后授权继续发布，0.1.0 的审核已撤回。
+
+已保存新版英文与简体中文说明、单一用途、scripting/storage/tabs/webNavigation/网站访问权限理由、无远程代码和无收集数据声明，以及 457 字符审核测试步骤。已核对免费、公开、所有地区分发；商店软件包显示版本 0.2.0，权限列表没有 debugger。Google 提示所有网站权限可能触发深入审核并延迟发布时间；该权限用于全局覆盖与用户自定义域名规则。
+
+送审成功提示与开发者后台的 0.2.0“待审核”状态已确认。本地截图：`submitted-for-review-0.2.0.png`（截图由 `.gitignore` 排除）。
 
 - 发布者：`aaronysj.top`（`55b29df0-6494-4bf6-b7ed-96c8f4c8d448`）。
 - 扩展 ID：`hecgaoajefgkcnmmmolmofcfioknelog`。
@@ -29,7 +33,7 @@
 
 ## 0.1.0 发布记录（已撤回审核）
 
-已使用用户 Chrome 上传 `timezone-override-0.1.0.zip`，并成功提交审核。后台当前状态为“待审核”，已勾选审核通过后自动发布；尚未上架。提交日期：2026-09-28（America/Los_Angeles）。
+已使用用户 Chrome 上传 `timezone-override-0.1.0.zip`，并成功提交审核。当时状态为“待审核”，勾选审核通过后自动发布；该审核已于新版发布准备期间撤回。提交日期：2026-09-28（America/Los_Angeles）。
 
 - 发布者：`aaronysj.top`（`55b29df0-6494-4bf6-b7ed-96c8f4c8d448`）。
 - 扩展 ID：`hecgaoajefgkcnmmmolmofcfioknelog`。
@@ -66,4 +70,4 @@
 
 ## 后续
 
-等待用户 review。获准继续后，更新商店草稿资料、核对 0.2.0 权限，再提交审核。审核通过前不能声称已经上架。
+等待 Google 审核。审核通过后自动发布；若收到拒绝或补充资料通知，按实际审核意见处理。审核通过前不能声称已经上架。
