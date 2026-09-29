@@ -51,6 +51,22 @@ beforeEach(() => {
 afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); vi.unstubAllGlobals(); });
 
 describe('popup regressions', () => {
+  it('shows the site clock while the page status is still pending', async () => {
+    vi.useFakeTimers();
+    let answer: ((status: unknown) => void) | undefined;
+    const sendMessage = vi.fn(() => new Promise((resolve) => { answer ??= resolve; }));
+    vi.stubGlobal('chrome', { ...chrome, runtime: { ...chrome.runtime, sendMessage } });
+    await import('../src/popup/main');
+    await flush();
+    expect(document.querySelector('.now-host')?.textContent).toBe(new URL(site).hostname);
+    expect(document.querySelector('.now-time')?.textContent).toMatch(/^\d\d:\d\d$/);
+    await vi.advanceTimersByTimeAsync(3000);
+    // Polling waits for the pending answer instead of discarding it as stale.
+    expect(sendMessage).toHaveBeenCalledTimes(1);
+    answer!({ desired: null, applied: null });
+    await flush();
+    expect(text()).toContain(chineseI18n.getMessage('statusSystem'));
+  });
   it('saves a language change, updates the entire popup, and restores the browser language', async () => {
     await import('../src/popup/main');
     input('popup-language').focus();
@@ -113,7 +129,7 @@ describe('popup regressions', () => {
     stored.rules = [{ ...stored.rules[0]!, pattern: 'amh-group.com' }];
     await import('../src/popup/main');
     expect(input('site-scope').value).toBe('suffix:amh-group.com');
-    input('only-this-site').click();
+    change('site-scope', 'exact:hubble.amh-group.com');
     expect(input('site-scope').value).toBe('exact:hubble.amh-group.com');
     const picker = input('site-tz');
     picker.value = '东京';
@@ -138,10 +154,21 @@ describe('popup regressions', () => {
     expect(document.activeElement?.id).toBe('site-tz');
     expect(input('site-tz').ariaExpanded).toBe('false');
   });
-  it('defaults a new co.uk site to only that host', async () => {
+  it('defaults a new site to its registrable domain, never a public suffix', async () => {
     site = 'https://shop.example.co.uk';
     await import('../src/popup/main');
-    expect(input('site-scope').value).toBe('exact:shop.example.co.uk');
+    expect(input('site-scope').value).toBe('suffix:example.co.uk');
+    // Timezone comes first; nothing to undo on a site without rules.
+    expect(input('site-tz').compareDocumentPosition(input('site-scope')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(document.getElementById('use-system')).toBeNull();
+    expect(document.getElementById('remove-site-rule')).toBeNull();
+    const picker = input('site-tz');
+    picker.value = '东京';
+    picker.dispatchEvent(new Event('input', { bubbles: true }));
+    picker.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await flush();
+    expect(stored.rules.at(-1)).toMatchObject({ pattern: 'example.co.uk', match: 'suffix', action: 'include', timezone: 'Asia/Tokyo' });
+    expect(input('remove-site-rule')).toBeTruthy();
     expect([...document.querySelectorAll('#site-scope option')].some((o) => (o as HTMLOptionElement).value === 'suffix:co.uk')).toBe(false);
   });
   it('warns about an existing public-suffix rule without silently changing it', async () => {

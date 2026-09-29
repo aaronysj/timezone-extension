@@ -16,6 +16,7 @@
     "@types/chrome": "^0.3.0",
     "happy-dom": "^20.14.5",
     "typescript": "^7.0.2",
+    "tzdata": "1.0.51",
     "vite": "^8.3.0",
     "vitest": "^5.0.1"
   },

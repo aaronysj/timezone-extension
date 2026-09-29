@@ -203,9 +203,6 @@
   "enableRule": {
     "message": "このルールを有効にする"
   },
-  "onlyThisSite": {
-    "message": "このサイトのみ設定"
-  },
   "useSystem": {
     "message": "システムのタイムゾーンを使用"
   },

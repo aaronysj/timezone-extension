@@ -203,9 +203,6 @@
   "enableRule": {
     "message": "이 규칙 사용"
   },
-  "onlyThisSite": {
-    "message": "이 사이트만 설정"
-  },
   "useSystem": {
     "message": "시스템 시간대 사용"
   },

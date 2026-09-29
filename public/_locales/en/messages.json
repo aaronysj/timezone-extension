@@ -171,7 +171,7 @@
     "message": "Incl. subdomains · $1"
   },
   "scopeField": {
-    "message": "Apply to"
+    "message": "Applies to"
   },
   "warnBroadRule": {
     "message": "An existing rule is too broad: $1 Remove it and set it again."
@@ -202,9 +202,6 @@
   },
   "enableRule": {
     "message": "Enable this rule"
-  },
-  "onlyThisSite": {
-    "message": "Only this site"
   },
   "useSystem": {
     "message": "Use system timezone"

@@ -39,6 +39,10 @@ main select, main .tzp-input { width: 100%; min-width: 0; min-height: 38px; back
 main select { text-overflow: ellipsis; }
 main .tzp-input { padding-right: 82px; }
 main .tzp-offset { right: 10px; top: 19px; }
+.scope-row { display: flex; align-items: center; gap: 8px; }
+.scope-label { flex: none; color: var(--muted); font-size: 12px; }
+main .scope-row select { flex: 1; min-height: 30px; padding: 4px 8px; background: none; color: var(--muted); font-size: 12px; }
+main .scope-row select:hover { background: var(--fill); }
 .block-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 0 16px; }
 .block .warn { margin: 0; font-size: 12px; overflow-wrap: anywhere; }
 .block > .link { justify-self: start; }

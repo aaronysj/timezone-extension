@@ -7,23 +7,32 @@ import { setLanguage } from '../shared/i18n';
 const overrider = new Overrider();
 let config: Config = DEFAULT_CONFIG;
 let configurationError: string | undefined;
+let ready: Promise<void> = Promise.resolve();
 
 function updateIcon(): void {
   chrome.action.setIcon({ path: { 16: `icons/${config.mode}-16.png`, 32: `icons/${config.mode}-32.png` } }).catch(() => {});
 }
 
-async function configure(next: Config): Promise<void> {
+/** Registration is queued; page updates are not, so a frozen tab never stalls later config changes. */
+function configure(next: Config): Promise<void> {
   config = next;
   setLanguage(config.language);
   updateIcon();
-  try {
-    await overrider.configure(config);
-    configurationError = undefined;
-  } catch (error) { configurationError = String(error); }
+  const run = ready.then(async () => {
+    try {
+      await overrider.configure(next);
+      configurationError = undefined;
+    } catch (error) { configurationError = String(error); }
+    if (next === config) void overrider.applyAll(next);
+  });
+  ready = run;
+  return run;
 }
 
-let ready = loadConfig().then(configure);
-onConfigChanged((next) => { ready = ready.then(() => configure(next)); });
+let changed = false;
+// A change event can arrive before the initial read resolves; never let the older read win.
+void loadConfig().then((initial) => changed ? undefined : configure(initial));
+onConfigChanged((next) => { changed = true; void configure(next); });
 
 // document_start handles first page scripts; refresh restored/inherited-origin frames too.
 chrome.webNavigation.onCommitted.addListener(({ tabId }) => {

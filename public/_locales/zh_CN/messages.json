@@ -171,7 +171,7 @@
     "message": "含子域名 · $1"
   },
   "scopeField": {
-    "message": "修改范围"
+    "message": "适用范围"
   },
   "warnBroadRule": {
     "message": "已有规则范围过宽：$1请移除后重新设置。"
@@ -202,9 +202,6 @@
   },
   "enableRule": {
     "message": "启用此规则"
-  },
-  "onlyThisSite": {
-    "message": "仅设置此网站"
   },
   "useSystem": {
     "message": "使用系统时区"

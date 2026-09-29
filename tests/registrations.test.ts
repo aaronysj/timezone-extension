@@ -25,3 +25,14 @@ it('compiles rule precedence into exactly one early script, including trailing-d
   }
   expect(scripts.every(s => s.world === 'MAIN' && s.runAt === 'document_start' && s.allFrames && s.persistAcrossSessions)).toBe(true);
 });
+
+it('ships a bootstrap file for every tzdata Zone and Link name, including link names Chrome may canonicalize to', async () => {
+  const { fileName } = await import('../scripts/timezone-names.mjs');
+  const { existsSync, readFileSync } = await import('node:fs');
+  if (!existsSync('dist/timezones/index.json')) return; // needs `npm run build`
+  const shipped = new Set(JSON.parse(readFileSync('dist/timezones/index.json', 'utf8')) as string[]);
+  for (const zone of ['Asia/Calcutta', 'Asia/Kolkata', 'Europe/Kiev', 'Europe/Kyiv', 'US/Eastern', 'America/Coyhaique', 'UTC', ...Intl.supportedValuesOf('timeZone')]) {
+    expect(shipped.has(fileName(zone)), zone).toBe(true);
+    expect(existsSync(`dist/timezones/${fileName(zone)}`), zone).toBe(true);
+  }
+});

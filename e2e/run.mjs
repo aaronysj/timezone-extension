@@ -184,6 +184,21 @@ try {
   await setConfig({mode:'rules',timezone:'UTC',rules:[include('localhost','Asia/Tokyo'), exclude('localhost'), include('127.0.0.1','Europe/London')]});
   await proceed('10', {url: `${LOCAL}/p?s=11`});
   expectAll('rules: exclusion does not disable a different-origin iframe', await report('11'), SYSTEM_TZ, 'Europe/London');
+
+  // Chrome freezes background tabs (Memory Saver); injecting there waits for a thaw and must not stall later changes.
+  await evalSW(`(() => { const set = chrome.action.setIcon.bind(chrome.action); chrome.action.setIcon = (d) => { globalThis.icon = d.path[16]; return set(d); }; })()`);
+  const frozen = (await cdp('Target.createTarget', { url: `${IP}/p?s=frozen` })).result.targetId;
+  await report('frozen');
+  const { sessionId: frozenSession } = (await cdp('Target.attachToTarget', { targetId: frozen, flatten: true })).result;
+  await cdp('Page.setWebLifecycleState', { state: 'frozen' }, frozenSession);
+  await setConfig({ mode: 'global', timezone: 'Europe/London', rules: [] });
+  expectEq('frozen tab: icon follows rules -> global', await evalSW('globalThis.icon'), 'icons/global-16.png');
+  await setConfig({ mode: 'rules', timezone: 'Europe/London', rules: [include('localhost', 'Asia/Tokyo')] });
+  expectEq('frozen tab: icon follows global -> rules', await evalSW('globalThis.icon'), 'icons/rules-16.png');
+  await sleep(700);
+  expectEq('frozen tab: later config still registers', await evalSW(`chrome.scripting.getRegisteredContentScripts().then(s => s.map(x => x.js[0]).join())`), 'timezones/Asia_Tokyo.js');
+  await setConfig({ mode: 'off', timezone: 'Europe/London', rules: [] });
+  expectEq('frozen tab: icon follows rules -> off', await evalSW('globalThis.icon'), 'icons/off-16.png');
 } finally {
   clearTimeout(watchdog);
   browser.kill();

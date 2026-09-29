@@ -1,3 +1,9 @@
+/** Self-contained: switches an already installed controller back to native behavior; never installs one. */
+export function restoreNative(): void {
+  const root = globalThis as typeof globalThis & { [key: symbol]: { set(zone: string | null): string | null } | undefined };
+  root[Symbol.for('timezone-override.controller')]?.set(null);
+}
+
 /** Self-contained: Chrome serializes this function when updating an already open page. */
 export function installTimezone(initial: string | null): string | null {
   const key = Symbol.for('timezone-override.controller');
@@ -48,10 +54,16 @@ export function installTimezone(initial: string | null): string | null {
   const parse = (text: string) => {
     const parsed = nativeParse(text);
     if (!zone || !Number.isFinite(parsed)) return parsed;
-    // ISO date-only is UTC by specification. Explicit offsets and named zones remain untouched.
-    if (/^[+-]?\d{4,6}(?:-\d{2}(?:-\d{2})?)?$/.test(text.trim()) || /(?:z|[+-]\d{2}:?\d{2}|\b(?:gmt|utc|[a-z]{3,4}t)\b)\s*(?:\([^)]*\))?$/i.test(text.trim())) return parsed;
-    const iso = /^([+-]?\d{4,6})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d+))?)?$/.exec(text.trim());
+    // ISO date-only is UTC by specification. Any explicit zone (V8 legacy: UT/UTC/GMT/Z, US abbreviations, numeric offsets) stays untouched.
+    const trimmed = text.trim();
+    const bare = trimmed.replace(/\([^)]*\)/g, ' ');
+    const zoned = /(?<![a-z])(?:ut|utc|gmt|z|[ecmp][sd]t)(?![a-z])/i.test(bare) || /\d:\d{2}(?::\d{2}(?:\.\d+)?)?\s*(?:[ap]m)?\s*[+-]\d{1,4}(?::?\d{2})?(?!\d)/i.test(bare);
+    if (/^[+-]?\d{4,6}(?:-\d{2}(?:-\d{2})?)?$/.test(trimmed) || zoned) return parsed;
+    const iso = /^([+-]?\d{4,6})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d+))?)?$/.exec(trimmed);
     if (iso) return instant(utc(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]), Number(iso[4]), Number(iso[5]), +(iso[6] ?? 0), Number((iso[7] ?? '').padEnd(3, '0').slice(0, 3))));
+    // Reading the wall clock as UTC avoids system-zone DST gaps/folds shifting fields before reinterpretation.
+    const clock = nativeParse(`${trimmed} UTC`);
+    if (Number.isFinite(clock)) return instant(clock);
     const date = new NativeDate(parsed);
     return instant(utc(native.getFullYear!.call(date), native.getMonth!.call(date), native.getDate!.call(date), native.getHours!.call(date), native.getMinutes!.call(date), native.getSeconds!.call(date), native.getMilliseconds!.call(date)));
   };
