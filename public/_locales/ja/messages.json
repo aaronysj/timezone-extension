@@ -1,0 +1,623 @@
+{
+  "locale": {
+    "message": "ja"
+  },
+  "extName": {
+    "message": "Timezone Override"
+  },
+  "extDescription": {
+    "message": "ブラウザのタイムゾーンを全体またはサイトごとのルールで上書きします。"
+  },
+  "optionsTitle": {
+    "message": "Timezone Override 設定"
+  },
+  "withDetail": {
+    "message": "$1（$2）"
+  },
+  "timeDiff": {
+    "message": "この端末との時差 $1"
+  },
+  "modeOff": {
+    "message": "オフ"
+  },
+  "modeGlobal": {
+    "message": "すべてのサイト"
+  },
+  "modeRules": {
+    "message": "ルール別"
+  },
+  "modeGroupLabel": {
+    "message": "適用範囲"
+  },
+  "modeHintOff": {
+    "message": "どのページのタイムゾーンも変更しません。"
+  },
+  "modeHintGlobal": {
+    "message": "すべての http/https ページでデフォルトのタイムゾーンを使用します。"
+  },
+  "modeHintRules": {
+    "message": "ルールに記載されたサイトのみ変更します。除外ルールが優先されます。"
+  },
+  "saveSaving": {
+    "message": "保存中…"
+  },
+  "saveSaved": {
+    "message": "保存しました"
+  },
+  "saveError": {
+    "message": "保存されていません。変更はこのウィンドウに保持されています。"
+  },
+  "saveIdle": {
+    "message": "変更は自動的に保存されます"
+  },
+  "saveRetry": {
+    "message": "保存を再試行"
+  },
+  "pickerLabel": {
+    "message": "タイムゾーンを選択"
+  },
+  "pickerPlaceholder": {
+    "message": "都市、タイムゾーン、+8 で検索"
+  },
+  "pickerTitle": {
+    "message": "検索対象：都市（Tokyo）、タイムゾーン ID、UTC オフセット（+8、GMT-5）"
+  },
+  "pickerThisDevice": {
+    "message": "この端末"
+  },
+  "pickerNoMatch": {
+    "message": "「$1」に一致するタイムゾーンはありません"
+  },
+  "pickerOpenHelp": {
+    "message": "結果をクリックするか Enter で適用、Esc でキャンセル。"
+  },
+  "pickerClickToSearch": {
+    "message": "クリックして都市やタイムゾーンを検索"
+  },
+  "pickerAbandoned": {
+    "message": "結果が選択されなかったため、タイムゾーンは変更されていません。"
+  },
+  "pickerInvalid": {
+    "message": "有効なタイムゾーンがありません。別の語で検索して結果を選んでください。"
+  },
+  "dayLater": {
+    "message": "この端末より 1 日進んでいます"
+  },
+  "dayLaterPlural": {
+    "message": "この端末より $1 日進んでいます"
+  },
+  "dayEarlier": {
+    "message": "この端末より 1 日遅れています"
+  },
+  "dayEarlierPlural": {
+    "message": "この端末より $1 日遅れています"
+  },
+  "patternInvalid": {
+    "message": "有効なドメインまたは http/https URL を入力してください（例：example.com）。"
+  },
+  "patternPublicSuffix": {
+    "message": "$1 はパブリックサフィックスのため、サブドメインを含むルールにはできません。具体的なサイトを入力してください。"
+  },
+  "scopeExact": {
+    "message": "$1 のみ"
+  },
+  "scopeSuffix": {
+    "message": "$1 とサブドメイン"
+  },
+  "errTabBusy": {
+    "message": "このタブは別の拡張機能またはデバッガーが使用中です"
+  },
+  "errInvalidTimezone": {
+    "message": "無効なタイムゾーン: $1"
+  },
+  "popupBackendRetry": {
+    "message": "拡張機能のバックグラウンドに接続できません。ポップアップを開き直して再試行してください。"
+  },
+  "popupBackendUnreachable": {
+    "message": "拡張機能のバックグラウンドに接続できません"
+  },
+  "errHelpDebugger": {
+    "message": "別のデバッガーがこのタブを使用している可能性があります。このページの DevTools や他のデバッグ用拡張機能を閉じてから再試行してください。"
+  },
+  "errHelpGeneric": {
+    "message": "変更を適用できませんでした。再試行し、それでも失敗する場合はこのページを開き直してください。"
+  },
+  "popupUnsupported": {
+    "message": "このページのタイムゾーンは変更できません。http/https サイトで使用してください。"
+  },
+  "statusUnknown": {
+    "message": "状態を取得できません"
+  },
+  "statusUnsaved": {
+    "message": "未保存"
+  },
+  "statusPaused": {
+    "message": "一時停止中"
+  },
+  "statusFailed": {
+    "message": "失敗"
+  },
+  "statusApplied": {
+    "message": "適用中"
+  },
+  "statusApplying": {
+    "message": "適用しています…"
+  },
+  "statusSystem": {
+    "message": "システムのタイムゾーン"
+  },
+  "actionResume": {
+    "message": "再開"
+  },
+  "actionRetry": {
+    "message": "再試行"
+  },
+  "explainUnknown": {
+    "message": "ページが実際に使用しているタイムゾーンを確認できません。この端末の時刻を表示しています。"
+  },
+  "explainUnsaved": {
+    "message": "変更が保存されていないため、このページは以前のタイムゾーンのままです。保存を再試行してください。"
+  },
+  "explainStillZone": {
+    "message": "現在も $1 のタイムゾーンを使用しています。$2"
+  },
+  "explainStillSystem": {
+    "message": "現在もシステムのタイムゾーンを使用しています。$1"
+  },
+  "explainPaused": {
+    "message": "このタブの変更は一時停止中です。「再開」をクリックすると再適用します。"
+  },
+  "techDetails": {
+    "message": "技術的な詳細"
+  },
+  "localTimeLabel": {
+    "message": "現在の現地時刻"
+  },
+  "popupOffHint": {
+    "message": "「$1」でこのサイトを設定するか、「$2」ですべてのサイトを変更します。"
+  },
+  "globalUse": {
+    "message": "すべてのサイトで使用"
+  },
+  "globalTzLabel": {
+    "message": "すべてのサイトのタイムゾーン"
+  },
+  "scopeSelectLabel": {
+    "message": "ルールの適用範囲"
+  },
+  "scopeOptionSuffix": {
+    "message": "サブドメイン含む · $1"
+  },
+  "scopeField": {
+    "message": "適用先"
+  },
+  "warnBroadRule": {
+    "message": "既存のルールの範囲が広すぎます：$1削除してから設定し直してください。"
+  },
+  "siteTzExcluded": {
+    "message": "このルールはシステムのタイムゾーンを使用します"
+  },
+  "siteTz": {
+    "message": "サイトのタイムゾーン"
+  },
+  "siteTzDisabled": {
+    "message": "ルール無効 · サイトのタイムゾーン"
+  },
+  "siteTzNew": {
+    "message": "このサイトのタイムゾーンを設定"
+  },
+  "siteTzPlaceholder": {
+    "message": "タイムゾーンを選んで適用"
+  },
+  "warnExcludedBy": {
+    "message": "除外ルール $1 が優先されるため、この設定は反映されません。"
+  },
+  "warnOverriddenBy": {
+    "message": "このページは $1 によって決まります。この範囲を変更しても優先度の高いルールは置き換わりません。"
+  },
+  "editEffective": {
+    "message": "適用中のルールを編集"
+  },
+  "enableRule": {
+    "message": "このルールを有効にする"
+  },
+  "onlyThisSite": {
+    "message": "このサイトのみ設定"
+  },
+  "useSystem": {
+    "message": "システムのタイムゾーンを使用"
+  },
+  "removeRule": {
+    "message": "ルールを削除"
+  },
+  "removeRuleTitleZone": {
+    "message": "削除後、このサイトは $1 のタイムゾーンを使用します。"
+  },
+  "removeRuleTitleSystem": {
+    "message": "削除後、このサイトはシステムのタイムゾーンを使用します。"
+  },
+  "openSettings": {
+    "message": "ルールと設定を管理"
+  },
+  "ruleDuplicate": {
+    "message": "同じドメインと範囲のルールが既にあります。既存のルールを編集してください。"
+  },
+  "defaultTz": {
+    "message": "デフォルトのタイムゾーン"
+  },
+  "ruleDomainLabel": {
+    "message": "ドメイン $1"
+  },
+  "ruleEffectLabel": {
+    "message": "$1 のタイムゾーンの動作"
+  },
+  "ruleEnableLabel": {
+    "message": "$1 を有効にする"
+  },
+  "ruleEnabledTitle": {
+    "message": "有効 — クリックで無効化"
+  },
+  "ruleDisabledTitle": {
+    "message": "無効 — クリックで有効化"
+  },
+  "includeSubdomains": {
+    "message": "サブドメインを含む"
+  },
+  "ruleCustomTzLabel": {
+    "message": "$1 の指定タイムゾーン"
+  },
+  "delete": {
+    "message": "削除"
+  },
+  "deleteLabel": {
+    "message": "$1 を削除"
+  },
+  "addSiteLabel": {
+    "message": "追加するサイトのドメインまたは URL"
+  },
+  "addSitePlaceholder": {
+    "message": "ドメインまたは URL を入力（例：github.com）"
+  },
+  "addExists": {
+    "message": "$1 の同じ範囲のルールが既にあるため、そのルールに移動しました。"
+  },
+  "addSite": {
+    "message": "サイトを追加"
+  },
+  "addSubdomains": {
+    "message": "このサイトのサブドメインも変更"
+  },
+  "switchTo": {
+    "message": "「$1」に切り替え"
+  },
+  "undo": {
+    "message": "元に戻す"
+  },
+  "rulesTitle": {
+    "message": "サイトのルール"
+  },
+  "rulesEmpty": {
+    "message": "サイトのルールはまだありません。追加したドメインはそのホストのみにデフォルトのタイムゾーンを適用します。サブドメインも対象にするには「サブドメインを含む」をオンにしてください。"
+  },
+  "testerOnlyHttp": {
+    "message": "変更できるのは http/https ページのみです。"
+  },
+  "testerOff": {
+    "message": "拡張機能はオフのため、変更しません。"
+  },
+  "testerGlobal": {
+    "message": "デフォルトのタイムゾーン $1 を使用"
+  },
+  "testerRule": {
+    "message": "ルール $2 により $1 を使用"
+  },
+  "testerExcluded": {
+    "message": "ルール $1 で除外されるため、変更しません。"
+  },
+  "testerNoMatch": {
+    "message": "$1 はどのルールにも一致しないため、変更しません。"
+  },
+  "optionsHeroHint": {
+    "message": "編集後に「$1」をクリックすると、ページのタイムゾーンが変わります。"
+  },
+  "draftPreview": {
+    "message": "下書きのプレビュー"
+  },
+  "generalTitle": {
+    "message": "基本設定"
+  },
+  "defaultTzHint": {
+    "message": "都市、タイムゾーン ID、オフセットで検索できます（例：「Tokyo」「+8」）。"
+  },
+  "effectDefault": {
+    "message": "デフォルトのタイムゾーンを使用"
+  },
+  "excludeTitle": {
+    "message": "このサイトのタイムゾーンは変更しません"
+  },
+  "addedDraftExact": {
+    "message": "下書きに追加しました：$1（このホストのみ）。"
+  },
+  "addedDraftSuffix": {
+    "message": "下書きに追加しました：$1（サブドメインを含む）。"
+  },
+  "inactiveNotice": {
+    "message": "下書きの適用範囲が「$1」のため、保存してもサイトのルールは適用されません。"
+  },
+  "pendingDelete": {
+    "message": "削除予定：$1"
+  },
+  "rulesHint": {
+    "message": "各サイトでデフォルト、指定、またはシステムのタイムゾーンを使用できます。システムのタイムゾーンのルールが優先されます。"
+  },
+  "colEnabled": {
+    "message": "有効"
+  },
+  "colSite": {
+    "message": "サイト"
+  },
+  "colTimezone": {
+    "message": "タイムゾーン設定"
+  },
+  "colLocalTime": {
+    "message": "現地時刻"
+  },
+  "testerLabel": {
+    "message": "下書きを確認"
+  },
+  "testerIdle": {
+    "message": "URL を入力すると、保存後に使用されるタイムゾーンとルールをプレビューできます。"
+  },
+  "addPendingError": {
+    "message": "先に「$1」をクリックするか、入力を消去してから保存してください。"
+  },
+  "ruleDuplicateMerge": {
+    "message": "同じドメインと範囲のルールがあります。重複を統合または削除してください。"
+  },
+  "ruleInvalidTz": {
+    "message": "有効なタイムゾーンを選んでください。"
+  },
+  "saveApplying": {
+    "message": "保存して適用しています…"
+  },
+  "saveConflict": {
+    "message": "別のウィンドウで設定が変更されました。最新の設定を読み込むか、明示的に上書き保存してください。"
+  },
+  "saveFailedDraft": {
+    "message": "保存に失敗しました。下書きは保持されています。再試行してください。"
+  },
+  "saveDirty": {
+    "message": "未保存の変更があります · ページは保存済みの設定を使用中"
+  },
+  "saveAppliedDone": {
+    "message": "保存して適用しました"
+  },
+  "saveClean": {
+    "message": "設定は保存済みです"
+  },
+  "loadLatest": {
+    "message": "最新の設定を読み込む"
+  },
+  "discardChanges": {
+    "message": "変更を破棄"
+  },
+  "overwriteSave": {
+    "message": "上書き保存"
+  },
+  "savingShort": {
+    "message": "保存中…"
+  },
+  "saveApply": {
+    "message": "保存して適用"
+  },
+  "pendingSettingsLabel": {
+    "message": "保存前の設定"
+  },
+  "scopeExactShort": {
+    "message": "完全一致"
+  },
+  "scopeExactOption": {
+    "message": "このドメインのみ（完全一致）"
+  },
+  "scopeSuffixOption": {
+    "message": "すべてのサブドメインを含む"
+  },
+  "scopeExactExample": {
+    "message": "$1 のみに一致"
+  },
+  "scopeSuffixExample": {
+    "message": "$1 とすべてのサブドメインに一致"
+  },
+  "ruleScopeLabel": {
+    "message": "$1 の一致範囲"
+  },
+  "editRule": {
+    "message": "編集"
+  },
+  "ruleEditLabel": {
+    "message": "$1 を編集"
+  },
+  "editDone": {
+    "message": "編集完了"
+  },
+  "ruleMoreLabel": {
+    "message": "$1 のその他の操作"
+  },
+  "pickerDraftHelp": {
+    "message": "選択すると下書きを更新します。「保存して適用」で有効になります。"
+  },
+  "cityShanghai": {
+    "message": "上海"
+  },
+  "cityHongKong": {
+    "message": "香港"
+  },
+  "cityMacau": {
+    "message": "マカオ"
+  },
+  "cityTaipei": {
+    "message": "台北"
+  },
+  "cityUrumqi": {
+    "message": "ウルムチ"
+  },
+  "cityTokyo": {
+    "message": "東京"
+  },
+  "citySeoul": {
+    "message": "ソウル"
+  },
+  "citySingapore": {
+    "message": "シンガポール"
+  },
+  "cityKualaLumpur": {
+    "message": "クアラルンプール"
+  },
+  "cityBangkok": {
+    "message": "バンコク"
+  },
+  "cityHoChiMinh": {
+    "message": "ホーチミン"
+  },
+  "cityJakarta": {
+    "message": "ジャカルタ"
+  },
+  "cityManila": {
+    "message": "マニラ"
+  },
+  "cityKolkata": {
+    "message": "コルカタ"
+  },
+  "cityDubai": {
+    "message": "ドバイ"
+  },
+  "cityRiyadh": {
+    "message": "リヤド"
+  },
+  "cityTehran": {
+    "message": "テヘラン"
+  },
+  "cityKarachi": {
+    "message": "カラチ"
+  },
+  "cityDhaka": {
+    "message": "ダッカ"
+  },
+  "cityJerusalem": {
+    "message": "エルサレム"
+  },
+  "cityLondon": {
+    "message": "ロンドン"
+  },
+  "cityParis": {
+    "message": "パリ"
+  },
+  "cityBerlin": {
+    "message": "ベルリン"
+  },
+  "cityMadrid": {
+    "message": "マドリード"
+  },
+  "cityRome": {
+    "message": "ローマ"
+  },
+  "cityAmsterdam": {
+    "message": "アムステルダム"
+  },
+  "cityZurich": {
+    "message": "チューリッヒ"
+  },
+  "cityStockholm": {
+    "message": "ストックホルム"
+  },
+  "cityMoscow": {
+    "message": "モスクワ"
+  },
+  "cityIstanbul": {
+    "message": "イスタンブール"
+  },
+  "cityKyiv": {
+    "message": "キーウ"
+  },
+  "cityNewYork": {
+    "message": "ニューヨーク"
+  },
+  "cityChicago": {
+    "message": "シカゴ"
+  },
+  "cityDenver": {
+    "message": "デンバー"
+  },
+  "cityLosAngeles": {
+    "message": "ロサンゼルス"
+  },
+  "cityAnchorage": {
+    "message": "アンカレッジ"
+  },
+  "cityHonolulu": {
+    "message": "ホノルル"
+  },
+  "cityToronto": {
+    "message": "トロント"
+  },
+  "cityVancouver": {
+    "message": "バンクーバー"
+  },
+  "cityMexicoCity": {
+    "message": "メキシコシティ"
+  },
+  "citySaoPaulo": {
+    "message": "サンパウロ"
+  },
+  "cityBuenosAires": {
+    "message": "ブエノスアイレス"
+  },
+  "cityCairo": {
+    "message": "カイロ"
+  },
+  "cityJohannesburg": {
+    "message": "ヨハネスブルク"
+  },
+  "cityLagos": {
+    "message": "ラゴス"
+  },
+  "cityNairobi": {
+    "message": "ナイロビ"
+  },
+  "citySydney": {
+    "message": "シドニー"
+  },
+  "cityMelbourne": {
+    "message": "メルボルン"
+  },
+  "cityPerth": {
+    "message": "パース"
+  },
+  "cityAuckland": {
+    "message": "オークランド"
+  },
+  "cityUTC": {
+    "message": "協定世界時"
+  },
+  "languageLabel": {
+    "message": "言語"
+  },
+  "languageAuto": {
+    "message": "ブラウザに合わせる"
+  },
+  "languageSaveHint": {
+    "message": "保存後、ポップアップと設定画面の両方に適用されます。"
+  },
+  "languageEnglish": {
+    "message": "English"
+  },
+  "languageChinese": {
+    "message": "简体中文"
+  },
+  "languageJapanese": {
+    "message": "日本語"
+  },
+  "languageKorean": {
+    "message": "한국어"
+  }
+}

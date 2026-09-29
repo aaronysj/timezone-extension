@@ -1,0 +1,623 @@
+{
+  "locale": {
+    "message": "ko"
+  },
+  "extName": {
+    "message": "Timezone Override"
+  },
+  "extDescription": {
+    "message": "브라우저 시간대를 전역 또는 사이트별 규칙으로 재정의합니다."
+  },
+  "optionsTitle": {
+    "message": "Timezone Override 설정"
+  },
+  "withDetail": {
+    "message": "$1($2)"
+  },
+  "timeDiff": {
+    "message": "이 기기와의 시차 $1"
+  },
+  "modeOff": {
+    "message": "끄기"
+  },
+  "modeGlobal": {
+    "message": "모든 사이트"
+  },
+  "modeRules": {
+    "message": "규칙별"
+  },
+  "modeGroupLabel": {
+    "message": "적용 범위"
+  },
+  "modeHintOff": {
+    "message": "어떤 페이지의 시간대도 변경하지 않습니다."
+  },
+  "modeHintGlobal": {
+    "message": "모든 http/https 페이지에서 기본 시간대를 사용합니다."
+  },
+  "modeHintRules": {
+    "message": "규칙에 있는 사이트만 변경하며, 제외 규칙이 우선합니다."
+  },
+  "saveSaving": {
+    "message": "저장 중…"
+  },
+  "saveSaved": {
+    "message": "저장됨"
+  },
+  "saveError": {
+    "message": "저장되지 않았습니다. 변경 사항은 이 창에 유지됩니다."
+  },
+  "saveIdle": {
+    "message": "변경 사항은 자동으로 저장됩니다"
+  },
+  "saveRetry": {
+    "message": "다시 저장"
+  },
+  "pickerLabel": {
+    "message": "시간대 선택"
+  },
+  "pickerPlaceholder": {
+    "message": "도시, 시간대 또는 +8 검색"
+  },
+  "pickerTitle": {
+    "message": "검색 대상: 도시(Tokyo), 시간대 ID, UTC 오프셋(+8, GMT-5)"
+  },
+  "pickerThisDevice": {
+    "message": "이 기기"
+  },
+  "pickerNoMatch": {
+    "message": "\"$1\"와(과) 일치하는 시간대가 없습니다"
+  },
+  "pickerOpenHelp": {
+    "message": "결과를 클릭하거나 Enter로 적용하고, Esc로 취소합니다."
+  },
+  "pickerClickToSearch": {
+    "message": "클릭하여 도시 또는 시간대 검색"
+  },
+  "pickerAbandoned": {
+    "message": "결과를 선택하지 않아 시간대가 변경되지 않았습니다."
+  },
+  "pickerInvalid": {
+    "message": "유효한 시간대가 없습니다. 다른 검색어로 검색한 후 결과를 선택하세요."
+  },
+  "dayLater": {
+    "message": "이 기기보다 1일 빠름"
+  },
+  "dayLaterPlural": {
+    "message": "이 기기보다 $1일 빠름"
+  },
+  "dayEarlier": {
+    "message": "이 기기보다 1일 느림"
+  },
+  "dayEarlierPlural": {
+    "message": "이 기기보다 $1일 느림"
+  },
+  "patternInvalid": {
+    "message": "유효한 도메인 또는 http/https URL을 입력하세요(예: example.com)."
+  },
+  "patternPublicSuffix": {
+    "message": "$1은(는) 공개 접미사이므로 하위 도메인을 포함하는 규칙으로 사용할 수 없습니다. 구체적인 사이트를 입력하세요."
+  },
+  "scopeExact": {
+    "message": "$1만"
+  },
+  "scopeSuffix": {
+    "message": "$1 및 하위 도메인"
+  },
+  "errTabBusy": {
+    "message": "이 탭은 다른 확장 프로그램 또는 디버거가 사용 중입니다"
+  },
+  "errInvalidTimezone": {
+    "message": "잘못된 시간대: $1"
+  },
+  "popupBackendRetry": {
+    "message": "확장 프로그램 백그라운드에 연결할 수 없습니다. 팝업을 다시 열고 다시 시도하세요."
+  },
+  "popupBackendUnreachable": {
+    "message": "확장 프로그램 백그라운드에 연결할 수 없습니다"
+  },
+  "errHelpDebugger": {
+    "message": "다른 디버거가 이 탭을 사용 중일 수 있습니다. 이 페이지의 DevTools 또는 다른 디버깅 확장 프로그램을 닫고 다시 시도하세요."
+  },
+  "errHelpGeneric": {
+    "message": "변경을 적용하지 못했습니다. 다시 시도하고, 계속 실패하면 이 페이지를 다시 여세요."
+  },
+  "popupUnsupported": {
+    "message": "이 페이지의 시간대는 변경할 수 없습니다. http/https 사이트에서 사용하세요."
+  },
+  "statusUnknown": {
+    "message": "상태를 확인할 수 없음"
+  },
+  "statusUnsaved": {
+    "message": "저장 안 됨"
+  },
+  "statusPaused": {
+    "message": "일시 중지됨"
+  },
+  "statusFailed": {
+    "message": "실패"
+  },
+  "statusApplied": {
+    "message": "적용됨"
+  },
+  "statusApplying": {
+    "message": "적용 중…"
+  },
+  "statusSystem": {
+    "message": "시스템 시간대"
+  },
+  "actionResume": {
+    "message": "다시 시작"
+  },
+  "actionRetry": {
+    "message": "다시 시도"
+  },
+  "explainUnknown": {
+    "message": "페이지가 실제로 사용하는 시간대를 확인할 수 없어 이 기기의 시간을 표시합니다."
+  },
+  "explainUnsaved": {
+    "message": "변경 사항이 저장되지 않아 이 페이지는 이전 시간대를 유지합니다. 다시 저장해 보세요."
+  },
+  "explainStillZone": {
+    "message": "아직 $1 시간대를 사용 중입니다. $2"
+  },
+  "explainStillSystem": {
+    "message": "아직 시스템 시간대를 사용 중입니다. $1"
+  },
+  "explainPaused": {
+    "message": "이 탭의 변경이 일시 중지되었습니다. 다시 시작을 눌러 다시 적용하세요."
+  },
+  "techDetails": {
+    "message": "기술 세부 정보"
+  },
+  "localTimeLabel": {
+    "message": "현재 현지 시간"
+  },
+  "popupOffHint": {
+    "message": "\"$1\"을(를) 선택해 이 사이트를 설정하거나 \"$2\"(으)로 모든 사이트를 변경하세요."
+  },
+  "globalUse": {
+    "message": "모든 사이트에 사용"
+  },
+  "globalTzLabel": {
+    "message": "모든 사이트 시간대"
+  },
+  "scopeSelectLabel": {
+    "message": "규칙 적용 범위"
+  },
+  "scopeOptionSuffix": {
+    "message": "하위 도메인 포함 · $1"
+  },
+  "scopeField": {
+    "message": "적용 대상"
+  },
+  "warnBroadRule": {
+    "message": "기존 규칙의 범위가 너무 넓습니다: $1 제거한 후 다시 설정하세요."
+  },
+  "siteTzExcluded": {
+    "message": "이 규칙은 시스템 시간대를 사용합니다"
+  },
+  "siteTz": {
+    "message": "사이트 시간대"
+  },
+  "siteTzDisabled": {
+    "message": "규칙 비활성 · 사이트 시간대"
+  },
+  "siteTzNew": {
+    "message": "이 사이트의 시간대 설정"
+  },
+  "siteTzPlaceholder": {
+    "message": "시간대를 선택해 적용"
+  },
+  "warnExcludedBy": {
+    "message": "제외 규칙 $1이(가) 우선하므로 이 설정은 적용되지 않습니다."
+  },
+  "warnOverriddenBy": {
+    "message": "이 페이지는 $1에 의해 결정됩니다. 이 범위를 변경해도 우선순위가 더 높은 규칙을 대체하지 않습니다."
+  },
+  "editEffective": {
+    "message": "적용 중인 규칙 편집"
+  },
+  "enableRule": {
+    "message": "이 규칙 사용"
+  },
+  "onlyThisSite": {
+    "message": "이 사이트만 설정"
+  },
+  "useSystem": {
+    "message": "시스템 시간대 사용"
+  },
+  "removeRule": {
+    "message": "규칙 제거"
+  },
+  "removeRuleTitleZone": {
+    "message": "제거하면 이 사이트는 $1 시간대를 사용합니다."
+  },
+  "removeRuleTitleSystem": {
+    "message": "제거하면 이 사이트는 시스템 시간대를 사용합니다."
+  },
+  "openSettings": {
+    "message": "규칙 및 설정 관리"
+  },
+  "ruleDuplicate": {
+    "message": "같은 도메인과 범위의 규칙이 이미 있습니다. 기존 규칙을 편집하세요."
+  },
+  "defaultTz": {
+    "message": "기본 시간대"
+  },
+  "ruleDomainLabel": {
+    "message": "도메인 $1"
+  },
+  "ruleEffectLabel": {
+    "message": "$1의 시간대 동작"
+  },
+  "ruleEnableLabel": {
+    "message": "$1 사용"
+  },
+  "ruleEnabledTitle": {
+    "message": "사용 중 — 클릭하여 사용 중지"
+  },
+  "ruleDisabledTitle": {
+    "message": "사용 안 함 — 클릭하여 사용"
+  },
+  "includeSubdomains": {
+    "message": "하위 도메인 포함"
+  },
+  "ruleCustomTzLabel": {
+    "message": "$1의 지정 시간대"
+  },
+  "delete": {
+    "message": "삭제"
+  },
+  "deleteLabel": {
+    "message": "$1 삭제"
+  },
+  "addSiteLabel": {
+    "message": "추가할 사이트의 도메인 또는 URL"
+  },
+  "addSitePlaceholder": {
+    "message": "도메인 또는 URL 입력(예: github.com)"
+  },
+  "addExists": {
+    "message": "$1에 대한 같은 범위의 규칙이 이미 있어 해당 규칙으로 이동했습니다."
+  },
+  "addSite": {
+    "message": "사이트 추가"
+  },
+  "addSubdomains": {
+    "message": "이 사이트의 하위 도메인도 변경"
+  },
+  "switchTo": {
+    "message": "\"$1\"(으)로 전환"
+  },
+  "undo": {
+    "message": "실행 취소"
+  },
+  "rulesTitle": {
+    "message": "사이트 규칙"
+  },
+  "rulesEmpty": {
+    "message": "아직 사이트 규칙이 없습니다. 추가한 도메인은 해당 호스트에만 기본 시간대를 적용하며, 하위 도메인도 포함하려면 \"하위 도메인 포함\"을 선택하세요."
+  },
+  "testerOnlyHttp": {
+    "message": "http/https 페이지만 변경할 수 있습니다."
+  },
+  "testerOff": {
+    "message": "확장 프로그램이 꺼져 있어 변경하지 않습니다."
+  },
+  "testerGlobal": {
+    "message": "기본 시간대 $1 사용"
+  },
+  "testerRule": {
+    "message": "규칙 $2에 따라 $1 사용"
+  },
+  "testerExcluded": {
+    "message": "규칙 $1에 의해 제외되어 변경하지 않습니다."
+  },
+  "testerNoMatch": {
+    "message": "$1은(는) 어떤 규칙과도 일치하지 않아 변경하지 않습니다."
+  },
+  "optionsHeroHint": {
+    "message": "편집 후 \"$1\"을(를) 클릭해야 페이지 시간대가 바뀝니다."
+  },
+  "draftPreview": {
+    "message": "초안 미리보기"
+  },
+  "generalTitle": {
+    "message": "기본 설정"
+  },
+  "defaultTzHint": {
+    "message": "도시, 시간대 ID 또는 오프셋으로 검색하세요(예: \"Tokyo\", \"+8\")."
+  },
+  "effectDefault": {
+    "message": "기본 시간대 사용"
+  },
+  "excludeTitle": {
+    "message": "이 사이트의 시간대를 변경하지 않음"
+  },
+  "addedDraftExact": {
+    "message": "초안에 추가됨: $1, 이 호스트만 해당."
+  },
+  "addedDraftSuffix": {
+    "message": "초안에 추가됨: $1, 하위 도메인 포함."
+  },
+  "inactiveNotice": {
+    "message": "초안 적용 범위가 \"$1\"이므로 저장해도 사이트 규칙이 적용되지 않습니다."
+  },
+  "pendingDelete": {
+    "message": "삭제 예정: $1"
+  },
+  "rulesHint": {
+    "message": "사이트마다 기본, 지정 또는 시스템 시간대를 사용할 수 있습니다. 시스템 시간대 규칙이 우선합니다."
+  },
+  "colEnabled": {
+    "message": "사용"
+  },
+  "colSite": {
+    "message": "사이트"
+  },
+  "colTimezone": {
+    "message": "시간대 설정"
+  },
+  "colLocalTime": {
+    "message": "현지 시간"
+  },
+  "testerLabel": {
+    "message": "초안 확인"
+  },
+  "testerIdle": {
+    "message": "URL을 입력하면 저장 후 사용할 시간대와 규칙을 미리 볼 수 있습니다."
+  },
+  "addPendingError": {
+    "message": "먼저 \"$1\"을(를) 클릭하거나 입력을 지운 후 저장하세요."
+  },
+  "ruleDuplicateMerge": {
+    "message": "같은 도메인과 범위의 규칙이 있습니다. 중복 규칙을 병합하거나 삭제하세요."
+  },
+  "ruleInvalidTz": {
+    "message": "유효한 시간대를 선택하세요."
+  },
+  "saveApplying": {
+    "message": "저장 및 적용 중…"
+  },
+  "saveConflict": {
+    "message": "다른 창에서 설정이 변경되었습니다. 최신 설정을 불러오거나 명시적으로 덮어쓰세요."
+  },
+  "saveFailedDraft": {
+    "message": "저장하지 못했습니다. 초안은 유지됩니다. 다시 시도하세요."
+  },
+  "saveDirty": {
+    "message": "저장되지 않은 변경 사항 · 페이지는 저장된 설정을 사용 중"
+  },
+  "saveAppliedDone": {
+    "message": "저장 및 적용됨"
+  },
+  "saveClean": {
+    "message": "설정이 저장되어 있음"
+  },
+  "loadLatest": {
+    "message": "최신 설정 불러오기"
+  },
+  "discardChanges": {
+    "message": "변경 취소"
+  },
+  "overwriteSave": {
+    "message": "덮어쓰고 저장"
+  },
+  "savingShort": {
+    "message": "저장 중…"
+  },
+  "saveApply": {
+    "message": "저장 및 적용"
+  },
+  "pendingSettingsLabel": {
+    "message": "저장 대기 중인 설정"
+  },
+  "scopeExactShort": {
+    "message": "정확히 일치"
+  },
+  "scopeExactOption": {
+    "message": "이 도메인만 (정확히 일치)"
+  },
+  "scopeSuffixOption": {
+    "message": "모든 하위 도메인 포함"
+  },
+  "scopeExactExample": {
+    "message": "$1 에만 일치"
+  },
+  "scopeSuffixExample": {
+    "message": "$1 및 모든 하위 도메인에 일치"
+  },
+  "ruleScopeLabel": {
+    "message": "$1 의 일치 범위"
+  },
+  "editRule": {
+    "message": "편집"
+  },
+  "ruleEditLabel": {
+    "message": "$1 편집"
+  },
+  "editDone": {
+    "message": "편집 완료"
+  },
+  "ruleMoreLabel": {
+    "message": "$1 의 추가 작업"
+  },
+  "pickerDraftHelp": {
+    "message": "선택하면 초안이 변경됩니다. 저장 후 적용하면 활성화됩니다."
+  },
+  "cityShanghai": {
+    "message": "상하이"
+  },
+  "cityHongKong": {
+    "message": "홍콩"
+  },
+  "cityMacau": {
+    "message": "마카오"
+  },
+  "cityTaipei": {
+    "message": "타이베이"
+  },
+  "cityUrumqi": {
+    "message": "우루무치"
+  },
+  "cityTokyo": {
+    "message": "도쿄"
+  },
+  "citySeoul": {
+    "message": "서울"
+  },
+  "citySingapore": {
+    "message": "싱가포르"
+  },
+  "cityKualaLumpur": {
+    "message": "쿠알라룸푸르"
+  },
+  "cityBangkok": {
+    "message": "방콕"
+  },
+  "cityHoChiMinh": {
+    "message": "호찌민"
+  },
+  "cityJakarta": {
+    "message": "자카르타"
+  },
+  "cityManila": {
+    "message": "마닐라"
+  },
+  "cityKolkata": {
+    "message": "콜카타"
+  },
+  "cityDubai": {
+    "message": "두바이"
+  },
+  "cityRiyadh": {
+    "message": "리야드"
+  },
+  "cityTehran": {
+    "message": "테헤란"
+  },
+  "cityKarachi": {
+    "message": "카라치"
+  },
+  "cityDhaka": {
+    "message": "다카"
+  },
+  "cityJerusalem": {
+    "message": "예루살렘"
+  },
+  "cityLondon": {
+    "message": "런던"
+  },
+  "cityParis": {
+    "message": "파리"
+  },
+  "cityBerlin": {
+    "message": "베를린"
+  },
+  "cityMadrid": {
+    "message": "마드리드"
+  },
+  "cityRome": {
+    "message": "로마"
+  },
+  "cityAmsterdam": {
+    "message": "암스테르담"
+  },
+  "cityZurich": {
+    "message": "취리히"
+  },
+  "cityStockholm": {
+    "message": "스톡홀름"
+  },
+  "cityMoscow": {
+    "message": "모스크바"
+  },
+  "cityIstanbul": {
+    "message": "이스탄불"
+  },
+  "cityKyiv": {
+    "message": "키이우"
+  },
+  "cityNewYork": {
+    "message": "뉴욕"
+  },
+  "cityChicago": {
+    "message": "시카고"
+  },
+  "cityDenver": {
+    "message": "덴버"
+  },
+  "cityLosAngeles": {
+    "message": "로스앤젤레스"
+  },
+  "cityAnchorage": {
+    "message": "앵커리지"
+  },
+  "cityHonolulu": {
+    "message": "호놀룰루"
+  },
+  "cityToronto": {
+    "message": "토론토"
+  },
+  "cityVancouver": {
+    "message": "밴쿠버"
+  },
+  "cityMexicoCity": {
+    "message": "멕시코시티"
+  },
+  "citySaoPaulo": {
+    "message": "상파울루"
+  },
+  "cityBuenosAires": {
+    "message": "부에노스아이레스"
+  },
+  "cityCairo": {
+    "message": "카이로"
+  },
+  "cityJohannesburg": {
+    "message": "요하네스버그"
+  },
+  "cityLagos": {
+    "message": "라고스"
+  },
+  "cityNairobi": {
+    "message": "나이로비"
+  },
+  "citySydney": {
+    "message": "시드니"
+  },
+  "cityMelbourne": {
+    "message": "멜버른"
+  },
+  "cityPerth": {
+    "message": "퍼스"
+  },
+  "cityAuckland": {
+    "message": "오클랜드"
+  },
+  "cityUTC": {
+    "message": "협정 세계시"
+  },
+  "languageLabel": {
+    "message": "언어"
+  },
+  "languageAuto": {
+    "message": "브라우저 언어 사용"
+  },
+  "languageSaveHint": {
+    "message": "저장하면 팝업과 설정 페이지에 함께 적용됩니다."
+  },
+  "languageEnglish": {
+    "message": "English"
+  },
+  "languageChinese": {
+    "message": "简体中文"
+  },
+  "languageJapanese": {
+    "message": "日本語"
+  },
+  "languageKorean": {
+    "message": "한국어"
+  }
+}

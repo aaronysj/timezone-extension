@@ -1,0 +1,623 @@
+{
+  "locale": {
+    "message": "zh-CN"
+  },
+  "extName": {
+    "message": "Timezone Override"
+  },
+  "extDescription": {
+    "message": "全局或按网站规则覆盖浏览器时区。"
+  },
+  "optionsTitle": {
+    "message": "Timezone Override 设置"
+  },
+  "withDetail": {
+    "message": "$1（$2）"
+  },
+  "timeDiff": {
+    "message": "与本机时差 $1"
+  },
+  "modeOff": {
+    "message": "关闭"
+  },
+  "modeGlobal": {
+    "message": "所有网站"
+  },
+  "modeRules": {
+    "message": "按规则"
+  },
+  "modeGroupLabel": {
+    "message": "生效范围"
+  },
+  "modeHintOff": {
+    "message": "不修改任何页面的时区。"
+  },
+  "modeHintGlobal": {
+    "message": "所有 http/https 网页使用默认时区。"
+  },
+  "modeHintRules": {
+    "message": "只修改规则里列出的网站，排除规则优先。"
+  },
+  "saveSaving": {
+    "message": "正在保存…"
+  },
+  "saveSaved": {
+    "message": "已保存"
+  },
+  "saveError": {
+    "message": "未保存，修改暂留在此窗口。"
+  },
+  "saveIdle": {
+    "message": "修改后自动保存"
+  },
+  "saveRetry": {
+    "message": "重试保存"
+  },
+  "pickerLabel": {
+    "message": "选择时区"
+  },
+  "pickerPlaceholder": {
+    "message": "搜索城市、时区或 +8"
+  },
+  "pickerTitle": {
+    "message": "可搜索：城市（Tokyo / 东京）、时区 ID、UTC 偏移（+8、GMT-5）"
+  },
+  "pickerThisDevice": {
+    "message": "本机"
+  },
+  "pickerNoMatch": {
+    "message": "没有匹配「$1」的时区"
+  },
+  "pickerOpenHelp": {
+    "message": "点击结果或按回车应用；Esc 取消。"
+  },
+  "pickerClickToSearch": {
+    "message": "点击搜索城市或时区"
+  },
+  "pickerAbandoned": {
+    "message": "未选择结果，时区未更改。"
+  },
+  "pickerInvalid": {
+    "message": "没有有效时区，请更换搜索词并选择结果。"
+  },
+  "dayLater": {
+    "message": "比本机晚 1 天"
+  },
+  "dayLaterPlural": {
+    "message": "比本机晚 $1 天"
+  },
+  "dayEarlier": {
+    "message": "比本机早 1 天"
+  },
+  "dayEarlierPlural": {
+    "message": "比本机早 $1 天"
+  },
+  "patternInvalid": {
+    "message": "请输入有效域名或 http/https 网址，如 example.com。"
+  },
+  "patternPublicSuffix": {
+    "message": "$1 是公共后缀，不能作为包含子域名的规则。请填写具体网站。"
+  },
+  "scopeExact": {
+    "message": "仅 $1"
+  },
+  "scopeSuffix": {
+    "message": "$1 及子域名"
+  },
+  "errTabBusy": {
+    "message": "该标签页已被其他扩展/调试器占用"
+  },
+  "errInvalidTimezone": {
+    "message": "无效时区: $1"
+  },
+  "popupBackendRetry": {
+    "message": "无法联系扩展后台，请重新打开弹窗后重试。"
+  },
+  "popupBackendUnreachable": {
+    "message": "无法联系扩展后台"
+  },
+  "errHelpDebugger": {
+    "message": "另一个调试器可能占用了此标签页。关闭该页面的 DevTools 或其他调试扩展后重试。"
+  },
+  "errHelpGeneric": {
+    "message": "无法完成修改，请重试；仍失败时重新打开此网页。"
+  },
+  "popupUnsupported": {
+    "message": "此页面不支持修改时区。请在 http/https 网站中使用。"
+  },
+  "statusUnknown": {
+    "message": "状态暂不可用"
+  },
+  "statusUnsaved": {
+    "message": "修改未保存"
+  },
+  "statusPaused": {
+    "message": "已暂停"
+  },
+  "statusFailed": {
+    "message": "修改失败"
+  },
+  "statusApplied": {
+    "message": "已生效"
+  },
+  "statusApplying": {
+    "message": "应用中…"
+  },
+  "statusSystem": {
+    "message": "系统时区"
+  },
+  "actionResume": {
+    "message": "恢复修改"
+  },
+  "actionRetry": {
+    "message": "重试"
+  },
+  "explainUnknown": {
+    "message": "暂时无法确认网页实际使用的时区，以下为本机时间。"
+  },
+  "explainUnsaved": {
+    "message": "修改尚未保存，当前页面仍保持原来的时区。请重试保存。"
+  },
+  "explainStillZone": {
+    "message": "当前仍使用 $1 时区。$2"
+  },
+  "explainStillSystem": {
+    "message": "当前仍使用系统时区。$1"
+  },
+  "explainPaused": {
+    "message": "此标签页已暂停修改，点击恢复后重新应用。"
+  },
+  "techDetails": {
+    "message": "技术详情"
+  },
+  "localTimeLabel": {
+    "message": "当前当地时间"
+  },
+  "popupOffHint": {
+    "message": "选择「$1」为当前网站设置，或选择「$2」统一修改。"
+  },
+  "globalUse": {
+    "message": "所有网站使用"
+  },
+  "globalTzLabel": {
+    "message": "所有网站时区"
+  },
+  "scopeSelectLabel": {
+    "message": "规则适用范围"
+  },
+  "scopeOptionSuffix": {
+    "message": "含子域名 · $1"
+  },
+  "scopeField": {
+    "message": "修改范围"
+  },
+  "warnBroadRule": {
+    "message": "已有规则范围过宽：$1请移除后重新设置。"
+  },
+  "siteTzExcluded": {
+    "message": "此规则使用系统时区"
+  },
+  "siteTz": {
+    "message": "网站时区"
+  },
+  "siteTzDisabled": {
+    "message": "规则已停用 · 网站时区"
+  },
+  "siteTzNew": {
+    "message": "为此网站设置时区"
+  },
+  "siteTzPlaceholder": {
+    "message": "选择时区并应用"
+  },
+  "warnExcludedBy": {
+    "message": "排除规则 $1 优先，此处设置不会生效。"
+  },
+  "warnOverriddenBy": {
+    "message": "当前页面由 $1 决定；修改此范围不会替代更优先的规则。"
+  },
+  "editEffective": {
+    "message": "编辑当前生效规则"
+  },
+  "enableRule": {
+    "message": "启用此规则"
+  },
+  "onlyThisSite": {
+    "message": "仅设置此网站"
+  },
+  "useSystem": {
+    "message": "使用系统时区"
+  },
+  "removeRule": {
+    "message": "移除规则"
+  },
+  "removeRuleTitleZone": {
+    "message": "移除后，此网站将使用 $1 时区。"
+  },
+  "removeRuleTitleSystem": {
+    "message": "移除后，此网站将使用系统时区。"
+  },
+  "openSettings": {
+    "message": "管理规则与设置"
+  },
+  "ruleDuplicate": {
+    "message": "已存在相同域名和范围的规则，请编辑已有规则。"
+  },
+  "defaultTz": {
+    "message": "默认时区"
+  },
+  "ruleDomainLabel": {
+    "message": "域名 $1"
+  },
+  "ruleEffectLabel": {
+    "message": "$1 的时区行为"
+  },
+  "ruleEnableLabel": {
+    "message": "启用 $1"
+  },
+  "ruleEnabledTitle": {
+    "message": "已启用，点击停用"
+  },
+  "ruleDisabledTitle": {
+    "message": "已停用，点击启用"
+  },
+  "includeSubdomains": {
+    "message": "含子域名"
+  },
+  "ruleCustomTzLabel": {
+    "message": "$1 的指定时区"
+  },
+  "delete": {
+    "message": "删除"
+  },
+  "deleteLabel": {
+    "message": "删除 $1"
+  },
+  "addSiteLabel": {
+    "message": "添加网站的域名或网址"
+  },
+  "addSitePlaceholder": {
+    "message": "输入域名或网址，如 github.com"
+  },
+  "addExists": {
+    "message": "已存在 $1 的相同范围规则，已定位到该规则。"
+  },
+  "addSite": {
+    "message": "添加网站"
+  },
+  "addSubdomains": {
+    "message": "同时修改该网站的子域名"
+  },
+  "switchTo": {
+    "message": "切换到「$1」"
+  },
+  "undo": {
+    "message": "撤销"
+  },
+  "rulesTitle": {
+    "message": "网站规则"
+  },
+  "rulesEmpty": {
+    "message": "还没有网站规则。添加域名后，仅该主机会使用默认时区；也可明确勾选包含子域名。"
+  },
+  "testerOnlyHttp": {
+    "message": "只能修改 http/https 网页。"
+  },
+  "testerOff": {
+    "message": "扩展已关闭，不修改。"
+  },
+  "testerGlobal": {
+    "message": "使用默认时区 $1"
+  },
+  "testerRule": {
+    "message": "使用 $1，来自规则 $2"
+  },
+  "testerExcluded": {
+    "message": "被规则 $1 排除，不修改。"
+  },
+  "testerNoMatch": {
+    "message": "$1 没有命中任何规则，不修改。"
+  },
+  "optionsHeroHint": {
+    "message": "编辑完成后点击「$1」，网页时区才会改变。"
+  },
+  "draftPreview": {
+    "message": "草稿预览"
+  },
+  "generalTitle": {
+    "message": "基础设置"
+  },
+  "defaultTzHint": {
+    "message": "搜索城市、时区 ID 或偏移，例如「东京」或「+8」。"
+  },
+  "effectDefault": {
+    "message": "使用默认时区"
+  },
+  "excludeTitle": {
+    "message": "不修改这个网站的时区"
+  },
+  "addedDraftExact": {
+    "message": "已加入草稿：$1，仅影响此主机。"
+  },
+  "addedDraftSuffix": {
+    "message": "已加入草稿：$1，包含其子域名。"
+  },
+  "inactiveNotice": {
+    "message": "草稿模式为「$1」，保存后网站规则不会生效。"
+  },
+  "pendingDelete": {
+    "message": "待删除：$1"
+  },
+  "rulesHint": {
+    "message": "每个网站可以使用默认、指定或系统时区。系统时区规则优先。"
+  },
+  "colEnabled": {
+    "message": "启用"
+  },
+  "colSite": {
+    "message": "网站"
+  },
+  "colTimezone": {
+    "message": "时区设置"
+  },
+  "colLocalTime": {
+    "message": "当地时间"
+  },
+  "testerLabel": {
+    "message": "检查草稿"
+  },
+  "testerIdle": {
+    "message": "输入网址，预览保存后会使用的时区和规则。"
+  },
+  "addPendingError": {
+    "message": "请先点击「$1」，或清空输入后保存。"
+  },
+  "ruleDuplicateMerge": {
+    "message": "已有相同域名和范围的规则，请合并或删除重复规则。"
+  },
+  "ruleInvalidTz": {
+    "message": "请选择有效时区。"
+  },
+  "saveApplying": {
+    "message": "正在保存并应用…"
+  },
+  "saveConflict": {
+    "message": "其他窗口已修改设置。载入最新设置，或明确覆盖保存。"
+  },
+  "saveFailedDraft": {
+    "message": "保存失败，草稿已保留。请重试。"
+  },
+  "saveDirty": {
+    "message": "有未保存的修改 · 网页仍使用已保存设置"
+  },
+  "saveAppliedDone": {
+    "message": "已保存并应用"
+  },
+  "saveClean": {
+    "message": "设置已保存"
+  },
+  "loadLatest": {
+    "message": "载入最新设置"
+  },
+  "discardChanges": {
+    "message": "放弃修改"
+  },
+  "overwriteSave": {
+    "message": "覆盖并保存"
+  },
+  "savingShort": {
+    "message": "保存中…"
+  },
+  "saveApply": {
+    "message": "保存并应用"
+  },
+  "pendingSettingsLabel": {
+    "message": "待保存的设置"
+  },
+  "scopeExactShort": {
+    "message": "仅此域名"
+  },
+  "scopeExactOption": {
+    "message": "仅此域名（精确匹配）"
+  },
+  "scopeSuffixOption": {
+    "message": "包含所有子域名"
+  },
+  "scopeExactExample": {
+    "message": "仅匹配 $1"
+  },
+  "scopeSuffixExample": {
+    "message": "匹配 $1 及其所有子域名"
+  },
+  "ruleScopeLabel": {
+    "message": "$1 的匹配范围"
+  },
+  "editRule": {
+    "message": "编辑"
+  },
+  "ruleEditLabel": {
+    "message": "编辑 $1"
+  },
+  "editDone": {
+    "message": "完成编辑"
+  },
+  "ruleMoreLabel": {
+    "message": "$1 的更多操作"
+  },
+  "pickerDraftHelp": {
+    "message": "选择结果修改草稿；保存并应用后生效。"
+  },
+  "cityShanghai": {
+    "message": "北京"
+  },
+  "cityHongKong": {
+    "message": "香港"
+  },
+  "cityMacau": {
+    "message": "澳门"
+  },
+  "cityTaipei": {
+    "message": "台北"
+  },
+  "cityUrumqi": {
+    "message": "乌鲁木齐"
+  },
+  "cityTokyo": {
+    "message": "东京"
+  },
+  "citySeoul": {
+    "message": "首尔"
+  },
+  "citySingapore": {
+    "message": "新加坡"
+  },
+  "cityKualaLumpur": {
+    "message": "吉隆坡"
+  },
+  "cityBangkok": {
+    "message": "曼谷"
+  },
+  "cityHoChiMinh": {
+    "message": "胡志明"
+  },
+  "cityJakarta": {
+    "message": "雅加达"
+  },
+  "cityManila": {
+    "message": "马尼拉"
+  },
+  "cityKolkata": {
+    "message": "印度"
+  },
+  "cityDubai": {
+    "message": "迪拜"
+  },
+  "cityRiyadh": {
+    "message": "利雅得"
+  },
+  "cityTehran": {
+    "message": "德黑兰"
+  },
+  "cityKarachi": {
+    "message": "卡拉奇"
+  },
+  "cityDhaka": {
+    "message": "达卡"
+  },
+  "cityJerusalem": {
+    "message": "耶路撒冷"
+  },
+  "cityLondon": {
+    "message": "伦敦"
+  },
+  "cityParis": {
+    "message": "巴黎"
+  },
+  "cityBerlin": {
+    "message": "柏林"
+  },
+  "cityMadrid": {
+    "message": "马德里"
+  },
+  "cityRome": {
+    "message": "罗马"
+  },
+  "cityAmsterdam": {
+    "message": "阿姆斯特丹"
+  },
+  "cityZurich": {
+    "message": "苏黎世"
+  },
+  "cityStockholm": {
+    "message": "斯德哥尔摩"
+  },
+  "cityMoscow": {
+    "message": "莫斯科"
+  },
+  "cityIstanbul": {
+    "message": "伊斯坦布尔"
+  },
+  "cityKyiv": {
+    "message": "基辅"
+  },
+  "cityNewYork": {
+    "message": "纽约"
+  },
+  "cityChicago": {
+    "message": "芝加哥"
+  },
+  "cityDenver": {
+    "message": "丹佛"
+  },
+  "cityLosAngeles": {
+    "message": "洛杉矶"
+  },
+  "cityAnchorage": {
+    "message": "安克雷奇"
+  },
+  "cityHonolulu": {
+    "message": "檀香山"
+  },
+  "cityToronto": {
+    "message": "多伦多"
+  },
+  "cityVancouver": {
+    "message": "温哥华"
+  },
+  "cityMexicoCity": {
+    "message": "墨西哥城"
+  },
+  "citySaoPaulo": {
+    "message": "圣保罗"
+  },
+  "cityBuenosAires": {
+    "message": "布宜诺斯艾利斯"
+  },
+  "cityCairo": {
+    "message": "开罗"
+  },
+  "cityJohannesburg": {
+    "message": "约翰内斯堡"
+  },
+  "cityLagos": {
+    "message": "拉各斯"
+  },
+  "cityNairobi": {
+    "message": "内罗毕"
+  },
+  "citySydney": {
+    "message": "悉尼"
+  },
+  "cityMelbourne": {
+    "message": "墨尔本"
+  },
+  "cityPerth": {
+    "message": "珀斯"
+  },
+  "cityAuckland": {
+    "message": "奥克兰"
+  },
+  "cityUTC": {
+    "message": "协调世界时"
+  },
+  "languageLabel": {
+    "message": "语言"
+  },
+  "languageAuto": {
+    "message": "跟随浏览器"
+  },
+  "languageSaveHint": {
+    "message": "保存后同时应用到弹窗和设置页。"
+  },
+  "languageEnglish": {
+    "message": "English"
+  },
+  "languageChinese": {
+    "message": "简体中文"
+  },
+  "languageJapanese": {
+    "message": "日本語"
+  },
+  "languageKorean": {
+    "message": "한국어"
+  }
+}

@@ -1,0 +1,87 @@
+:root {
+  color-scheme: light dark;
+  /* Cool paper, teal for "override", rust for "exclude". */
+  --paper: #eef1f0;
+  --surface: #fff;
+  --fill: #f0f3f2;
+  --fg: #15212b;
+  --muted: #5b6873;
+  --border: #d3dad8;
+  --accent: #0b6e69;
+  --accent-soft: #dcefed;
+  --exclude: #a4432f;
+  --exclude-soft: #f6e4df;
+  --ok: var(--accent);
+  --warn: #8a5a00;
+  --err: #c0362c;
+  font: 13px/1.5 system-ui, -apple-system, 'PingFang SC', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #11171b;
+    --surface: #182126;
+    --fill: #212b31;
+    --fg: #e3e9ec;
+    --muted: #8e9ba5;
+    --border: #2a353c;
+    --accent: #4fb8b0;
+    --accent-soft: #173a39;
+    --exclude: #e08a7a;
+    --exclude-soft: #3a2320;
+    --warn: #d6a346;
+    --err: #f07b70;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; color: var(--fg); background: var(--surface); }
+h1 { font-size: 15px; margin: 0; }
+h2 { font-size: 14px; margin: 20px 0 8px; }
+section { display: grid; gap: 8px; }
+.row { display: flex; align-items: center; gap: 8px; }
+.row > label { width: 64px; flex: none; color: var(--muted); }
+.muted { color: var(--muted); margin: 0; }
+.ok { color: var(--ok); }
+.warn { color: var(--warn); }
+.err { color: var(--err); }
+input, select, button { font: inherit; color: inherit; background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; }
+input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+input.invalid { border-color: var(--err); }
+input:disabled { opacity: 0.4; }
+button { cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.segmented { display: inline-flex; }
+.segmented button { border-radius: 0; margin-left: -1px; }
+.segmented button:first-child { border-radius: 6px 0 0 6px; margin-left: 0; }
+.segmented button:last-child { border-radius: 0 6px 6px 0; }
+.segmented button.active { background: var(--accent); border-color: var(--accent); color: var(--surface); position: relative; }
+
+/* Timezone picker */
+.tzp { position: relative; width: var(--tzp-width, 240px); max-width: 100%; }
+.tzp-input { width: 100%; padding-right: 72px; }
+.tzp-offset { position: absolute; right: 9px; top: 17px; translate: 0 -50%; color: var(--muted); font-size: 12px; pointer-events: none; font-variant-numeric: tabular-nums; }
+.tzp.is-open .tzp-offset { visibility: hidden; }
+.tzp-list {
+  position: absolute; z-index: 10; top: calc(100% + 4px); left: 0;
+  width: max(100%, 340px); max-height: 320px; overflow-y: auto; overscroll-behavior: contain;
+  margin: 0; padding: 4px; list-style: none;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  box-shadow: 0 12px 32px -8px color-mix(in srgb, var(--fg) 30%, transparent);
+}
+.tzp-opt {
+  display: grid; grid-template-columns: 1fr auto; column-gap: 12px;
+  padding: 6px 8px; border-radius: 6px; cursor: pointer; line-height: 1.35;
+}
+.tzp-opt.is-active { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.tzp-opt.is-current .tzp-city { color: var(--accent); }
+.tzp-city { font-weight: 600; }
+.tzp-city em { font-style: normal; font-weight: 400; font-size: 11px; color: var(--accent); border: 1px solid currentColor; border-radius: 4px; padding: 0 4px; margin-left: 6px; }
+.tzp-time { font-variant-numeric: tabular-nums; text-align: right; }
+.tzp-id { color: var(--muted); font-size: 12px; white-space: pre; overflow: hidden; text-overflow: ellipsis; }
+.tzp-off { color: var(--muted); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+.tzp-empty { padding: 12px 8px; color: var(--muted); }
+.tzp-help { margin: 4px 0 0; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+.tzp-help:empty, .field-error:empty { display: none; }
+.field-error { margin: 0; color: var(--err); font-size: 12px; overflow-wrap: anywhere; }
+.save-notice { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 12px; }

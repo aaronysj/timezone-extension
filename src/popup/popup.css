@@ -1,0 +1,58 @@
+/* Native popups measure their document to choose a window size. Keep that
+   intrinsic width independent of the provisional viewport (no 100vw cap). */
+html, body { width: 360px; }
+main { padding: 12px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+main, main > *, .now > *, .block > *, .tzp { min-width: 0; }
+[hidden] { display: none !important; }
+
+.segmented { display: grid; grid-template-columns: repeat(3, 1fr); padding: 3px; background: var(--fill); border-radius: 10px; }
+.segmented button, .segmented button:first-child, .segmented button:last-child {
+  margin: 0; border: 0; border-radius: 7px; min-height: 32px; padding: 5px 0; color: var(--muted);
+}
+.segmented button.active { background: var(--surface); color: var(--fg); font-weight: 600; box-shadow: 0 1px 3px color-mix(in srgb, var(--fg) 18%, transparent); }
+.segmented button:hover { color: var(--fg); }
+
+.now { padding: 12px 14px; border-radius: 12px; background: var(--accent-soft); gap: 8px; }
+.now.is-system { background: var(--fill); }
+.now.is-system .now-time { color: var(--fg); }
+.now-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.now-host { min-width: 0; color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.now-status { display: flex; align-items: center; gap: 8px; flex: none; font-size: 12px; }
+.state { display: inline-flex; align-items: center; gap: 5px; font-weight: 500; }
+.state::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.now-clock { display: flex; align-items: center; gap: 14px; }
+.now-time { flex: none; font-size: 36px; font-weight: 350; line-height: 1.15; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--accent); }
+.now-location { min-width: 0; }
+.now-city { font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+.now-offset { color: var(--muted); font-size: 12px; }
+.now-calendar { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 12px; }
+.now-calendar > * { white-space: nowrap; }
+.now-rule, .now-empty { margin: 0; font-size: 12px; overflow-wrap: anywhere; }
+.now-rule { color: var(--muted); }
+.now details { font-size: 12px; color: var(--muted); }
+.error-details { overflow-wrap: anywhere; }
+
+.block { display: grid; gap: 6px; --tzp-width: 100%; }
+.block-label { color: var(--muted); font-size: 12px; }
+.block-label:not(:first-child) { margin-top: 4px; }
+main select, main .tzp-input { width: 100%; min-width: 0; min-height: 38px; background: var(--fill); border-color: transparent; border-radius: 8px; padding: 8px 10px; }
+main select { text-overflow: ellipsis; }
+main .tzp-input { padding-right: 82px; }
+main .tzp-offset { right: 10px; top: 19px; }
+.block-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 0 16px; }
+.block .warn { margin: 0; font-size: 12px; overflow-wrap: anywhere; }
+.block > .link { justify-self: start; }
+.hint { margin: 0; padding: 0 2px; color: var(--muted); font-size: 12px; }
+
+button.link { min-height: 30px; border: 0; padding: 4px 0; background: none; color: var(--muted); font-size: 12px; white-space: nowrap; }
+button.link:hover { color: var(--accent); }
+.now-status button.link { min-height: 0; padding: 0; color: var(--accent); }
+footer { padding-top: 5px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.feedback { min-width: 0; }
+.popup-language { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.popup-language label { color: var(--muted); font-size: 12px; }
+.popup-language .language-select { width: 180px; max-width: 70%; min-height: 34px; padding-block: 6px; }
+
+/* Native popup height must include the open list. Limit results to a compact
+   scrolling region rather than making the entire popup scroll. */
+.tzp-list { position: static; width: 100%; margin-top: 4px; max-height: 140px; box-shadow: none; }

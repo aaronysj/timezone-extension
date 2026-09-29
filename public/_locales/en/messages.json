@@ -1,0 +1,623 @@
+{
+  "locale": {
+    "message": "en"
+  },
+  "extName": {
+    "message": "Timezone Override"
+  },
+  "extDescription": {
+    "message": "Override the browser timezone globally or per site via rules."
+  },
+  "optionsTitle": {
+    "message": "Timezone Override Settings"
+  },
+  "withDetail": {
+    "message": "$1 ($2)"
+  },
+  "timeDiff": {
+    "message": "$1 vs. this device"
+  },
+  "modeOff": {
+    "message": "Off"
+  },
+  "modeGlobal": {
+    "message": "All sites"
+  },
+  "modeRules": {
+    "message": "By rules"
+  },
+  "modeGroupLabel": {
+    "message": "Scope"
+  },
+  "modeHintOff": {
+    "message": "No page's timezone is changed."
+  },
+  "modeHintGlobal": {
+    "message": "All http/https pages use the default timezone."
+  },
+  "modeHintRules": {
+    "message": "Only sites listed in rules are changed; exclusions take priority."
+  },
+  "saveSaving": {
+    "message": "Saving…"
+  },
+  "saveSaved": {
+    "message": "Saved"
+  },
+  "saveError": {
+    "message": "Not saved. Your changes are kept in this window."
+  },
+  "saveIdle": {
+    "message": "Changes save automatically"
+  },
+  "saveRetry": {
+    "message": "Retry save"
+  },
+  "pickerLabel": {
+    "message": "Choose timezone"
+  },
+  "pickerPlaceholder": {
+    "message": "Search city, timezone or +8"
+  },
+  "pickerTitle": {
+    "message": "Search by city (Tokyo), timezone ID or UTC offset (+8, GMT-5)"
+  },
+  "pickerThisDevice": {
+    "message": "this device"
+  },
+  "pickerNoMatch": {
+    "message": "No timezone matches \"$1\""
+  },
+  "pickerOpenHelp": {
+    "message": "Click a result or press Enter to apply; Esc to cancel."
+  },
+  "pickerClickToSearch": {
+    "message": "Click to search city or timezone"
+  },
+  "pickerAbandoned": {
+    "message": "No result selected; timezone unchanged."
+  },
+  "pickerInvalid": {
+    "message": "No valid timezone. Try another search and pick a result."
+  },
+  "dayLater": {
+    "message": "1 day ahead of this device"
+  },
+  "dayLaterPlural": {
+    "message": "$1 days ahead of this device"
+  },
+  "dayEarlier": {
+    "message": "1 day behind this device"
+  },
+  "dayEarlierPlural": {
+    "message": "$1 days behind this device"
+  },
+  "patternInvalid": {
+    "message": "Enter a valid domain or http/https URL, e.g. example.com."
+  },
+  "patternPublicSuffix": {
+    "message": "$1 is a public suffix and can't be a rule that includes subdomains. Enter a specific site."
+  },
+  "scopeExact": {
+    "message": "Only $1"
+  },
+  "scopeSuffix": {
+    "message": "$1 and subdomains"
+  },
+  "errTabBusy": {
+    "message": "This tab is in use by another extension or debugger"
+  },
+  "errInvalidTimezone": {
+    "message": "Invalid timezone: $1"
+  },
+  "popupBackendRetry": {
+    "message": "Can't reach the extension background. Reopen the popup and try again."
+  },
+  "popupBackendUnreachable": {
+    "message": "Can't reach the extension background"
+  },
+  "errHelpDebugger": {
+    "message": "Another debugger may be using this tab. Close DevTools or other debugging extensions for this page and try again."
+  },
+  "errHelpGeneric": {
+    "message": "Couldn't apply the change. Try again; if it still fails, reopen this page."
+  },
+  "popupUnsupported": {
+    "message": "This page's timezone can't be changed. Use it on http/https sites."
+  },
+  "statusUnknown": {
+    "message": "Status unavailable"
+  },
+  "statusUnsaved": {
+    "message": "Not saved"
+  },
+  "statusPaused": {
+    "message": "Paused"
+  },
+  "statusFailed": {
+    "message": "Failed"
+  },
+  "statusApplied": {
+    "message": "Active"
+  },
+  "statusApplying": {
+    "message": "Applying…"
+  },
+  "statusSystem": {
+    "message": "System timezone"
+  },
+  "actionResume": {
+    "message": "Resume"
+  },
+  "actionRetry": {
+    "message": "Retry"
+  },
+  "explainUnknown": {
+    "message": "Can't confirm the page's actual timezone right now; showing this device's time."
+  },
+  "explainUnsaved": {
+    "message": "Changes aren't saved; this page keeps its previous timezone. Retry saving."
+  },
+  "explainStillZone": {
+    "message": "Still using the $1 timezone. $2"
+  },
+  "explainStillSystem": {
+    "message": "Still using the system timezone. $1"
+  },
+  "explainPaused": {
+    "message": "Changes are paused for this tab. Click Resume to apply them again."
+  },
+  "techDetails": {
+    "message": "Technical details"
+  },
+  "localTimeLabel": {
+    "message": "Current local time"
+  },
+  "popupOffHint": {
+    "message": "Choose \"$1\" to set this site, or \"$2\" to change every site."
+  },
+  "globalUse": {
+    "message": "All sites use"
+  },
+  "globalTzLabel": {
+    "message": "Timezone for all sites"
+  },
+  "scopeSelectLabel": {
+    "message": "Rule scope"
+  },
+  "scopeOptionSuffix": {
+    "message": "Incl. subdomains · $1"
+  },
+  "scopeField": {
+    "message": "Apply to"
+  },
+  "warnBroadRule": {
+    "message": "An existing rule is too broad: $1 Remove it and set it again."
+  },
+  "siteTzExcluded": {
+    "message": "This rule uses the system timezone"
+  },
+  "siteTz": {
+    "message": "Site timezone"
+  },
+  "siteTzDisabled": {
+    "message": "Rule disabled · Site timezone"
+  },
+  "siteTzNew": {
+    "message": "Set a timezone for this site"
+  },
+  "siteTzPlaceholder": {
+    "message": "Choose a timezone to apply"
+  },
+  "warnExcludedBy": {
+    "message": "Exclusion rule $1 takes priority; this setting won't take effect."
+  },
+  "warnOverriddenBy": {
+    "message": "This page is controlled by $1; changing this scope won't replace the higher-priority rule."
+  },
+  "editEffective": {
+    "message": "Edit the active rule"
+  },
+  "enableRule": {
+    "message": "Enable this rule"
+  },
+  "onlyThisSite": {
+    "message": "Only this site"
+  },
+  "useSystem": {
+    "message": "Use system timezone"
+  },
+  "removeRule": {
+    "message": "Remove rule"
+  },
+  "removeRuleTitleZone": {
+    "message": "After removal, this site will use the $1 timezone."
+  },
+  "removeRuleTitleSystem": {
+    "message": "After removal, this site will use the system timezone."
+  },
+  "openSettings": {
+    "message": "Manage rules & settings"
+  },
+  "ruleDuplicate": {
+    "message": "A rule with the same domain and scope already exists; edit that rule instead."
+  },
+  "defaultTz": {
+    "message": "Default timezone"
+  },
+  "ruleDomainLabel": {
+    "message": "Domain $1"
+  },
+  "ruleEffectLabel": {
+    "message": "Timezone behavior for $1"
+  },
+  "ruleEnableLabel": {
+    "message": "Enable $1"
+  },
+  "ruleEnabledTitle": {
+    "message": "Enabled — click to disable"
+  },
+  "ruleDisabledTitle": {
+    "message": "Disabled — click to enable"
+  },
+  "includeSubdomains": {
+    "message": "Include subdomains"
+  },
+  "ruleCustomTzLabel": {
+    "message": "Custom timezone for $1"
+  },
+  "delete": {
+    "message": "Delete"
+  },
+  "deleteLabel": {
+    "message": "Delete $1"
+  },
+  "addSiteLabel": {
+    "message": "Domain or URL of the site to add"
+  },
+  "addSitePlaceholder": {
+    "message": "Enter a domain or URL, e.g. github.com"
+  },
+  "addExists": {
+    "message": "A rule for $1 with the same scope already exists; jumped to it."
+  },
+  "addSite": {
+    "message": "Add site"
+  },
+  "addSubdomains": {
+    "message": "Also change this site's subdomains"
+  },
+  "switchTo": {
+    "message": "Switch to \"$1\""
+  },
+  "undo": {
+    "message": "Undo"
+  },
+  "rulesTitle": {
+    "message": "Site rules"
+  },
+  "rulesEmpty": {
+    "message": "No site rules yet. An added domain gets the default timezone on that host only; check \"Include subdomains\" to cover them too."
+  },
+  "testerOnlyHttp": {
+    "message": "Only http/https pages can be changed."
+  },
+  "testerOff": {
+    "message": "The extension is off; no change."
+  },
+  "testerGlobal": {
+    "message": "Uses the default timezone $1"
+  },
+  "testerRule": {
+    "message": "Uses $1 from rule $2"
+  },
+  "testerExcluded": {
+    "message": "Excluded by rule $1; no change."
+  },
+  "testerNoMatch": {
+    "message": "$1 matches no rule; no change."
+  },
+  "optionsHeroHint": {
+    "message": "Changes reach web pages only after you click \"$1\"."
+  },
+  "draftPreview": {
+    "message": "Draft preview"
+  },
+  "generalTitle": {
+    "message": "General"
+  },
+  "defaultTzHint": {
+    "message": "Search a city, timezone ID or offset, e.g. \"Tokyo\" or \"+8\"."
+  },
+  "effectDefault": {
+    "message": "Use default timezone"
+  },
+  "excludeTitle": {
+    "message": "Don't change this site's timezone"
+  },
+  "addedDraftExact": {
+    "message": "Added to draft: $1, this host only."
+  },
+  "addedDraftSuffix": {
+    "message": "Added to draft: $1, including subdomains."
+  },
+  "inactiveNotice": {
+    "message": "Draft scope is \"$1\"; site rules won't apply after saving."
+  },
+  "pendingDelete": {
+    "message": "Pending deletion: $1"
+  },
+  "rulesHint": {
+    "message": "Each site can use the default, a custom, or the system timezone. System-timezone rules take priority."
+  },
+  "colEnabled": {
+    "message": "On"
+  },
+  "colSite": {
+    "message": "Site"
+  },
+  "colTimezone": {
+    "message": "Timezone"
+  },
+  "colLocalTime": {
+    "message": "Local time"
+  },
+  "testerLabel": {
+    "message": "Check draft"
+  },
+  "testerIdle": {
+    "message": "Enter a URL to preview the timezone and rule it will get after saving."
+  },
+  "addPendingError": {
+    "message": "Click \"$1\" first, or clear the field before saving."
+  },
+  "ruleDuplicateMerge": {
+    "message": "Another rule has the same domain and scope; merge or delete the duplicate."
+  },
+  "ruleInvalidTz": {
+    "message": "Choose a valid timezone."
+  },
+  "saveApplying": {
+    "message": "Saving and applying…"
+  },
+  "saveConflict": {
+    "message": "Settings were changed in another window. Load the latest settings, or explicitly overwrite them."
+  },
+  "saveFailedDraft": {
+    "message": "Save failed; your draft is kept. Try again."
+  },
+  "saveDirty": {
+    "message": "Unsaved changes · pages still use the saved settings"
+  },
+  "saveAppliedDone": {
+    "message": "Saved and applied"
+  },
+  "saveClean": {
+    "message": "Settings saved"
+  },
+  "loadLatest": {
+    "message": "Load latest settings"
+  },
+  "discardChanges": {
+    "message": "Discard changes"
+  },
+  "overwriteSave": {
+    "message": "Overwrite and save"
+  },
+  "savingShort": {
+    "message": "Saving…"
+  },
+  "saveApply": {
+    "message": "Save & apply"
+  },
+  "pendingSettingsLabel": {
+    "message": "Unsaved settings"
+  },
+  "scopeExactShort": {
+    "message": "Exact match"
+  },
+  "scopeExactOption": {
+    "message": "This domain only (exact match)"
+  },
+  "scopeSuffixOption": {
+    "message": "Include all subdomains"
+  },
+  "scopeExactExample": {
+    "message": "Only matches $1"
+  },
+  "scopeSuffixExample": {
+    "message": "Matches $1 and all its subdomains"
+  },
+  "ruleScopeLabel": {
+    "message": "Match scope for $1"
+  },
+  "editRule": {
+    "message": "Edit"
+  },
+  "ruleEditLabel": {
+    "message": "Edit $1"
+  },
+  "editDone": {
+    "message": "Done"
+  },
+  "ruleMoreLabel": {
+    "message": "More actions for $1"
+  },
+  "pickerDraftHelp": {
+    "message": "Choose a result to update the draft; Save and apply to activate it."
+  },
+  "cityShanghai": {
+    "message": "Shanghai"
+  },
+  "cityHongKong": {
+    "message": "Hong Kong"
+  },
+  "cityMacau": {
+    "message": "Macau"
+  },
+  "cityTaipei": {
+    "message": "Taipei"
+  },
+  "cityUrumqi": {
+    "message": "Urumqi"
+  },
+  "cityTokyo": {
+    "message": "Tokyo"
+  },
+  "citySeoul": {
+    "message": "Seoul"
+  },
+  "citySingapore": {
+    "message": "Singapore"
+  },
+  "cityKualaLumpur": {
+    "message": "Kuala Lumpur"
+  },
+  "cityBangkok": {
+    "message": "Bangkok"
+  },
+  "cityHoChiMinh": {
+    "message": "Ho Chi Minh"
+  },
+  "cityJakarta": {
+    "message": "Jakarta"
+  },
+  "cityManila": {
+    "message": "Manila"
+  },
+  "cityKolkata": {
+    "message": "Kolkata"
+  },
+  "cityDubai": {
+    "message": "Dubai"
+  },
+  "cityRiyadh": {
+    "message": "Riyadh"
+  },
+  "cityTehran": {
+    "message": "Tehran"
+  },
+  "cityKarachi": {
+    "message": "Karachi"
+  },
+  "cityDhaka": {
+    "message": "Dhaka"
+  },
+  "cityJerusalem": {
+    "message": "Jerusalem"
+  },
+  "cityLondon": {
+    "message": "London"
+  },
+  "cityParis": {
+    "message": "Paris"
+  },
+  "cityBerlin": {
+    "message": "Berlin"
+  },
+  "cityMadrid": {
+    "message": "Madrid"
+  },
+  "cityRome": {
+    "message": "Rome"
+  },
+  "cityAmsterdam": {
+    "message": "Amsterdam"
+  },
+  "cityZurich": {
+    "message": "Zurich"
+  },
+  "cityStockholm": {
+    "message": "Stockholm"
+  },
+  "cityMoscow": {
+    "message": "Moscow"
+  },
+  "cityIstanbul": {
+    "message": "Istanbul"
+  },
+  "cityKyiv": {
+    "message": "Kyiv"
+  },
+  "cityNewYork": {
+    "message": "New York"
+  },
+  "cityChicago": {
+    "message": "Chicago"
+  },
+  "cityDenver": {
+    "message": "Denver"
+  },
+  "cityLosAngeles": {
+    "message": "Los Angeles"
+  },
+  "cityAnchorage": {
+    "message": "Anchorage"
+  },
+  "cityHonolulu": {
+    "message": "Honolulu"
+  },
+  "cityToronto": {
+    "message": "Toronto"
+  },
+  "cityVancouver": {
+    "message": "Vancouver"
+  },
+  "cityMexicoCity": {
+    "message": "Mexico City"
+  },
+  "citySaoPaulo": {
+    "message": "Sao Paulo"
+  },
+  "cityBuenosAires": {
+    "message": "Buenos Aires"
+  },
+  "cityCairo": {
+    "message": "Cairo"
+  },
+  "cityJohannesburg": {
+    "message": "Johannesburg"
+  },
+  "cityLagos": {
+    "message": "Lagos"
+  },
+  "cityNairobi": {
+    "message": "Nairobi"
+  },
+  "citySydney": {
+    "message": "Sydney"
+  },
+  "cityMelbourne": {
+    "message": "Melbourne"
+  },
+  "cityPerth": {
+    "message": "Perth"
+  },
+  "cityAuckland": {
+    "message": "Auckland"
+  },
+  "cityUTC": {
+    "message": "UTC"
+  },
+  "languageLabel": {
+    "message": "Language"
+  },
+  "languageAuto": {
+    "message": "Follow browser"
+  },
+  "languageSaveHint": {
+    "message": "Applies to the popup and settings after you save."
+  },
+  "languageEnglish": {
+    "message": "English"
+  },
+  "languageChinese": {
+    "message": "简体中文"
+  },
+  "languageJapanese": {
+    "message": "日本語"
+  },
+  "languageKorean": {
+    "message": "한국어"
+  }
+}
