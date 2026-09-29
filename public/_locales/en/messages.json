@@ -33,7 +33,7 @@
     "message": "No page's timezone is changed."
   },
   "modeHintGlobal": {
-    "message": "All http/https pages use the default timezone."
+    "message": "All sites use the selected timezone."
   },
   "modeHintRules": {
     "message": "Only sites listed in rules are changed; exclusions take priority."
@@ -287,9 +287,6 @@
   "addSubdomains": {
     "message": "Also change this site's subdomains"
   },
-  "switchTo": {
-    "message": "Switch to \"$1\""
-  },
   "undo": {
     "message": "Undo"
   },
@@ -320,9 +317,6 @@
   "optionsHeroHint": {
     "message": "Changes reach web pages only after you click \"$1\"."
   },
-  "draftPreview": {
-    "message": "Draft preview"
-  },
   "generalTitle": {
     "message": "General"
   },
@@ -336,13 +330,10 @@
     "message": "Don't change this site's timezone"
   },
   "addedDraftExact": {
-    "message": "Added to draft: $1, this host only."
+    "message": "Site added (unsaved): $1, this host only."
   },
   "addedDraftSuffix": {
-    "message": "Added to draft: $1, including subdomains."
-  },
-  "inactiveNotice": {
-    "message": "Draft scope is \"$1\"; site rules won't apply after saving."
+    "message": "Site added (unsaved): $1, including subdomains."
   },
   "pendingDelete": {
     "message": "Pending deletion: $1"
@@ -363,7 +354,7 @@
     "message": "Local time"
   },
   "testerLabel": {
-    "message": "Check draft"
+    "message": "Check website settings"
   },
   "testerIdle": {
     "message": "Enter a URL to preview the timezone and rule it will get after saving."
@@ -384,7 +375,7 @@
     "message": "Settings were changed in another window. Load the latest settings, or explicitly overwrite them."
   },
   "saveFailedDraft": {
-    "message": "Save failed; your draft is kept. Try again."
+    "message": "Save failed. Your changes are kept; try again."
   },
   "saveDirty": {
     "message": "Unsaved changes · pages still use the saved settings"
@@ -444,7 +435,7 @@
     "message": "More actions for $1"
   },
   "pickerDraftHelp": {
-    "message": "Choose a result to update the draft; Save and apply to activate it."
+    "message": "Choose a timezone, then Save and apply to activate it."
   },
   "cityShanghai": {
     "message": "Shanghai"
@@ -619,5 +610,32 @@
   },
   "languageKorean": {
     "message": "한국어"
+  },
+  "heroGlobalTime": {
+    "message": "Time used by all sites"
+  },
+  "heroDefaultTime": {
+    "message": "Time in the default timezone"
+  },
+  "heroSystemTime": {
+    "message": "Time on this device"
+  },
+  "settingsUnsaved": {
+    "message": "Unsaved"
+  },
+  "rulesRetainedGlobal": {
+    "message": "All sites use the timezone selected above. Your site rules are kept and apply when you switch back to By rules."
+  },
+  "rulesRetainedOff": {
+    "message": "When off, websites use the system timezone. Your site rules are kept."
+  },
+  "manageRules": {
+    "message": "Switch to By rules"
+  },
+  "discardRuleInputs": {
+    "message": "Discard unfinished site edits"
+  },
+  "rulesPendingInputs": {
+    "message": "There are unfinished site edits. Complete them in By rules or discard them before saving."
   }
 }

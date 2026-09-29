@@ -33,7 +33,7 @@
     "message": "どのページのタイムゾーンも変更しません。"
   },
   "modeHintGlobal": {
-    "message": "すべての http/https ページでデフォルトのタイムゾーンを使用します。"
+    "message": "すべてのサイトで選択したタイムゾーンを使用します。"
   },
   "modeHintRules": {
     "message": "ルールに記載されたサイトのみ変更します。除外ルールが優先されます。"
@@ -287,9 +287,6 @@
   "addSubdomains": {
     "message": "このサイトのサブドメインも変更"
   },
-  "switchTo": {
-    "message": "「$1」に切り替え"
-  },
   "undo": {
     "message": "元に戻す"
   },
@@ -320,9 +317,6 @@
   "optionsHeroHint": {
     "message": "編集後に「$1」をクリックすると、ページのタイムゾーンが変わります。"
   },
-  "draftPreview": {
-    "message": "下書きのプレビュー"
-  },
   "generalTitle": {
     "message": "基本設定"
   },
@@ -336,13 +330,10 @@
     "message": "このサイトのタイムゾーンは変更しません"
   },
   "addedDraftExact": {
-    "message": "下書きに追加しました：$1（このホストのみ）。"
+    "message": "サイトを追加（未保存）：$1、このドメインのみ。"
   },
   "addedDraftSuffix": {
-    "message": "下書きに追加しました：$1（サブドメインを含む）。"
-  },
-  "inactiveNotice": {
-    "message": "下書きの適用範囲が「$1」のため、保存してもサイトのルールは適用されません。"
+    "message": "サイトを追加（未保存）：$1、サブドメインを含む。"
   },
   "pendingDelete": {
     "message": "削除予定：$1"
@@ -363,7 +354,7 @@
     "message": "現地時刻"
   },
   "testerLabel": {
-    "message": "下書きを確認"
+    "message": "サイトの設定を確認"
   },
   "testerIdle": {
     "message": "URL を入力すると、保存後に使用されるタイムゾーンとルールをプレビューできます。"
@@ -384,7 +375,7 @@
     "message": "別のウィンドウで設定が変更されました。最新の設定を読み込むか、明示的に上書き保存してください。"
   },
   "saveFailedDraft": {
-    "message": "保存に失敗しました。下書きは保持されています。再試行してください。"
+    "message": "保存に失敗しました。変更は保持されています。再試行してください。"
   },
   "saveDirty": {
     "message": "未保存の変更があります · ページは保存済みの設定を使用中"
@@ -444,7 +435,7 @@
     "message": "$1 のその他の操作"
   },
   "pickerDraftHelp": {
-    "message": "選択すると下書きを更新します。「保存して適用」で有効になります。"
+    "message": "タイムゾーンを選択し、「保存して適用」で有効にします。"
   },
   "cityShanghai": {
     "message": "上海"
@@ -619,5 +610,32 @@
   },
   "languageKorean": {
     "message": "한국어"
+  },
+  "heroGlobalTime": {
+    "message": "すべてのサイトで使用する時刻"
+  },
+  "heroDefaultTime": {
+    "message": "デフォルトのタイムゾーンの時刻"
+  },
+  "heroSystemTime": {
+    "message": "この端末の時刻"
+  },
+  "settingsUnsaved": {
+    "message": "未保存"
+  },
+  "rulesRetainedGlobal": {
+    "message": "すべてのサイトで上記のタイムゾーンを使用します。サイトのルールは保持され、「ルール別」に戻すと適用されます。"
+  },
+  "rulesRetainedOff": {
+    "message": "オフの場合、サイトはシステムのタイムゾーンを使用します。サイトのルールは保持されます。"
+  },
+  "manageRules": {
+    "message": "「ルール別」に切り替え"
+  },
+  "discardRuleInputs": {
+    "message": "未完了のサイト編集を破棄"
+  },
+  "rulesPendingInputs": {
+    "message": "未完了のサイト編集があります。「ルール別」で完了するか、編集を破棄してから保存してください。"
   }
 }

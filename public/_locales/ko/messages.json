@@ -33,7 +33,7 @@
     "message": "어떤 페이지의 시간대도 변경하지 않습니다."
   },
   "modeHintGlobal": {
-    "message": "모든 http/https 페이지에서 기본 시간대를 사용합니다."
+    "message": "모든 사이트가 선택한 시간대를 사용합니다."
   },
   "modeHintRules": {
     "message": "규칙에 있는 사이트만 변경하며, 제외 규칙이 우선합니다."
@@ -287,9 +287,6 @@
   "addSubdomains": {
     "message": "이 사이트의 하위 도메인도 변경"
   },
-  "switchTo": {
-    "message": "\"$1\"(으)로 전환"
-  },
   "undo": {
     "message": "실행 취소"
   },
@@ -320,9 +317,6 @@
   "optionsHeroHint": {
     "message": "편집 후 \"$1\"을(를) 클릭해야 페이지 시간대가 바뀝니다."
   },
-  "draftPreview": {
-    "message": "초안 미리보기"
-  },
   "generalTitle": {
     "message": "기본 설정"
   },
@@ -336,13 +330,10 @@
     "message": "이 사이트의 시간대를 변경하지 않음"
   },
   "addedDraftExact": {
-    "message": "초안에 추가됨: $1, 이 호스트만 해당."
+    "message": "사이트 추가됨(저장 전): $1, 이 도메인만."
   },
   "addedDraftSuffix": {
-    "message": "초안에 추가됨: $1, 하위 도메인 포함."
-  },
-  "inactiveNotice": {
-    "message": "초안 적용 범위가 \"$1\"이므로 저장해도 사이트 규칙이 적용되지 않습니다."
+    "message": "사이트 추가됨(저장 전): $1, 하위 도메인 포함."
   },
   "pendingDelete": {
     "message": "삭제 예정: $1"
@@ -363,7 +354,7 @@
     "message": "현지 시간"
   },
   "testerLabel": {
-    "message": "초안 확인"
+    "message": "사이트 설정 확인"
   },
   "testerIdle": {
     "message": "URL을 입력하면 저장 후 사용할 시간대와 규칙을 미리 볼 수 있습니다."
@@ -384,7 +375,7 @@
     "message": "다른 창에서 설정이 변경되었습니다. 최신 설정을 불러오거나 명시적으로 덮어쓰세요."
   },
   "saveFailedDraft": {
-    "message": "저장하지 못했습니다. 초안은 유지됩니다. 다시 시도하세요."
+    "message": "저장하지 못했습니다. 변경 사항은 유지됩니다. 다시 시도하세요."
   },
   "saveDirty": {
     "message": "저장되지 않은 변경 사항 · 페이지는 저장된 설정을 사용 중"
@@ -444,7 +435,7 @@
     "message": "$1 의 추가 작업"
   },
   "pickerDraftHelp": {
-    "message": "선택하면 초안이 변경됩니다. 저장 후 적용하면 활성화됩니다."
+    "message": "시간대를 선택한 후 저장 및 적용을 눌러 활성화하세요."
   },
   "cityShanghai": {
     "message": "상하이"
@@ -619,5 +610,32 @@
   },
   "languageKorean": {
     "message": "한국어"
+  },
+  "heroGlobalTime": {
+    "message": "모든 사이트에서 사용하는 시간"
+  },
+  "heroDefaultTime": {
+    "message": "기본 시간대의 시간"
+  },
+  "heroSystemTime": {
+    "message": "이 기기의 시간"
+  },
+  "settingsUnsaved": {
+    "message": "저장되지 않음"
+  },
+  "rulesRetainedGlobal": {
+    "message": "모든 사이트가 위에서 선택한 시간대를 사용합니다. 사이트 규칙은 유지되며 규칙별 모드로 돌아가면 적용됩니다."
+  },
+  "rulesRetainedOff": {
+    "message": "꺼짐 모드에서는 사이트가 시스템 시간대를 사용합니다. 사이트 규칙은 유지됩니다."
+  },
+  "manageRules": {
+    "message": "규칙별 모드로 전환"
+  },
+  "discardRuleInputs": {
+    "message": "미완료 사이트 편집 취소"
+  },
+  "rulesPendingInputs": {
+    "message": "미완료 사이트 편집이 있습니다. 규칙별 모드에서 완료하거나 편집을 취소한 후 저장하세요."
   }
 }

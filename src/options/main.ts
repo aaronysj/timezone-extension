@@ -1,7 +1,7 @@
-import { type Config, type Mode, type Rule, loadConfig, onConfigChanged } from '../shared/config';
+import { type Config, type Rule, loadConfig, onConfigChanged } from '../shared/config';
 import { hostnameOf, normalizePattern, resolveTimezone, ruleForHost } from '../shared/resolve';
 import { cityLabel, dateLabel, dayDifference, isValidTimezone, offsetLabel, systemTimezone } from '../shared/timezone';
-import { h, languageSelect, modeHint, modeLabel, modeSwitch, replaceKeepingFocus } from '../ui/dom';
+import { h, languageSelect, modeHint, modeSwitch, replaceKeepingFocus } from '../ui/dom';
 import { timezonePicker } from '../ui/tzpicker';
 import { icon } from '../ui/icons';
 import { attachPopover } from '../ui/popover';
@@ -30,6 +30,7 @@ let undo: { rule: Rule; index: number } | null = null;
 /** Rule to briefly highlight on the next render (just added, or already existed). */
 let flashId: string | null = null;
 let editingRuleId: string | null = null;
+let rulesSaveBlocked = false;
 
 function stage(next: Config) {
   editor.update(next);
@@ -75,13 +76,16 @@ function tick() {
     if (offsetLabel(tz)) el.textContent = timeIn(tz, 'seconds' in el.dataset);
   }
   const date = root.querySelector('.hero-date');
-  if (date) date.textContent = [dateLabel(config.timezone), dayDifference(config.timezone)].filter(Boolean).join(' · ');
+  if (date) date.textContent = [dateLabel(headerTimezone()), dayDifference(headerTimezone())].filter(Boolean).join(' · ');
 }
 
-// ---- header: the default timezone as a live clock ----
+// ---- header: explain what the displayed time means in the selected mode ----
+
+const headerTimezone = () => config.mode === 'off' ? systemTimezone() : config.timezone;
 
 function hero(): HTMLElement {
   const off = config.mode === 'off';
+  const timezone = headerTimezone();
   return h(
     'header',
     { className: `hero${off ? ' is-off' : ''}` },
@@ -94,14 +98,17 @@ function hero(): HTMLElement {
     h(
       'div',
       { className: 'hero-clock' },
-      clock(config.timezone, 'big-clock'),
-      h('span', { className: 'hero-zone', title: config.timezone }, `${cityLabel(config.timezone)} · ${offsetLabel(config.timezone)} · ${t('draftPreview')}`),
-      h('span', { className: 'hero-date' }, dateLabel(config.timezone)),
+      clock(timezone, 'big-clock'),
+      h('div', { className: 'hero-purpose' }, t(off ? 'heroSystemTime' : config.mode === 'global' ? 'heroGlobalTime' : 'heroDefaultTime'),
+        h('span', { className: 'pending-state', hidden: !hasChanges() }, t('settingsUnsaved'))),
+      h('span', { className: 'hero-zone', title: timezone }, `${cityLabel(timezone)} · ${offsetLabel(timezone)}`),
+      h('span', { className: 'hero-date' }, dateLabel(timezone)),
     ),
   );
 }
 
 function general(): HTMLElement {
+  const timezoneLabel = t(config.mode === 'global' ? 'globalTzLabel' : 'defaultTz');
   return h(
     'section',
     { className: 'panel general' },
@@ -115,11 +122,11 @@ function general(): HTMLElement {
     h(
       'div',
       { className: 'field' },
-      h('label', { className: 'field-label', htmlFor: 'default-tz' }, t('defaultTz')),
+      h('label', { className: 'field-label', htmlFor: 'default-tz' }, timezoneLabel),
       h(
         'div',
         {},
-        timezonePicker({ id: 'default-tz', label: t('defaultTz'), value: config.timezone, compact: true, onCommit: (timezone) => void stage({ ...config, timezone }) }),
+        timezonePicker({ id: 'default-tz', label: timezoneLabel, value: config.timezone, compact: true, onCommit: (timezone) => void stage({ ...config, timezone }) }),
         h('p', { className: 'muted' }, t('defaultTzHint')),
       ),
     ),
@@ -127,6 +134,7 @@ function general(): HTMLElement {
       h('label', { className: 'field-label', htmlFor: 'settings-language' }, t('languageLabel')),
       h('div', {}, languageSelect('settings-language', config.language, (language) => stage({ ...config, language })),
         h('p', { className: 'muted' }, t('languageSaveHint')))),
+    retainedRules(),
   );
 }
 
@@ -255,15 +263,28 @@ function addForm(): HTMLElement {
     error, h('p', { className: 'muted', role: 'status' }, addMessage));
 }
 
-function inactiveNotice(): HTMLElement | null {
+function retainedRules(): HTMLElement | null {
   if (config.mode === 'rules') return null;
-  const mode: Mode = config.mode;
-  return h(
-    'div',
-    { className: 'notice' },
-    h('span', {}, t('inactiveNotice', modeLabel(mode))),
-    h('button', { id: 'activate-rules', textContent: t('switchTo', modeLabel('rules')), onclick: () => void stage({ ...config, mode: 'rules' }) }),
-  );
+  return h('div', { className: 'mode-summary' },
+    h('p', { className: 'muted' }, t(config.mode === 'global' ? 'rulesRetainedGlobal' : 'rulesRetainedOff')),
+    h('div', { className: 'mode-summary-actions' },
+      h('button', { id: 'activate-rules', textContent: t('manageRules'), onclick: () => {
+        rulesSaveBlocked = false;
+        editingRuleId = patternDrafts.keys().next().value ?? null;
+        focusAfter = addDraft.trim() ? 'add-site' : editingRuleId ? `rule-${editingRuleId}-pattern` : 'mode-rules';
+        stage({ ...config, mode: 'rules' });
+      } }),
+      hasPendingFields() ? h('button', { id: 'discard-rule-inputs', textContent: t('discardRuleInputs'), onclick: () => {
+        patternDrafts.clear();
+        ruleErrors.clear();
+        addDraft = addError = addMessage = '';
+        addSubdomains = false;
+        editingRuleId = null;
+        rulesSaveBlocked = false;
+        focusAfter = 'activate-rules';
+        render();
+      } }) : null),
+    hasPendingFields() ? h('p', { className: 'warn', role: rulesSaveBlocked ? 'alert' : 'status' }, t('rulesPendingInputs')) : null);
 }
 
 function undoBar(): HTMLElement | null {
@@ -289,14 +310,13 @@ function undoBar(): HTMLElement | null {
 function rulesSection(): HTMLElement {
   return h(
     'section',
-    { className: `panel rules${config.mode === 'rules' ? '' : ' is-inactive'}` },
+    { className: 'panel rules' },
     h(
       'div',
       { className: 'panel-head' },
       h('h2', {}, t('rulesTitle')),
       h('p', { className: 'muted' }, t('rulesHint')),
     ),
-    inactiveNotice(),
     addForm(),
     config.rules.length
       ? h('div', { className: 'rules-table' }, h('div', { className: 'rule-columns', ariaHidden: 'true' }, h('span', { className: 'column-enabled' }, t('colEnabled')), h('span', {}, t('colSite')), h('span', {}, t('colTimezone')), h('span', {}, t('colLocalTime')), h('span')), h('ul', { className: 'rule-list' }, ...config.rules.map(ruleRow)))
@@ -359,12 +379,24 @@ function discard() {
   addSubdomains = false;
   undo = null;
   editingRuleId = null;
+  rulesSaveBlocked = false;
   focusAfter = `mode-${editor.value.mode}`;
   editor.reset();
 }
 
 async function saveSettings(overwrite = false) {
   if (editor.state === 'saving') return;
+  // Inactive saved rules must not block changing the global mode. Unfinished
+  // text fields stay local, with visible actions rather than hidden validation.
+  if (config.mode !== 'rules') {
+    if (hasPendingFields()) {
+      rulesSaveBlocked = true;
+      focusAfter = 'activate-rules';
+      return render();
+    }
+    await editor.save(overwrite);
+    return;
+  }
   if (addDraft.trim()) {
     addError = t('addPendingError', t('addSite'));
     focusAfter = 'add-site';
@@ -396,6 +428,8 @@ async function saveSettings(overwrite = false) {
 function renderActions() {
   const saving = editor.state === 'saving';
   const dirty = hasChanges();
+  const pending = root.querySelector<HTMLElement>('.pending-state');
+  if (pending) pending.hidden = !dirty;
   const message = t(saving ? 'saveApplying' : editor.conflict ? 'saveConflict'
     : editor.state === 'error' ? 'saveFailedDraft'
     : dirty ? 'saveDirty'
@@ -413,12 +447,13 @@ function render() {
   // Language changes join the explicit transaction, including discard and failed saves.
   if (!editor.dirty && !hasPendingFields()) setLanguage(config.language);
   localizeDocument('optionsTitle');
-  replaceKeepingFocus(root, [hero(), h('fieldset', { className: 'settings-fields', disabled: editor.state === 'saving', ariaLabel: t('pendingSettingsLabel') }, general(), rulesSection(), testerSection()), actions], focusAfter);
+  replaceKeepingFocus(root, [hero(), h('fieldset', { className: 'settings-fields', disabled: editor.state === 'saving', ariaLabel: t('pendingSettingsLabel') }, general(),
+    ...(config.mode === 'rules' ? [rulesSection(), testerSection()] : [])), actions], focusAfter);
   renderActions();
   focusAfter = undefined;
   renderTester();
   flashId = null;
-  if (editingRuleId) {
+  if (editingRuleId && config.mode === 'rules') {
     const popup = document.getElementById(`rule-${editingRuleId}-edit-popup`);
     popup?.showPopover();
     document.getElementById(`rule-${editingRuleId}-pattern`)?.focus();

@@ -12,9 +12,11 @@ button:focus-visible, input[type='checkbox']:focus-visible { outline: 2px solid 
 .hero h1 { font-size: 22px; font-weight: 650; }
 .hero-copy p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
 .hero-clock { display: grid; grid-template-columns: auto auto; gap: 0 12px; align-items: center; flex: none; }
-.big-clock { grid-row: 1 / 3; font-size: 32px; font-weight: 400; line-height: 1.1; color: var(--accent); font-variant-numeric: tabular-nums; }
+.big-clock { grid-row: 1 / 4; font-size: 32px; font-weight: 400; line-height: 1.1; color: var(--accent); font-variant-numeric: tabular-nums; }
 .hero-zone, .hero-date { color: var(--muted); font-size: 12px; }
 .hero-date { grid-column: 2; }
+.hero-purpose { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.pending-state { border: 1px solid var(--border); border-radius: 4px; padding-inline: 5px; white-space: nowrap; }
 .hero.is-off .big-clock { color: var(--muted); }
 .settings-fields { min-width: 0; border: 0; padding: 0; margin: 0; display: grid; gap: 20px; }
 .panel { min-width: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; gap: 18px; }
@@ -35,8 +37,10 @@ button:focus-visible, input[type='checkbox']:focus-visible { outline: 2px solid 
 .segmented button.active { background: var(--surface); color: var(--fg); font-weight: 600; box-shadow: 0 1px 3px color-mix(in srgb, var(--fg) 16%, transparent); }
 
 .panel-head { display: grid; gap: 4px; }
-.notice { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 12px; border-radius: 8px; background: color-mix(in srgb, var(--warn) 10%, transparent); color: var(--warn); font-size: 12px; }
-.notice button { color: var(--fg); background: var(--surface); }
+.mode-summary { grid-column: 1 / -1; display: grid; gap: 8px; border-top: 1px solid var(--border); padding-top: 16px; }
+.mode-summary-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.mode-summary button { font-size: 12px; }
+.mode-summary .warn { margin: 0; font-size: 12px; }
 .add-form { display: grid; gap: 8px; }
 .add { display: flex; gap: 8px; }
 .add input { flex: 1; min-width: 0; width: 100%; }

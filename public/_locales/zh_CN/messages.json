@@ -33,7 +33,7 @@
     "message": "不修改任何页面的时区。"
   },
   "modeHintGlobal": {
-    "message": "所有 http/https 网页使用默认时区。"
+    "message": "所有网站统一使用选定的时区。"
   },
   "modeHintRules": {
     "message": "只修改规则里列出的网站，排除规则优先。"
@@ -287,9 +287,6 @@
   "addSubdomains": {
     "message": "同时修改该网站的子域名"
   },
-  "switchTo": {
-    "message": "切换到「$1」"
-  },
   "undo": {
     "message": "撤销"
   },
@@ -320,9 +317,6 @@
   "optionsHeroHint": {
     "message": "编辑完成后点击「$1」，网页时区才会改变。"
   },
-  "draftPreview": {
-    "message": "草稿预览"
-  },
   "generalTitle": {
     "message": "基础设置"
   },
@@ -336,13 +330,10 @@
     "message": "不修改这个网站的时区"
   },
   "addedDraftExact": {
-    "message": "已加入草稿：$1，仅影响此主机。"
+    "message": "已添加网站（未保存）：$1，仅此域名。"
   },
   "addedDraftSuffix": {
-    "message": "已加入草稿：$1，包含其子域名。"
-  },
-  "inactiveNotice": {
-    "message": "草稿模式为「$1」，保存后网站规则不会生效。"
+    "message": "已添加网站（未保存）：$1，包含子域名。"
   },
   "pendingDelete": {
     "message": "待删除：$1"
@@ -363,7 +354,7 @@
     "message": "当地时间"
   },
   "testerLabel": {
-    "message": "检查草稿"
+    "message": "检查网站设置"
   },
   "testerIdle": {
     "message": "输入网址，预览保存后会使用的时区和规则。"
@@ -384,7 +375,7 @@
     "message": "其他窗口已修改设置。载入最新设置，或明确覆盖保存。"
   },
   "saveFailedDraft": {
-    "message": "保存失败，草稿已保留。请重试。"
+    "message": "保存失败，修改已保留，请重试。"
   },
   "saveDirty": {
     "message": "有未保存的修改 · 网页仍使用已保存设置"
@@ -444,7 +435,7 @@
     "message": "$1 的更多操作"
   },
   "pickerDraftHelp": {
-    "message": "选择结果修改草稿；保存并应用后生效。"
+    "message": "选择时区后，点击「保存并应用」使设置生效。"
   },
   "cityShanghai": {
     "message": "北京"
@@ -619,5 +610,32 @@
   },
   "languageKorean": {
     "message": "한국어"
+  },
+  "heroGlobalTime": {
+    "message": "所有网站使用的时间"
+  },
+  "heroDefaultTime": {
+    "message": "默认时区的时间"
+  },
+  "heroSystemTime": {
+    "message": "本机时间"
+  },
+  "settingsUnsaved": {
+    "message": "未保存"
+  },
+  "rulesRetainedGlobal": {
+    "message": "所有网站统一使用上方时区。网站规则会保留，切回「按规则」后生效。"
+  },
+  "rulesRetainedOff": {
+    "message": "关闭模式下，网站使用系统时区。已配置的网站规则会保留。"
+  },
+  "manageRules": {
+    "message": "切换到「按规则」"
+  },
+  "discardRuleInputs": {
+    "message": "放弃未完成的网站编辑"
+  },
+  "rulesPendingInputs": {
+    "message": "还有未完成的网站编辑。请切回「按规则」完成，或放弃这些编辑后再保存。"
   }
 }

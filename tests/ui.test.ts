@@ -179,6 +179,104 @@ describe('popup regressions', () => {
 });
 
 describe('options regressions', () => {
+  it('hides rule editing and the URL tester in global mode while preserving rules through save', async () => {
+    await import('../src/options/main');
+    const original = structuredClone(stored.rules);
+    const writes = vi.spyOn(chrome.storage.local, 'set');
+    input('mode-global').click();
+    expect(document.querySelector('.rules')).toBeNull();
+    expect(document.getElementById('tester')).toBeNull();
+    expect(document.getElementById('add-site')).toBeNull();
+    expect(document.querySelector('.hero-purpose')?.textContent).toContain('所有网站使用的时间');
+    expect((document.querySelector('.pending-state') as HTMLElement).hidden).toBe(false);
+    expect(input('default-tz').ariaLabel).toBe('所有网站时区');
+    expect(text()).not.toContain('草稿');
+    expect(text()).toContain('网站规则会保留');
+    expect(writes).not.toHaveBeenCalled();
+    expect(stored.mode).toBe('rules');
+    input('save-settings').click();
+    await flush();
+    expect(stored.mode).toBe('global');
+    expect(stored.rules).toEqual(original);
+    expect((document.querySelector('.pending-state') as HTMLElement).hidden).toBe(true);
+    input('activate-rules').click();
+    expect(document.querySelectorAll('.rule')).toHaveLength(original.length);
+    expect(document.activeElement?.id).toBe('mode-rules');
+    expect(stored.mode).toBe('global');
+    input('save-settings').click();
+    await flush();
+    expect(stored.mode).toBe('rules');
+    expect(stored.rules).toEqual(original);
+  });
+  it('discards a mode change without losing accepted rule edits', async () => {
+    await import('../src/options/main');
+    input('rule-parent-scope-exact').click();
+    input('mode-global').click();
+    input('mode-rules').click();
+    expect(input('rule-parent-scope').textContent).toContain('仅此域名');
+    input('mode-global').click();
+    input('discard-settings').click();
+    expect(input('mode-rules').ariaPressed).toBe('true');
+    expect(input('rule-parent-scope').textContent).toContain('含子域名');
+    expect((document.querySelector('.pending-state') as HTMLElement).hidden).toBe(true);
+  });
+  it('makes unfinished rule fields recoverable instead of failing validation in a hidden section', async () => {
+    await import('../src/options/main');
+    input('rule-parent-pattern').value = 'bad domain';
+    input('rule-parent-pattern').dispatchEvent(new Event('input', { bubbles: true }));
+    input('mode-global').click();
+    expect(document.getElementById('rule-parent-pattern')).toBeNull();
+    expect(text()).toContain('还有未完成的网站编辑');
+    input('save-settings').click();
+    await flush();
+    expect(stored.mode).toBe('rules');
+    expect(document.querySelector('.mode-summary [role="alert"]')).not.toBeNull();
+    expect(document.activeElement?.id).toBe('activate-rules');
+    input('activate-rules').click();
+    expect(input('rule-parent-pattern').value).toBe('bad domain');
+    expect(document.activeElement?.id).toBe('rule-parent-pattern');
+    input('rule-parent-pattern').value = 'new.example.com';
+    input('rule-parent-pattern').dispatchEvent(new Event('input', { bubbles: true }));
+    input('rule-parent-edit-done').click();
+    input('mode-global').click();
+    input('save-settings').click();
+    await flush();
+    expect(stored.mode).toBe('global');
+    expect(stored.rules[0]!.pattern).toBe('new.example.com');
+  });
+  it('lets users discard only unfinished site input and still save the selected global settings', async () => {
+    await import('../src/options/main');
+    input('rule-parent-scope-exact').click();
+    input('add-site').value = 'not a domain';
+    input('add-site').dispatchEvent(new Event('input', { bubbles: true }));
+    input('mode-global').click();
+    input('discard-rule-inputs').click();
+    expect(input('mode-global').ariaPressed).toBe('true');
+    expect(document.getElementById('discard-rule-inputs')).toBeNull();
+    expect(document.activeElement?.id).toBe('activate-rules');
+    input('save-settings').click();
+    await flush();
+    expect(stored.mode).toBe('global');
+    expect(stored.rules[0]!.match).toBe('exact');
+  });
+  it('does not let invalid inactive legacy rules block a global mode save', async () => {
+    stored.rules[0]!.pattern = 'co.uk';
+    await import('../src/options/main');
+    const original = structuredClone(stored.rules);
+    input('mode-global').click();
+    input('save-settings').click();
+    await flush();
+    expect(stored.mode).toBe('global');
+    expect(stored.rules).toEqual(original);
+  });
+  it('shows the system clock and retains rules when switching off', async () => {
+    await import('../src/options/main');
+    input('mode-off').click();
+    expect(document.querySelector('.rules')).toBeNull();
+    expect(document.querySelector('.hero-purpose')?.textContent).toContain('本机时间');
+    expect((document.querySelector('.big-clock') as HTMLElement).dataset.tz).toBe(Intl.DateTimeFormat().resolvedOptions().timeZone);
+    expect(text()).toContain('已配置的网站规则会保留');
+  });
   it('stages language changes, discards them, then saves and localizes all controls', async () => {
     await import('../src/options/main');
     const writes = vi.spyOn(chrome.storage.local, 'set');
@@ -328,7 +426,7 @@ describe('options regressions', () => {
     await flush();
     expect(document.activeElement?.id).toBe('rule-parent-enabled');
     expect(input('mode-rules').ariaPressed).toBe('true');
-    expect(text()).toContain('草稿预览');
+    expect((document.querySelector('.pending-state') as HTMLElement).hidden).toBe(false);
     expect(stored.rules[0]!.enabled).toBe(true);
   });
   it('defaults added rules to exact and retains failed edits for retry', async () => {
@@ -408,6 +506,9 @@ describe.each(['en', 'zh_CN', 'ja', 'ko', 'de'])('localized UI flows: %s', (loca
     await flush();
     expect(stored.mode).toBe('global');
     expect(text()).toContain(i18n.getMessage('saveAppliedDone'));
+    expect(document.querySelector('.rules')).toBeNull();
+    expect(text()).toContain(i18n.getMessage('rulesRetainedGlobal'));
+    input('mode-rules').click();
     input('add-site').value = 'bad domain';
     input('add-site').dispatchEvent(new Event('input', { bubbles: true }));
     document.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
