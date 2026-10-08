@@ -10,7 +10,7 @@ import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 
-const EXT = path.resolve(import.meta.dirname, '../dist');
+const EXT = path.resolve(process.env.EXT ?? path.join(import.meta.dirname, '../dist'));
 const CHROMIUM = process.env.CHROMIUM;
 if (!CHROMIUM) throw new Error('Set CHROMIUM to a Chromium / Chrome for Testing binary');
 const SYSTEM_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -97,7 +97,7 @@ async function proceed(step, value) {
 // ---- browser + extension service worker over raw CDP ------------------------
 const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'tz-e2e-'));
 const browser = spawn(CHROMIUM, [
-  `--user-data-dir=${profile}`, '--remote-debugging-port=0', '--no-first-run', '--no-default-browser-check',
+  `--user-data-dir=${profile}`, '--remote-debugging-port=0', '--no-first-run', '--no-default-browser-check', '--headless=new',
   `--disable-extensions-except=${EXT}`, `--load-extension=${EXT}`, 'about:blank',
 ], { stdio: ['ignore', 'ignore', 'pipe'] });
 const wsUrl = await new Promise((r) => browser.stderr.on('data', (d) => { const m = String(d).match(/ws:\/\/\S+/); if (m) r(m[0]); }));
@@ -197,6 +197,22 @@ try {
   expectEq('frozen tab: icon follows global -> rules', await evalSW('globalThis.icon'), 'icons/rules-16.png');
   await sleep(700);
   expectEq('frozen tab: later config still registers', await evalSW(`chrome.scripting.getRegisteredContentScripts().then(s => s.map(x => x.js[0]).join())`), 'timezones/Asia_Tokyo.js');
+  // The popup must show the clock and a settled status even while another tab is frozen.
+  await setConfig({ mode: 'global', timezone: 'Asia/Tokyo', rules: [] });
+  await cdp('Target.createTarget', { url: `${IP}/p?s=popup` });
+  await report('popup');
+  // openPopup needs a focused window, which another app can take; focus it and retry until the popup target appears.
+  let popup;
+  for (let i = 0; i < 50 && !popup; i++, await sleep(200)) {
+    if (i % 5 === 0) await evalSW(`chrome.windows.getLastFocused().then((w) => chrome.windows.update(w.id, { focused: true })).then((w) => chrome.action.openPopup({ windowId: w.id })).catch(() => {})`);
+    popup = (await cdp('Target.getTargets')).result.targetInfos.find((t) => t.url.endsWith('/popup.html'));
+  }
+  if (!popup) throw new Error('popup did not open');
+  const { sessionId: popupSession } = (await cdp('Target.attachToTarget', { targetId: popup.targetId, flatten: true })).result;
+  await sleep(3000);
+  const popupState = (await cdp('Runtime.evaluate', { returnByValue: true, expression:
+    `[document.querySelector('.now-time')?.textContent ?? '', document.querySelector('.now-city')?.title, document.querySelector('.state')?.className].join('|')` }, popupSession)).result.result.value;
+  expectEq('frozen tab: popup shows clock and settles status', popupState.replace(/^\d\d:\d\d/, 'HH:MM'), 'HH:MM|Asia/Tokyo|state ok');
   await setConfig({ mode: 'off', timezone: 'Europe/London', rules: [] });
   expectEq('frozen tab: icon follows rules -> off', await evalSW('globalThis.icon'), 'icons/off-16.png');
 } finally {

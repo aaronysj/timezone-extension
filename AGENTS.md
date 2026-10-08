@@ -5,7 +5,11 @@
 - `npm run dev` — watches both UI/background and the MAIN-world engine (unminified, sourcemaps); reload the extension in chrome://extensions after changes.
 - `npm test` — Vitest unit tests (`tests/`), including native Date comparisons in separate timezone processes.
 - `npm run e2e` — builds, then drives a real Chromium via raw CDP (`e2e/run.mjs`). Requires `CHROMIUM=/path/to/binary`
-  (Chromium or Chrome for Testing; branded Chrome ignores `--load-extension`). Tests use an isolated profile.
+  (Chromium or Chrome for Testing; branded Chrome ignores `--load-extension`). Tests use an isolated headless profile
+  (headless keeps `chrome.action.openPopup` working when another app has OS focus).
+  `EXT=/path/to/unzipped` runs it against another build (e.g. a store zip) instead of `dist/`.
+- Release zips must be rebuilt from the commit being shipped and pass `npm run e2e`; 0.2.0 shipped a stale
+  pre-fix build whose popup clock stayed blank whenever Memory Saver had frozen any tab.
 
 ## Architecture
 - `src/shared/resolve.ts` — pure `resolveTimezone(url, config)`: the single source of truth for which tz a URL gets.
