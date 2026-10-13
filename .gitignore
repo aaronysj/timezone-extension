@@ -2,5 +2,8 @@ node_modules/
 dist/
 *.zip
 store/*review*.png
+store/edge/*.jpg
+store/video/*.mp4
+store/video/*submitted*.png
 .DS_Store
 .claude/

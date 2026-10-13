@@ -109,11 +109,31 @@ ws.onmessage = (e) => { const m = JSON.parse(e.data); pending.get(m.id)?.(m); pe
 const cdp = (method, params = {}, sessionId) =>
   new Promise((r) => { const id = ++seq; pending.set(id, r); ws.send(JSON.stringify({ id, method, params, sessionId })); });
 
-let sw;
-for (let i = 0; i < 100 && !sw; i++, await sleep(100))
-  sw = (await cdp('Target.getTargets')).result.targetInfos.find((t) => t.type === 'service_worker' && t.url.endsWith('/background.js'));
-if (!sw) throw new Error('extension service worker not found');
-const { sessionId } = (await cdp('Target.attachToTarget', { targetId: sw.targetId, flatten: true })).result;
+const manifest = JSON.parse(fs.readFileSync(path.join(EXT, 'manifest.json'), 'utf8'));
+const names = manifest.default_locale
+  ? fs.readdirSync(path.join(EXT, '_locales')).map((locale) =>
+    JSON.parse(fs.readFileSync(path.join(EXT, '_locales', locale, 'messages.json'), 'utf8'))[
+      manifest.name.replace(/^__MSG_(.*)__$/, '$1')
+    ].message)
+  : [manifest.name];
+let sessionId;
+for (let i = 0; i < 100 && !sessionId; i++, await sleep(100)) {
+  const candidates = (await cdp('Target.getTargets')).result.targetInfos.filter(
+    (t) => t.type === 'service_worker' && t.url.endsWith('/background.js'));
+  for (const candidate of candidates) {
+    const attached = (await cdp('Target.attachToTarget', { targetId: candidate.targetId, flatten: true })).result;
+    const actual = (await cdp('Runtime.evaluate', {
+      expression: 'chrome.runtime.getManifest()', returnByValue: true,
+    }, attached.sessionId)).result?.result?.value;
+    // Chromium also ships component extensions with a background.js worker.
+    if (actual?.version === manifest.version && names.includes(actual.name)) {
+      sessionId = attached.sessionId;
+      break;
+    }
+    await cdp('Target.detachFromTarget', { sessionId: attached.sessionId });
+  }
+}
+if (!sessionId) throw new Error('extension service worker not found');
 const evalSW = async (expression) =>
   (await cdp('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true }, sessionId)).result?.result?.value;
 for (let i = 0; i < 50 && !(await evalSW('!!globalThis.chrome?.storage')); i++) await sleep(100);
@@ -139,7 +159,6 @@ function expectEq(name, actual, expected) {
 
 const watchdog = setTimeout(() => { console.log('TIMEOUT'); browser.kill(); process.exit(1); }, 60000);
 try {
-  const manifest = JSON.parse(fs.readFileSync(path.join(EXT, 'manifest.json'), 'utf8'));
   expectEq('no debugger permission', manifest.permissions.includes('debugger'), false);
   const missing = await evalSW(`(async () => {
     const zones = [...Intl.supportedValuesOf('timeZone'), 'UTC', 'Etc/GMT+12', 'Etc/GMT-14'];

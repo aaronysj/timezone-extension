@@ -1,0 +1,59 @@
+{
+  "status": "In review",
+  "sourceCommit": "bee0423",
+  "version": "0.2.1",
+  "package": "timezone-override-edge-0.2.1.zip",
+  "size": 345718,
+  "sha256": "4ce7bd75592f162177bad192d28874c343d009b2d3d65e667e198d3f526da6f9",
+  "validation": {
+    "unitTests": 151,
+    "build": "passed",
+    "e2e": "20 checks passed on Chrome for Testing 140.0.7339.207",
+    "chrome155": "worker selection corrected; page navigation timed out, unresolved"
+  },
+  "registration": {
+    "country": "China",
+    "accountType": "Individual",
+    "publisher": "aaronysj.top",
+    "contactSource": "Google developer account; user authorized reuse",
+    "complete": true,
+    "status": "Authorized",
+    "sellerId": "96593850"
+  },
+  "video": {
+    "path": "store/video/timezone-override-promo.mp4",
+    "durationSeconds": 52,
+    "width": 1920,
+    "height": 1080,
+    "visibility": "Unlisted",
+    "youtubeTermsApproved": true,
+    "upload": "published and verified Unlisted",
+    "youtubeUrl": "https://www.youtube.com/watch?v=1eRUPRi-Usw",
+    "copyrightChecks": "No issues found",
+    "embeddingEnabled": true,
+    "aiDisclosure": true
+  },
+  "edgeProductId": "9da48883-c581-46dd-afc1-04f1b9d9aab8",
+  "dashboardUrl": "https://partner.microsoft.com/en-us/dashboard/microsoftedge/9da48883-c581-46dd-afc1-04f1b9d9aab8/packages/dashboard",
+  "edgeStoreId": "0RDCKCJ5HRCT",
+  "edgeCrxId": "aioacidgmnjpdcmlmhelhgmecpmljobg",
+  "submission": {
+    "version": "0.2.1",
+    "status": "In review",
+    "reviewEstimate": "7 business days, as shown by Microsoft",
+    "visibility": "Public",
+    "markets": 241,
+    "languages": [
+      "en",
+      "zh_CN",
+      "ja",
+      "ko"
+    ],
+    "videoAddedToAllLanguages": true,
+    "proof": "store/edge/submitted-for-review-0.2.1.jpg",
+    "screenshots": [
+      "store/edge/screenshot-rules-1280x800.png",
+      "store/edge/screenshot-picker-1280x800.png"
+    ]
+  }
+}
