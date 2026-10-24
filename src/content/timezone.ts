@@ -1,14 +1,40 @@
-/** Self-contained: switches an already installed controller back to native behavior; never installs one. */
+/*
+ * Per-tab temporary override: key `timezone-override.temporary` in the page's sessionStorage, written only by the background.
+ * sessionStorage is isolated per tab+origin, survives reloads and is readable synchronously at document_start.
+ * Every self-contained function that reads it (below, Overrider.status, temporary.ts) inlines the reader: Chrome serializes them one by one.
+ */
+
+/** Self-contained: switches an already installed controller back to native behavior; never installs one. A valid temporary marker wins over config, so it is left alone. */
 export function restoreNative(): void {
   const root = globalThis as typeof globalThis & { [key: symbol]: { set(zone: string | null): string | null } | undefined };
-  root[Symbol.for('timezone-override.controller')]?.set(null);
+  const controller = root[Symbol.for('timezone-override.controller')];
+  if (!controller) return;
+  try {
+    // Sandboxed frames and disabled storage throw; the page may also have tampered with the value.
+    const zone = sessionStorage.getItem('timezone-override.temporary');
+    if (zone) { new Intl.DateTimeFormat('en', { timeZone: zone }); return; }
+  } catch { /* No usable marker: fall through to native. */ }
+  controller.set(null);
 }
 
-/** Self-contained: Chrome serializes this function when updating an already open page. */
+/**
+ * Self-contained: Chrome serializes this function when updating an already open page.
+ * A valid temporary marker replaces `initial`; with neither, nothing is installed (and an existing controller goes native).
+ */
 export function installTimezone(initial: string | null): string | null {
   const key = Symbol.for('timezone-override.controller');
   const root = globalThis as typeof globalThis & { [key: symbol]: { set(zone: string | null): string | null } };
-  if (root[key]) return root[key].set(initial);
+  const marked = (): string | null => {
+    try {
+      const zone = sessionStorage.getItem('timezone-override.temporary');
+      if (!zone) return null;
+      new Intl.DateTimeFormat('en', { timeZone: zone });
+      return zone;
+    } catch { return null; }
+  };
+  const target = marked() ?? initial;
+  if (root[key]) return root[key].set(target);
+  if (target === null) return null;
 
   const NativeDate = Date;
   const NativeFormat = Intl.DateTimeFormat;
@@ -25,7 +51,7 @@ export function installTimezone(initial: string | null): string | null {
     zone = next;
     return zone;
   };
-  set(initial);
+  set(target);
 
   const utc = (year: number, month: number, day: number, hour = 0, minute = 0, second = 0, ms = 0) => {
     const date = new NativeDate(0);

@@ -9,6 +9,8 @@ let site: string;
 let failure: boolean;
 let statusFailure: boolean;
 let appliedOverride: string | undefined;
+let temporaryZone: string | null;
+let sent: unknown[];
 let listeners: ((changes: unknown, area: string) => void)[];
 const input = (id: string) => document.getElementById(id) as HTMLInputElement;
 const text = () => document.body.textContent!;
@@ -22,6 +24,8 @@ beforeEach(() => {
   failure = false;
   statusFailure = false;
   appliedOverride = undefined;
+  temporaryZone = null;
+  sent = [];
   listeners = [];
   stored = { mode: 'rules', timezone: 'Asia/Shanghai', rules: [
     { id: 'parent', enabled: true, action: 'include', match: 'suffix', pattern: 'example.com' },
@@ -30,7 +34,7 @@ beforeEach(() => {
   document.body.innerHTML = '<main id="app"></main>';
   vi.stubGlobal('chrome', {
     i18n: chineseI18n,
-    tabs: { query: async () => [{ id: 1, url: site }] },
+    tabs: { query: async () => [{ id: 1, url: site }], reload: vi.fn() },
     storage: { local: {
       get: async () => ({ config: structuredClone(stored) }),
       set: async ({ config }: { config: Config }) => {
@@ -39,9 +43,11 @@ beforeEach(() => {
         listeners.forEach((fn) => fn({ config: { newValue: stored } }, 'local'));
       },
     }, onChanged: { addListener: (fn: typeof listeners[number]) => listeners.push(fn) } },
-    runtime: { openOptionsPage: vi.fn(), sendMessage: async () => {
-      const desired = resolveTimezone(site, stored);
-      return { desired, applied: appliedOverride ?? (statusFailure ? null : desired?.timezone ?? null),
+    runtime: { openOptionsPage: vi.fn(), sendMessage: async (req: { type: string; timezone?: string | null }) => {
+      sent.push(req);
+      if (req.type === 'setTemporary') { temporaryZone = req.timezone ?? null; return null; }
+      const desired = temporaryZone ? { timezone: temporaryZone, temporary: true } : resolveTimezone(site, stored);
+      return { desired, temporary: temporaryZone, applied: appliedOverride ?? (statusFailure ? null : desired?.timezone ?? null),
         ...(statusFailure ? { error: 'Cannot access contents of the page. Extension host permission is withheld.' } : {}) };
     } },
   });
@@ -560,5 +566,84 @@ describe.each(['en', 'zh_CN', 'ja', 'ko', 'de'])('localized UI flows: %s', (loca
     expect(stored.rules[1]!.timezone).toBe('Asia/Tokyo');
     expect(input('site-tz').value).toBe(i18n.getMessage('cityTokyo'));
     expect(text()).not.toMatch(/__MSG_|\$[1-9]|undefined/);
+  });
+});
+
+describe('temporary tab override', () => {
+  const pick = async (id: string, query: string) => {
+    input(id).focus();
+    input(id).value = query;
+    input(id).dispatchEvent(new Event('input', { bubbles: true }));
+    input(id).dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await flush();
+  };
+  it.each(['off', 'global', 'rules'] as const)('is offered in %s mode, empty and without an active note', async (mode) => {
+    stored = { ...stored, mode };
+    await import('../src/popup/main');
+    await flush();
+    expect(input('temp-tz').value).toBe('');
+    expect(input('temp-tz').placeholder).toBe(chineseI18n.getMessage('tempPlaceholder'));
+    expect(document.querySelector('label[for="temp-tz"]')?.textContent).toBe(chineseI18n.getMessage('tempUse'));
+    expect(document.getElementById('temp-clear')).toBeNull();
+    expect(text()).not.toContain(chineseI18n.getMessage('tempHint'));
+  });
+  it('sits after the site controls and before the language selector', async () => {
+    await import('../src/popup/main');
+    expect(input('site-tz').compareDocumentPosition(input('temp-tz')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(input('temp-tz').compareDocumentPosition(input('popup-language')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+  it('is hidden on pages it cannot cover', async () => {
+    site = 'chrome://extensions';
+    await import('../src/popup/main');
+    expect(document.getElementById('temp-tz')).toBeNull();
+  });
+  it('commits through setTemporary without touching config, then shows the temporary state', async () => {
+    stored = { ...stored, mode: 'off' };
+    const before = structuredClone(stored);
+    await import('../src/popup/main');
+    await flush();
+    await pick('temp-tz', '东京');
+    expect(sent).toContainEqual({ type: 'setTemporary', tabId: 1, timezone: 'Asia/Tokyo' });
+    expect(stored).toEqual(before);
+    expect(input('temp-tz').value).toBe('东京');
+    expect(document.activeElement?.id).toBe('temp-tz');
+    expect(text()).toContain(chineseI18n.getMessage('tempHint'));
+    expect(text()).toContain(chineseI18n.getMessage('statusTemporary'));
+    expect(text()).toContain(chineseI18n.getMessage('explainTemporary'));
+    expect(document.querySelector('.now-city')?.getAttribute('title')).toBe('Asia/Tokyo');
+    expect(document.querySelector('.state.ok')).not.toBeNull();
+  });
+  it('reflects an existing override on open, over what config says', async () => {
+    temporaryZone = 'Asia/Tokyo';
+    await import('../src/popup/main');
+    await flush();
+    expect(input('temp-tz').value).toBe('东京');
+    expect(document.querySelector('.now-city')?.getAttribute('title')).toBe('Asia/Tokyo');
+    expect(text()).toContain(chineseI18n.getMessage('statusTemporary'));
+  });
+  it('reloads the tab and ends the override, returning focus to the picker', async () => {
+    temporaryZone = 'Asia/Tokyo';
+    await import('../src/popup/main');
+    await flush();
+    input('temp-reload').click();
+    expect(chrome.tabs.reload).toHaveBeenCalledWith(1);
+    input('temp-clear').focus();
+    input('temp-clear').click();
+    await flush();
+    expect(sent).toContainEqual({ type: 'setTemporary', tabId: 1, timezone: null });
+    expect(document.getElementById('temp-clear')).toBeNull();
+    expect(input('temp-tz').value).toBe('');
+    expect(document.activeElement?.id).toBe('temp-tz');
+    expect(text()).not.toContain(chineseI18n.getMessage('statusTemporary'));
+  });
+  it('shows the background error instead of pretending the override applied', async () => {
+    const send = chrome.runtime.sendMessage as (req: unknown) => Promise<unknown>;
+    vi.stubGlobal('chrome', { ...chrome, runtime: { ...chrome.runtime, sendMessage: async (req: { type: string }) => req.type === 'setTemporary' ? { error: 'Error: Page storage is unavailable' } : send(req) } });
+    await import('../src/popup/main');
+    await flush();
+    await pick('temp-tz', '东京');
+    expect(text()).toContain(chineseI18n.getMessage('statusFailed'));
+    expect(text()).toContain('Page storage is unavailable');
+    expect(document.getElementById('temp-clear')).toBeNull();
   });
 });

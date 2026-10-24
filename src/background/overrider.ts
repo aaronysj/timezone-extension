@@ -39,7 +39,8 @@ export class Overrider {
     await Promise.all(tabs.filter((tab) => tab.id !== undefined && !tab.discarded).map((tab) => this.apply(tab.id!, config).catch(() => {})));
   }
 
-  async apply(tabId: number, config: Config): Promise<void> {
+  /** `temporary`: the tab has a page marker that may need a live install, which restoreNative never does. */
+  async apply(tabId: number, config: Config, temporary = false): Promise<void> {
     const frames = await chrome.webNavigation.getAllFrames({ tabId });
     const byId = new Map(frames?.map((frame) => [frame.frameId, frame]));
     const effectiveUrl = (id: number, visited = new Set<number>()): string => {
@@ -54,8 +55,9 @@ export class Overrider {
       const timezone = resolveTimezone(effectiveUrl(frame.frameId), config)?.timezone ?? null;
       try {
         // No timezone: never touch the page unless our controller is already there, then only switch it to native.
+        // Each frame reads the temporary marker from its own origin's storage, so config never needs to know about it.
         const target = { tabId, documentIds: [frame.documentId] };
-        if (timezone) await chrome.scripting.executeScript({ target, world: 'MAIN', func: installTimezone, args: [timezone], injectImmediately: true });
+        if (timezone || temporary) await chrome.scripting.executeScript({ target, world: 'MAIN', func: installTimezone, args: [timezone ?? null], injectImmediately: true });
         else await chrome.scripting.executeScript({ target, world: 'MAIN', func: restoreNative, injectImmediately: true });
         if (frame.frameId === 0) this.failures.delete(tabId);
       } catch (error) {
@@ -64,16 +66,22 @@ export class Overrider {
     }));
   }
 
-  async status(tabId: number): Promise<{ applied: string | null; error?: string }> {
+  async status(tabId: number): Promise<{ applied: string | null; temporary: string | null; error?: string }> {
     try {
       // Without injectImmediately Chrome waits for document_idle, so a still-loading page stalls the popup.
       const [result] = await chrome.scripting.executeScript({ target: { tabId }, world: 'MAIN', injectImmediately: true, func: () => {
         const controller = (globalThis as typeof globalThis & { [key: symbol]: unknown })[Symbol.for('timezone-override.controller')];
-        return controller ? Intl.DateTimeFormat().resolvedOptions().timeZone : null;
+        let temporary: string | null = null;
+        try {
+          temporary = sessionStorage.getItem('timezone-override.temporary') || null;
+          if (temporary) new Intl.DateTimeFormat('en', { timeZone: temporary });
+        } catch { temporary = null; }
+        return { applied: controller ? Intl.DateTimeFormat().resolvedOptions().timeZone : null, temporary };
       } });
       const failure = this.failures.get(tabId);
-      return { applied: result?.result ?? null, ...(failure?.documentId === result?.documentId ? { error: failure?.error } : {}) };
-    } catch (error) { return { applied: null, error: String(error) }; }
+      return { applied: result?.result?.applied ?? null, temporary: result?.result?.temporary ?? null,
+        ...(failure?.documentId === result?.documentId ? { error: failure?.error } : {}) };
+    } catch (error) { return { applied: null, temporary: null, error: String(error) }; }
   }
 
   forget(tabId: number): void { this.failures.delete(tabId); }

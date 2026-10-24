@@ -50,6 +50,8 @@ let shownZone = systemTimezone();
 let statusKey = '';
 let statusRequest = 0;
 let actionError = '';
+/** This tab's temporary override as last reported by the background; the section below follows it. */
+let temporary: string | null = null;
 
 function tick() {
   const at = new Date();
@@ -78,6 +80,20 @@ async function retryApply() {
   statusKey = '';
   await refreshStatus();
   (document.getElementById('retry-apply') ?? document.getElementById('site-scope') ?? document.getElementById(`mode-${config.mode}`))?.focus();
+}
+
+async function setTemporary(timezone: string | null) {
+  if (tab?.id === undefined) return;
+  actionError = '';
+  try {
+    const res = await sendRequest<{ error?: string } | null>({ type: 'setTemporary', tabId: tab.id, timezone });
+    if (res?.error) actionError = res.error;
+  } catch { actionError = t('popupBackendRetry'); }
+  // Ending removes the focused button, so keep the keyboard on the picker that replaces it.
+  if (timezone === null) focusAfter = 'temp-tz';
+  statusKey = '';
+  await refreshStatus();
+  focusAfter = undefined;
 }
 
 function errorHelp(): string {
@@ -124,13 +140,18 @@ async function refreshStatus() {
     .catch(() => undefined) ?? { error: t('popupBackendUnreachable') };
   if (request !== statusRequest) return;
   const known = 'applied' in res;
-  const desired = tabUrl ? resolveTimezone(tabUrl, config)?.timezone ?? null : null;
+  const override = known ? res.temporary ?? null : temporary;
+  const desired = override ?? (tabUrl ? resolveTimezone(tabUrl, config)?.timezone ?? null : null);
   shownZone = (known && res.applied) || systemTimezone();
   const effective = config.mode === 'rules' ? ruleForHost(host, config.rules) : undefined;
   const error = actionError || res.error;
   const applied = known && editor.state !== 'error' && !!res.applied && res.applied === desired && !error;
-  const label = t(!known ? 'statusUnknown' : editor.state === 'error' ? 'statusUnsaved' : error ? 'statusFailed' : applied ? 'statusApplied' : res.applied !== desired ? 'statusApplying' : 'statusSystem');
-  const key = JSON.stringify([bundleLocale(), label, shownZone, effective, error, config.mode]);
+  const label = t(!known ? 'statusUnknown' : editor.state === 'error' ? 'statusUnsaved' : error ? 'statusFailed' : applied ? (override ? 'statusTemporary' : 'statusApplied') : res.applied !== desired ? 'statusApplying' : 'statusSystem');
+  const key = JSON.stringify([bundleLocale(), label, shownZone, effective, error, config.mode, override]);
+  if (override !== temporary) {
+    temporary = override;
+    render();
+  }
   if (key !== statusKey) {
     statusKey = key;
     now.className = `now${applied ? '' : ' is-system'}`;
@@ -141,6 +162,7 @@ async function refreshStatus() {
     const explanation = !known ? t('explainUnknown')
       : editor.state === 'error' ? t('explainUnsaved')
       : error ? (res.applied ? t('explainStillZone', cityLabel(shownZone), errorHelp()) : t('explainStillSystem', errorHelp()))
+      : applied && override ? t('explainTemporary')
       : '';
     replaceKeepingFocus(now, nowView(state, explanation, error));
   }
@@ -184,13 +206,26 @@ function siteControls(): HTMLElement | null {
       rule ? h('button', { id: 'remove-site-rule', className: 'link', textContent: t('removeRule'), title: fallback ? t('removeRuleTitleZone', cityLabel(fallback.timezone)) : t('removeRuleTitleSystem'), onclick: () => { followEffective = true; focusAfter = 'site-scope'; void editor.update({ ...config, rules: config.rules.filter((r) => r.id !== rule.id) }); } }) : null) : null);
 }
 
+/** Available in every mode: the override lives in this tab only and outranks config. */
+function temporaryControls(): HTMLElement | null {
+  if (!host) return null;
+  return h('section', { className: 'block' },
+    h('label', { className: 'block-label', htmlFor: 'temp-tz' }, t('tempUse')),
+    timezonePicker({ id: 'temp-tz', label: t('tempTzLabel'), compact: true, value: temporary ?? '', placeholder: t('tempPlaceholder'),
+      onCommit: (timezone) => void setTemporary(timezone) }),
+    temporary ? h('p', { className: 'hint' }, t('tempHint')) : null,
+    temporary ? h('div', { className: 'block-actions' },
+      h('button', { id: 'temp-reload', className: 'link', textContent: t('tempReload'), onclick: () => { if (tab?.id !== undefined) void chrome.tabs.reload(tab.id); } }),
+      h('button', { id: 'temp-clear', className: 'link', textContent: t('tempClear'), onclick: () => void setTemporary(null) })) : null);
+}
+
 function render() {
   setLanguage(config.language);
   localizeDocument('extName');
   replaceKeepingFocus(root, [modeSwitch(config.mode, (mode) => {
     followEffective = true;
     void editor.update({ ...config, mode });
-  }), now, ...[siteControls()].filter((el): el is HTMLElement => el !== null),
+  }), now, ...[siteControls(), temporaryControls()].filter((el): el is HTMLElement => el !== null),
     h('div', { className: 'popup-language' }, h('label', { htmlFor: 'popup-language' }, t('languageLabel')),
       languageSelect('popup-language', config.language, (language) => void editor.update({ ...config, language }))),
     h('footer', {}, h('button', { id: 'open-settings', className: 'link', textContent: t('openSettings'), onclick: () => chrome.runtime.openOptionsPage() }), feedback)], focusAfter);

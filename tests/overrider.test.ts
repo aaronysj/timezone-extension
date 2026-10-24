@@ -65,3 +65,29 @@ it('reports a zone missing from the shipped list before registering, and still r
   await expect(new Overrider().configure(config)).rejects.toThrow('Europe_London.js');
   expect(registered.length).toBe(1);
 });
+
+it('configure never unregisters the temporary script, but still drops stale timezone- scripts', async () => {
+  const unregistered: string[][] = [];
+  stubChrome([{ id: 'temporary-timezone' }, { id: 'timezone-global' }]);
+  (globalThis as any).chrome.scripting.unregisterContentScripts = async ({ ids }: { ids: string[] }) => { unregistered.push(ids); };
+  await new Overrider().configure({ mode: 'off', timezone: 'Asia/Tokyo', rules: [] });
+  expect(unregistered).toEqual([['timezone-global']]);
+});
+
+it('apply on a temporary tab installs through the marker even when config resolves to nothing', async () => {
+  const { executed } = stubChrome();
+  const off: Config = { mode: 'off', timezone: 'Asia/Tokyo', rules: [] };
+  await new Overrider().apply(1, off, true);
+  expect(executed.map((e) => [e.func, e.args])).toEqual([[installTimezone, [null]]]);
+  await new Overrider().apply(1, { ...off, mode: 'global' }, true);
+  expect(executed[1]!.args).toEqual(['Asia/Tokyo']);
+});
+
+it('status reports the page marker alongside the applied zone', async () => {
+  stubChrome();
+  (globalThis as any).chrome.scripting.executeScript = async ({ func }: { func: () => unknown }) => {
+    const context = vm.createContext({ sessionStorage: { getItem: () => 'Asia/Tokyo' } });
+    return [{ documentId: 'd', result: vm.runInContext(`(${func.toString()})()`, context) }];
+  };
+  expect(await new Overrider().status(1)).toEqual({ applied: null, temporary: 'Asia/Tokyo' });
+});

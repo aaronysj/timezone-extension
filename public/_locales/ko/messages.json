@@ -618,6 +618,30 @@
     "message": "미완료 사이트 편집이 있습니다. 규칙별 모드에서 완료하거나 편집을 취소한 후 저장하세요."
   },
   "coverageNote": {
-    "message": "페이지의 Date 및 Intl API에 적용되며 iframe은 자체 URL의 규칙을 따릅니다. Worker, 이미 저장된 네이티브 API와 기존 Intl 포맷터는 원래 시간대를 유지합니다. 열린 페이지는 새로고침하세요."
+    "message": "페이지의 Date 및 Intl API에 적용되며 iframe은 자체 URL의 규칙을 따릅니다. Worker, 이미 저장된 네이티브 API와 기존 Intl 포맷터는 원래 시간대를 유지합니다. 열린 페이지는 새로고침하세요. 한 탭에만 설정한 시간대는 해당 페이지의 세션 스토리지에 저장되며, 탭을 닫거나 브라우저를 다시 시작하면 종료됩니다."
+  },
+  "statusTemporary": {
+    "message": "임시 적용 중"
+  },
+  "explainTemporary": {
+    "message": "이 탭은 설정 대신 임시 시간대를 사용하고 있습니다."
+  },
+  "tempUse": {
+    "message": "이 탭에서만 임시 사용"
+  },
+  "tempTzLabel": {
+    "message": "이 탭 전용 시간대"
+  },
+  "tempPlaceholder": {
+    "message": "시간대 선택"
+  },
+  "tempHint": {
+    "message": "이 탭을 닫으면 종료됩니다. 이미 표시된 시간은 새로고침 후 갱신됩니다."
+  },
+  "tempReload": {
+    "message": "페이지 새로고침"
+  },
+  "tempClear": {
+    "message": "임시 사용 종료"
   }
 }

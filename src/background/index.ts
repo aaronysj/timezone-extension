@@ -1,10 +1,14 @@
 import { type Config, DEFAULT_CONFIG, loadConfig, onConfigChanged } from '../shared/config';
 import type { Request, TabStatus } from '../shared/messages';
-import { resolveTimezone } from '../shared/resolve';
+import { hostnameOf } from '../shared/resolve';
+import { isValidTimezone } from '../shared/timezone';
 import { Overrider } from './overrider';
+import { tabStatus } from './status';
+import { TemporaryTabs, setMarker, temporaryHost } from './temporary';
 import { setLanguage } from '../shared/i18n';
 
 const overrider = new Overrider();
+const temporary = new TemporaryTabs();
 let config: Config = DEFAULT_CONFIG;
 let configurationError: string | undefined;
 let ready: Promise<void> = Promise.resolve();
@@ -38,7 +42,10 @@ onConfigChanged((next) => { changed = true; void configure(next); });
 chrome.webNavigation.onCommitted.addListener(({ tabId }) => {
   void ready.then(() => overrider.apply(tabId, config)).catch(() => {});
 });
-chrome.tabs.onRemoved.addListener((tabId) => overrider.forget(tabId));
+chrome.tabs.onRemoved.addListener((tabId) => {
+  overrider.forget(tabId);
+  void temporary.update(tabId, null).catch(() => {});
+});
 
 async function handle(req: Request): Promise<unknown> {
   await ready;
@@ -48,14 +55,27 @@ async function handle(req: Request): Promise<unknown> {
     return null;
   }
   const tab = await chrome.tabs.get(req.tabId);
+  if (req.type === 'setTemporary') {
+    const { timezone } = req;
+    if (timezone === null) {
+      // Ending must always drop the registration, even if the tab has since moved somewhere we cannot script.
+      await setMarker(req.tabId, null).catch(() => {});
+      await temporary.update(req.tabId, null);
+      await overrider.apply(req.tabId, config).catch(() => {});
+      return null;
+    }
+    const host = temporaryHost(tab.url);
+    if (!host) throw new Error(`Temporary timezones need an http(s) page, got ${tab.url}`);
+    if (!isValidTimezone(timezone)) throw new Error(`Unknown timezone ${timezone}`);
+    // Marker first: if the page refuses storage, nothing is registered. The registration is what makes refreshes work from document_start.
+    await setMarker(req.tabId, timezone);
+    await temporary.update(req.tabId, host);
+    await overrider.apply(req.tabId, config, true);
+    return null;
+  }
   const url = tab.pendingUrl ?? tab.url;
-  const desired = url ? resolveTimezone(url, config) : null;
-  if (!desired) return { desired: null, applied: null } satisfies TabStatus;
-  const status = await overrider.status(req.tabId);
-  try {
-    if (status.applied === new Intl.DateTimeFormat('en', { timeZone: desired.timezone }).resolvedOptions().timeZone) status.applied = desired.timezone;
-  } catch (error) { status.error = String(error); }
-  return { desired, ...status, ...(configurationError ? { error: configurationError } : {}) } satisfies TabStatus;
+  const probe = url && hostnameOf(url) ? await overrider.status(req.tabId) : { applied: null, temporary: null };
+  return tabStatus(url, config, probe, configurationError);
 }
 
 chrome.runtime.onMessage.addListener((req: Request, _sender, sendResponse) => {

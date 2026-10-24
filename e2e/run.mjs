@@ -116,7 +116,7 @@ const names = manifest.default_locale
       manifest.name.replace(/^__MSG_(.*)__$/, '$1')
     ].message)
   : [manifest.name];
-let sessionId;
+let sessionId, extensionId;
 for (let i = 0; i < 100 && !sessionId; i++, await sleep(100)) {
   const candidates = (await cdp('Target.getTargets')).result.targetInfos.filter(
     (t) => t.type === 'service_worker' && t.url.endsWith('/background.js'));
@@ -128,6 +128,7 @@ for (let i = 0; i < 100 && !sessionId; i++, await sleep(100)) {
     // Chromium also ships component extensions with a background.js worker.
     if (actual?.version === manifest.version && names.includes(actual.name)) {
       sessionId = attached.sessionId;
+      extensionId = new URL(candidate.url).host;
       break;
     }
     await cdp('Target.detachFromTarget', { sessionId: attached.sessionId });
@@ -157,7 +158,7 @@ function expectEq(name, actual, expected) {
   console.log(`${pass ? 'PASS' : 'FAIL'} ${name}: ${actual}${pass ? '' : ` (expected ${expected})`}`);
 }
 
-const watchdog = setTimeout(() => { console.log('TIMEOUT'); browser.kill(); process.exit(1); }, 60000);
+const watchdog = setTimeout(() => { console.log('TIMEOUT'); browser.kill(); process.exit(1); }, 120000);
 try {
   expectEq('no debugger permission', manifest.permissions.includes('debugger'), false);
   const missing = await evalSW(`(async () => {
@@ -204,6 +205,69 @@ try {
   await proceed('10', {url: `${LOCAL}/p?s=11`});
   expectAll('rules: exclusion does not disable a different-origin iframe', await report('11'), SYSTEM_TZ, 'Europe/London');
 
+  // ---- temporary per-tab override (mode off / rules; page sessionStorage marker + `temporary-timezone` registration) ----
+  // The SW cannot message itself, so an extension page (options) plays the popup's part.
+  const optionsTarget = (await cdp('Target.createTarget', { url: `chrome-extension://${extensionId}/options.html` })).result.targetId;
+  const { sessionId: optionsSession } = (await cdp('Target.attachToTarget', { targetId: optionsTarget, flatten: true })).result;
+  const tabIdOf = (step) => evalSW(`chrome.tabs.query({}).then((tabs) => tabs.find((tab) => tab.url.includes('s=${step}'))?.id)`);
+  const setTemporary = async (tabId, timezone) => (await cdp('Runtime.evaluate', { awaitPromise: true, returnByValue: true,
+    expression: `chrome.runtime.sendMessage({ type: 'setTemporary', tabId: ${tabId}, timezone: ${JSON.stringify(timezone)} })` }, optionsSession)).result?.result?.value;
+  const statusOf = async (tabId) => (await cdp('Runtime.evaluate', { awaitPromise: true, returnByValue: true,
+    expression: `chrome.runtime.sendMessage({ type: 'getStatus', tabId: ${tabId} }).then((r) => JSON.stringify({ desired: r.desired, applied: r.applied, temporary: r.temporary }))` }, optionsSession)).result?.result?.value;
+  const registered = () => evalSW(`chrome.scripting.getRegisteredContentScripts().then((scripts) => scripts.map((script) => script.id).sort().join())`);
+  const markerOf = (tabId) => evalSW(`chrome.scripting.executeScript({ target: { tabId: ${tabId} }, world: 'MAIN', func: () => sessionStorage.getItem('timezone-override.temporary') }).then(([r]) => r.result)`);
+
+  await setConfig({ mode: 'off', timezone: 'Europe/London', rules: [] });
+  const tabA = await tabIdOf('11');
+  expectEq('temporary: nothing registered before use', await registered(), '');
+  const ok = await setTemporary(tabA, 'Asia/Tokyo');
+  expectEq('temporary: setTemporary succeeds in mode off', ok, null);
+  await proceed('11', { live: 't-live' });
+  expectEq('temporary: open page switches live while config is off', (await report('t-live')).live, 'Asia/Tokyo');
+  expectEq('temporary: registration is separate from timezone- scripts', await registered(), 'temporary-timezone');
+  await proceed('t-live', { url: `${LOCAL}/p?s=t-reload` });
+  expectAll('temporary: refresh applies from document_start; srcdoc follows, cross-origin iframe keeps config', await report('t-reload'), 'Asia/Tokyo', SYSTEM_TZ);
+
+  expectEq('temporary: getStatus reports the override as desired while config is off', await statusOf(tabA),
+    JSON.stringify({ desired: { timezone: 'Asia/Tokyo', temporary: true }, applied: 'Asia/Tokyo', temporary: 'Asia/Tokyo' }));
+
+  await cdp('Target.createTarget', { url: `${LOCAL}/p?s=t-other` });
+  expectAll('temporary: another tab on the same host stays on the system timezone', await report('t-other'), SYSTEM_TZ);
+
+  await setConfig({ mode: 'rules', timezone: 'Europe/London', rules: [exclude('localhost')] });
+  await proceed('t-reload', { live: 't-excluded' });
+  expectEq('temporary: wins when config excludes the host (live)', (await report('t-excluded')).live, 'Asia/Tokyo');
+  await setConfig({ mode: 'rules', timezone: 'Europe/London', rules: [include('localhost', 'America/New_York')] });
+  await proceed('t-excluded', { live: 't-included' });
+  expectEq('temporary: wins when config includes the host (live)', (await report('t-included')).live, 'Asia/Tokyo');
+  await proceed('t-included', { url: `${LOCAL}/p?s=t-included-nav` });
+  expectAll('temporary: wins over an include rule from document_start', await report('t-included-nav'), 'Asia/Tokyo', SYSTEM_TZ);
+  await proceed('t-other', { live: 't-other-live' });
+  expectEq('temporary: the other tab follows the include rule, not the override', (await report('t-other-live')).live, 'America/New_York');
+
+  await setTemporary(tabA, null);
+  await proceed('t-included-nav', { live: 't-ended' });
+  expectEq('temporary: ending restores config (include rule) live', (await report('t-ended')).live, 'America/New_York');
+  expectEq('temporary: ending removes the marker', await markerOf(tabA), null);
+  expectEq('temporary: ending unregisters the script', await registered(), 'timezone-rule-0');
+  await proceed('t-ended', { url: `${LOCAL}/p?s=t-ended-nav` });
+  expectAll('temporary: refresh after ending follows config again', await report('t-ended-nav'), 'America/New_York', SYSTEM_TZ);
+
+  await setTemporary(tabA, 'Asia/Tokyo');
+  await proceed('t-ended-nav', { url: `${IP}/p?s=t-away` });
+  const away = await report('t-away');
+  expectEq('temporary: navigating to another origin falls back to config', away.early, SYSTEM_TZ);
+  // sessionStorage is partitioned by top-level site, so the marked origin embedded elsewhere in this tab does not see the marker (config says New York).
+  expectEq('temporary: iframe of the marked origin under another origin keeps config', away.frame, 'America/New_York');
+  expectEq('temporary: registration stays until the tab closes', await registered(), 'temporary-timezone,timezone-rule-0');
+  const tabTarget = (await cdp('Target.getTargets')).result.targetInfos.find((target) => target.url.includes('s=t-away'));
+  await cdp('Target.closeTarget', { targetId: tabTarget.targetId });
+  let leftover = '';
+  for (let i = 0; i < 20; i++, await sleep(100)) if ((leftover = await registered()) === 'timezone-rule-0') break;
+  expectEq('temporary: closing the tab removes the registration', leftover, 'timezone-rule-0');
+  expectEq('temporary: session store is empty after closing', await evalSW(`chrome.storage.session.get('temporaryTabs').then((r) => JSON.stringify(r.temporaryTabs))`), '{}');
+  await cdp('Target.closeTarget', { targetId: optionsTarget });
+
   // Chrome freezes background tabs (Memory Saver); injecting there waits for a thaw and must not stall later changes.
   await evalSW(`(() => { const set = chrome.action.setIcon.bind(chrome.action); chrome.action.setIcon = (d) => { globalThis.icon = d.path[16]; return set(d); }; })()`);
   const frozen = (await cdp('Target.createTarget', { url: `${IP}/p?s=frozen` })).result.targetId;
@@ -215,7 +279,7 @@ try {
   await setConfig({ mode: 'rules', timezone: 'Europe/London', rules: [include('localhost', 'Asia/Tokyo')] });
   expectEq('frozen tab: icon follows global -> rules', await evalSW('globalThis.icon'), 'icons/rules-16.png');
   await sleep(700);
-  expectEq('frozen tab: later config still registers', await evalSW(`chrome.scripting.getRegisteredContentScripts().then(s => s.map(x => x.js[0]).join())`), 'timezones/Asia_Tokyo.js');
+  expectEq('frozen tab: later config still registers', await evalSW(`chrome.scripting.getRegisteredContentScripts().then(s => s.filter(x => x.id.startsWith('timezone-')).map(x => x.js[0]).join())`), 'timezones/Asia_Tokyo.js');
   // The popup must show the clock and a settled status even while another tab is frozen.
   await setConfig({ mode: 'global', timezone: 'Asia/Tokyo', rules: [] });
   await cdp('Target.createTarget', { url: `${IP}/p?s=popup` });
