@@ -9,7 +9,7 @@ export interface TabStatus {
   desired: Resolution | null;
   /** Timezone observed through the current page's Intl API. */
   applied: string | null;
-  /** The valid temporary override found in the page, which `desired` follows. */
+  /** This tab's temporary override as the background holds it, which `desired` follows. */
   temporary: string | null;
   error?: string;
 }

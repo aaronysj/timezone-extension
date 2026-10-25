@@ -1,18 +1,26 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import vm from 'node:vm';
-import { TEMPORARY_SCRIPT_ID, TemporaryTabs, setMarker, temporaryHost, writeMarker } from '../src/background/temporary';
-import { tabStatus } from '../src/background/status';
+import { TEMPORARY_SCRIPT_ID, TemporaryTabs, setMarker, writeMarker } from '../src/background/temporary';
+import { needsProbe, tabStatus } from '../src/background/status';
 import type { Config } from '../src/shared/config';
+import { temporaryHost, temporaryZone } from '../src/shared/temporary';
+import { chineseI18n } from './i18n-mock';
+
+const on = (host: string, timezone = 'Asia/Tokyo') => ({ host, timezone });
 
 let session: Record<string, unknown>;
 let scripts: Map<string, chrome.scripting.RegisteredContentScript>;
 let calls: string[];
+let openTabs: number[];
 
 beforeEach(() => {
   session = {};
   scripts = new Map();
   calls = [];
+  openTabs = [1, 2, 3, 5];
   vi.stubGlobal('chrome', {
+    i18n: chineseI18n,
+    tabs: { query: async () => openTabs.map((id) => ({ id })) },
     storage: { session: {
       get: async (key: string) => ({ [key]: structuredClone(session[key]) }),
       set: async (items: Record<string, unknown>) => { Object.assign(session, structuredClone(items)); },
@@ -38,9 +46,9 @@ afterEach(() => vi.unstubAllGlobals());
 describe('temporary registration', () => {
   it('registers one script for the deduplicated hosts, with an id Overrider.configure does not own', async () => {
     const tabs = new TemporaryTabs();
-    await tabs.update(1, 'example.com');
-    await tabs.update(2, 'example.com');
-    await tabs.update(3, '[::1]');
+    await tabs.update(1, on('example.com'));
+    await tabs.update(2, on('example.com'));
+    await tabs.update(3, on('[::1]'));
     expect(TEMPORARY_SCRIPT_ID.startsWith('timezone-')).toBe(false);
     const script = scripts.get(TEMPORARY_SCRIPT_ID)!;
     expect(scripts.size).toBe(1);
@@ -50,8 +58,8 @@ describe('temporary registration', () => {
   });
   it('keeps the host while any tab still uses it and unregisters when the set empties', async () => {
     const tabs = new TemporaryTabs();
-    await tabs.update(1, 'example.com');
-    await tabs.update(2, 'example.com');
+    await tabs.update(1, on('example.com'));
+    await tabs.update(2, on('example.com'));
     await tabs.update(1, null);
     expect(scripts.get(TEMPORARY_SCRIPT_ID)!.matches).toContain('*://example.com/*');
     await tabs.update(2, null);
@@ -60,16 +68,16 @@ describe('temporary registration', () => {
     expect(calls.filter((c) => c === 'unregister')).toHaveLength(1);
   });
   it('moves a tab to another host and survives a worker restart via storage.session', async () => {
-    await new TemporaryTabs().update(1, 'a.com');
+    await new TemporaryTabs().update(1, on('a.com'));
     const restarted = new TemporaryTabs();
-    await restarted.update(2, 'b.com');
+    await restarted.update(2, on('b.com'));
     expect(scripts.get(TEMPORARY_SCRIPT_ID)!.matches).toEqual(['*://a.com/*', '*://a.com./*', '*://b.com/*', '*://b.com./*']);
-    await restarted.update(1, 'c.com');
+    await restarted.update(1, on('c.com'));
     expect(scripts.get(TEMPORARY_SCRIPT_ID)!.matches).toEqual(['*://b.com/*', '*://b.com./*', '*://c.com/*', '*://c.com./*']);
   });
   it('serializes concurrent updates so only the first one registers', async () => {
     const tabs = new TemporaryTabs();
-    await Promise.all([tabs.update(1, 'a.com'), tabs.update(2, 'b.com'), tabs.update(3, 'c.com'), tabs.update(1, null)]);
+    await Promise.all([tabs.update(1, on('a.com')), tabs.update(2, on('b.com')), tabs.update(3, on('c.com')), tabs.update(1, null)]);
     expect(calls).toEqual(['register', 'update', 'update', 'update']);
     expect(scripts.get(TEMPORARY_SCRIPT_ID)!.matches!.filter((m) => !m.includes('./'))).toEqual(['*://b.com/*', '*://c.com/*']);
   });
@@ -77,9 +85,9 @@ describe('temporary registration', () => {
     const tabs = new TemporaryTabs();
     const original = (chrome as any).scripting.registerContentScripts;
     (chrome as any).scripting.registerContentScripts = async () => { throw new Error('boom'); };
-    await expect(tabs.update(1, 'a.com')).rejects.toThrow('boom');
+    await expect(tabs.update(1, on('a.com'))).rejects.toThrow('boom');
     (chrome as any).scripting.registerContentScripts = original;
-    await tabs.update(1, 'a.com');
+    await tabs.update(1, on('a.com'));
     expect(scripts.has(TEMPORARY_SCRIPT_ID)).toBe(true);
   });
 });
@@ -107,7 +115,7 @@ describe('page marker', () => {
   it('targets only the top frame and fails loudly when the page refuses', async () => {
     const executeScript = vi.fn(async () => [{ result: false }]);
     (chrome as any).scripting.executeScript = executeScript;
-    await expect(setMarker(5, 'Asia/Tokyo')).rejects.toThrow('storage');
+    await expect(setMarker(5, 'Asia/Tokyo')).rejects.toThrow(chineseI18n.getMessage('tempErrStorage'));
     expect(executeScript).toHaveBeenCalledWith(expect.objectContaining({ target: { tabId: 5, frameIds: [0] }, world: 'MAIN', func: writeMarker, args: ['Asia/Tokyo'] }));
   });
 });
@@ -115,18 +123,129 @@ describe('page marker', () => {
 describe('tab status', () => {
   const off: Config = { mode: 'off', timezone: 'Europe/London', rules: [] };
   it('reports the temporary override even when config is off', () => {
-    expect(tabStatus('https://example.com/', off, { applied: 'Asia/Tokyo', temporary: 'Asia/Tokyo' })).toEqual({
+    expect(tabStatus('https://example.com/', off, { applied: 'Asia/Tokyo' }, 'Asia/Tokyo')).toEqual({
       desired: { timezone: 'Asia/Tokyo', temporary: true }, applied: 'Asia/Tokyo', temporary: 'Asia/Tokyo' });
   });
   it('outranks config and normalizes aliases of the applied zone', () => {
-    const status = tabStatus('https://example.com/', { ...off, mode: 'global' }, { applied: 'Asia/Calcutta', temporary: 'Asia/Kolkata' });
+    const status = tabStatus('https://example.com/', { ...off, mode: 'global' }, { applied: 'Asia/Calcutta' }, 'Asia/Kolkata');
     expect(status.desired).toEqual({ timezone: 'Asia/Kolkata', temporary: true });
     expect(status.applied).toBe('Asia/Kolkata');
   });
-  it('falls back to config without a marker, and keeps configuration errors', () => {
+  it('falls back to config without an override, and keeps configuration errors', () => {
     const global: Config = { ...off, mode: 'global', timezone: 'Asia/Tokyo' };
-    expect(tabStatus('https://example.com/', global, { applied: null, temporary: null }, 'bad zone')).toEqual({
+    expect(tabStatus('https://example.com/', global, { applied: null }, null, 'bad zone')).toEqual({
       desired: { timezone: 'Asia/Tokyo' }, applied: null, temporary: null, error: 'bad zone' });
-    expect(tabStatus('https://example.com/', off, { applied: 'Asia/Tokyo', temporary: null })).toEqual({ desired: null, applied: null, temporary: null });
+    expect(tabStatus('https://example.com/', off, { applied: 'Asia/Tokyo' }, null)).toEqual({ desired: null, applied: null, temporary: null });
+  });
+  it('does not fail a working temporary override over an unrelated configuration error', () => {
+    const status = tabStatus('https://example.com/', { ...off, mode: 'global' }, { applied: 'Asia/Tokyo' }, 'Asia/Tokyo', 'No bundled timezone script for rule-3');
+    expect(status.error).toBeUndefined();
+    expect(status.applied).toBe('Asia/Tokyo');
+  });
+});
+
+describe('needsProbe', () => {
+  const rules: Config = { mode: 'rules', timezone: 'Europe/London', rules: [{ id: 'a', enabled: true, action: 'include', match: 'exact', pattern: 'a.com' }] };
+  it('skips pages that run natively, so the 1 s poll does not inject into them', () => {
+    expect(needsProbe('https://a.com/', { ...rules, mode: 'off' }, null)).toBe(false);
+    expect(needsProbe('https://b.com/', rules, null)).toBe(false);
+    expect(needsProbe('chrome://settings', { ...rules, mode: 'global' }, null)).toBe(false);
+    expect(needsProbe(undefined, rules, 'Asia/Tokyo')).toBe(false);
+  });
+  it('probes pages with a configured zone or a temporary override', () => {
+    expect(needsProbe('https://a.com/', rules, null)).toBe(true);
+    expect(needsProbe('https://b.com/', { ...rules, mode: 'off' }, 'Asia/Tokyo')).toBe(true);
+  });
+});
+
+describe('temporaryZone', () => {
+  it('only covers the host it was set for, so a stale or foreign entry never counts', () => {
+    expect(temporaryZone(on('a.com'), 'https://a.com/x')).toBe('Asia/Tokyo');
+    expect(temporaryZone(on('a.com'), 'https://b.com/')).toBeNull();
+    expect(temporaryZone(undefined, 'https://a.com/')).toBeNull();
+    expect(temporaryZone(on('a.com'), undefined)).toBeNull();
+  });
+});
+
+describe('start / end', () => {
+  const executeScript = (outcome: (timezone: string | null) => unknown) => {
+    const written: (string | null)[] = [];
+    (chrome as any).scripting.executeScript = async ({ args }: { args: [string | null] }) => { written.push(args[0]); return [{ result: await outcome(args[0]) }]; };
+    return written;
+  };
+  const stored = () => (session.temporaryTabs ?? {}) as Record<string, unknown>;
+  it('registers before writing the marker, and stores the entry', async () => {
+    const written = executeScript(() => true);
+    await new TemporaryTabs().start(1, on('a.com'));
+    expect(calls).toEqual(['register']);
+    expect(written).toEqual(['Asia/Tokyo']);
+    expect(stored()).toEqual({ 1: on('a.com') });
+  });
+  it('leaves nothing behind when registration fails: no marker, no entry', async () => {
+    const written = executeScript(() => true);
+    (chrome as any).scripting.registerContentScripts = async () => { throw new Error('boom'); };
+    await expect(new TemporaryTabs().start(1, on('a.com'))).rejects.toThrow('boom');
+    expect(written).toEqual([]);
+    expect(stored()).toEqual({});
+    expect(scripts.size).toBe(0);
+  });
+  it('rolls the registration and entry back when the page refuses the marker', async () => {
+    executeScript(() => false);
+    await expect(new TemporaryTabs().start(1, on('a.com'))).rejects.toThrow(chineseI18n.getMessage('tempErrStorage'));
+    expect(stored()).toEqual({});
+    expect(scripts.size).toBe(0);
+  });
+  it('restores the previous entry when switching hosts fails', async () => {
+    const tabs = new TemporaryTabs();
+    const written = executeScript((zone) => zone !== 'Europe/London');
+    await tabs.start(1, on('a.com'));
+    await expect(tabs.start(1, on('b.com', 'Europe/London'))).rejects.toThrow();
+    expect(written).toEqual(['Asia/Tokyo', 'Europe/London']);
+    expect(stored()).toEqual({ 1: on('a.com') });
+    expect(scripts.get(TEMPORARY_SCRIPT_ID)!.matches).toEqual(['*://a.com/*', '*://a.com./*']);
+  });
+  it('a host switch replaces the entry, so the previous host is no longer registered or trusted', async () => {
+    const tabs = new TemporaryTabs();
+    executeScript(() => true);
+    await tabs.start(1, on('a.com'));
+    await tabs.start(1, on('b.com'));
+    expect(stored()).toEqual({ 1: on('b.com') });
+    expect(scripts.get(TEMPORARY_SCRIPT_ID)!.matches).toEqual(['*://b.com/*', '*://b.com./*']);
+    expect(temporaryZone(await tabs.get(1), 'https://a.com/')).toBeNull();
+  });
+  it('end drops the entry and registration even when the page can no longer be scripted', async () => {
+    const tabs = new TemporaryTabs();
+    executeScript(() => true);
+    await tabs.start(1, on('a.com'));
+    (chrome as any).scripting.executeScript = async () => { throw new Error('Cannot access contents of the page'); };
+    await tabs.end(1);
+    expect(stored()).toEqual({});
+    expect(scripts.size).toBe(0);
+  });
+});
+
+describe('reconciliation', () => {
+  it('unregisters a registration orphaned by an extension reload (session state gone)', async () => {
+    scripts.set(TEMPORARY_SCRIPT_ID, { id: TEMPORARY_SCRIPT_ID, matches: ['*://a.com/*'], js: ['timezone-content.js'] });
+    await new TemporaryTabs().sync();
+    expect(scripts.size).toBe(0);
+  });
+  it('drops entries of tabs that no longer exist and keeps the registration for the rest', async () => {
+    const tabs = new TemporaryTabs();
+    await tabs.update(1, on('a.com'));
+    await tabs.update(9, on('gone.com'));
+    await tabs.sync();
+    expect(session.temporaryTabs).toEqual({ 1: on('a.com') });
+    expect(scripts.get(TEMPORARY_SCRIPT_ID)!.matches).toEqual(['*://a.com/*', '*://a.com./*']);
+  });
+  it('moves the entry when a prerendered page replaces the tab, so End still finds it', async () => {
+    const tabs = new TemporaryTabs();
+    await tabs.update(1, on('a.com'));
+    await tabs.replace(1, 5);
+    expect(session.temporaryTabs).toEqual({ 5: on('a.com') });
+    await tabs.update(5, null);
+    expect(scripts.size).toBe(0);
+    await tabs.replace(7, 8); // unrelated replacement touches nothing
+    expect(calls.filter((c) => c === 'unregister')).toHaveLength(1);
   });
 });

@@ -1,14 +1,14 @@
 import { type Config, DEFAULT_CONFIG, loadConfig, onConfigChanged } from '../shared/config';
 import type { Request, TabStatus } from '../shared/messages';
-import { hostnameOf } from '../shared/resolve';
+import { temporaryHost, temporaryZone } from '../shared/temporary';
 import { isValidTimezone } from '../shared/timezone';
 import { Overrider } from './overrider';
-import { tabStatus } from './status';
-import { TemporaryTabs, setMarker, temporaryHost } from './temporary';
-import { setLanguage } from '../shared/i18n';
+import { needsProbe, tabStatus } from './status';
+import { TemporaryTabs } from './temporary';
+import { setLanguage, t } from '../shared/i18n';
 
-const overrider = new Overrider();
 const temporary = new TemporaryTabs();
+const overrider = new Overrider((tabId) => temporary.get(tabId).catch(() => undefined));
 let config: Config = DEFAULT_CONFIG;
 let configurationError: string | undefined;
 let ready: Promise<void> = Promise.resolve();
@@ -46,6 +46,9 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   overrider.forget(tabId);
   void temporary.update(tabId, null).catch(() => {});
 });
+chrome.tabs.onReplaced.addListener((added, removed) => void temporary.replace(removed, added).catch(() => {}));
+// A reload of the extension clears the session state but keeps the registration; reconcile every time the worker starts.
+void temporary.sync().catch(() => {});
 
 async function handle(req: Request): Promise<unknown> {
   await ready;
@@ -59,23 +62,21 @@ async function handle(req: Request): Promise<unknown> {
     const { timezone } = req;
     if (timezone === null) {
       // Ending must always drop the registration, even if the tab has since moved somewhere we cannot script.
-      await setMarker(req.tabId, null).catch(() => {});
-      await temporary.update(req.tabId, null);
+      await temporary.end(req.tabId);
       await overrider.apply(req.tabId, config).catch(() => {});
       return null;
     }
     const host = temporaryHost(tab.url);
-    if (!host) throw new Error(`Temporary timezones need an http(s) page, got ${tab.url}`);
-    if (!isValidTimezone(timezone)) throw new Error(`Unknown timezone ${timezone}`);
-    // Marker first: if the page refuses storage, nothing is registered. The registration is what makes refreshes work from document_start.
-    await setMarker(req.tabId, timezone);
-    await temporary.update(req.tabId, host);
-    await overrider.apply(req.tabId, config, true);
+    if (!host) throw new Error(t('tempErrPage'));
+    if (!isValidTimezone(timezone)) throw new Error(t('tempErrZone', timezone));
+    await temporary.start(req.tabId, { host, timezone });
+    await overrider.apply(req.tabId, config);
     return null;
   }
   const url = tab.pendingUrl ?? tab.url;
-  const probe = url && hostnameOf(url) ? await overrider.status(req.tabId) : { applied: null, temporary: null };
-  return tabStatus(url, config, probe, configurationError);
+  const override = temporaryZone(await temporary.get(req.tabId).catch(() => undefined), url);
+  const probe = needsProbe(url, config, override) ? await overrider.status(req.tabId) : { applied: null };
+  return tabStatus(url, config, probe, override, configurationError);
 }
 
 chrome.runtime.onMessage.addListener((req: Request, _sender, sendResponse) => {

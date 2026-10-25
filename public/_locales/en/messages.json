@@ -618,7 +618,7 @@
     "message": "There are unfinished site edits. Complete them in By rules or discard them before saving."
   },
   "coverageNote": {
-    "message": "Applies to page Date and Intl APIs, including frames matched by their own URL. Workers and previously cached native APIs or Intl formatters keep their original timezone. Reload an existing page for consistent results. A timezone set for one tab only is kept in that page's session storage and ends when the tab is closed or the browser restarts."
+    "message": "Applies to page Date and Intl APIs, including frames matched by their own URL. Workers and previously cached native APIs or Intl formatters keep their original timezone. Reload an existing page for consistent results. A timezone set for one tab only ends when the tab is closed or the browser restarts."
   },
   "statusTemporary": {
     "message": "Temporary"
@@ -643,5 +643,14 @@
   },
   "tempClear": {
     "message": "End temporary use"
+  },
+  "tempErrPage": {
+    "message": "A temporary timezone needs an ordinary http(s) page with a standard hostname."
+  },
+  "tempErrStorage": {
+    "message": "This page does not allow its storage to be used, so a temporary timezone cannot be kept for this tab."
+  },
+  "tempErrZone": {
+    "message": "Unknown timezone: $1"
   }
 }

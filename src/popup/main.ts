@@ -4,6 +4,7 @@ import { type SiteScope, rulePatternError, scopeLabel, siteScopes } from '../sha
 import { bundleLocale, intlLocale, localizeDocument, setLanguage, t } from '../shared/i18n';
 import { type TabStatus, sendRequest } from '../shared/messages';
 import { hostnameOf, normalizePattern, resolveTimezone, ruleForHost } from '../shared/resolve';
+import { loadTemporaryTabs, temporaryHost, temporaryZone } from '../shared/temporary';
 import { cityLabel, dateLabel, dayDifference, offsetLabel, systemTimezone, timeDifference } from '../shared/timezone';
 import { h, languageSelect, modeLabel, modeSwitch, replaceKeepingFocus, saveNotice } from '../ui/dom';
 import { timezonePicker } from '../ui/tzpicker';
@@ -50,8 +51,8 @@ let shownZone = systemTimezone();
 let statusKey = '';
 let statusRequest = 0;
 let actionError = '';
-/** This tab's temporary override as last reported by the background; the section below follows it. */
-let temporary: string | null = null;
+/** This tab's temporary override; read up front so the first paint already shows it, then kept in step with the background's reports. */
+let temporary: string | null = tab?.id === undefined ? null : await loadTemporaryTabs().then((tabs) => temporaryZone(tabs[tab.id!], tabUrl)).catch(() => null);
 
 function tick() {
   const at = new Date();
@@ -90,9 +91,11 @@ async function setTemporary(timezone: string | null) {
     if (res?.error) actionError = res.error;
   } catch { actionError = t('popupBackendRetry'); }
   // Ending removes the focused button, so keep the keyboard on the picker that replaces it.
-  if (timezone === null) focusAfter = 'temp-tz';
+  focusAfter = 'temp-tz';
   statusKey = '';
   await refreshStatus();
+  // The picker already shows what was chosen; after a failure, put back what is actually in effect.
+  if (actionError) render();
   focusAfter = undefined;
 }
 
@@ -115,7 +118,7 @@ function nowView(state: HTMLElement | null, explanation: string, error: string |
 /** Shown until the first status arrives, so a slow page never leaves the clock blank. */
 function pendingStatus() {
   if (tab?.id === undefined || !host || statusKey) return;
-  shownZone = (tabUrl ? resolveTimezone(tabUrl, config)?.timezone : undefined) ?? systemTimezone();
+  shownZone = temporary ?? (tabUrl ? resolveTimezone(tabUrl, config)?.timezone : undefined) ?? systemTimezone();
   now.className = 'now is-system';
   replaceKeepingFocus(now, nowView(null, '', undefined));
   tick();
@@ -208,7 +211,7 @@ function siteControls(): HTMLElement | null {
 
 /** Available in every mode: the override lives in this tab only and outranks config. */
 function temporaryControls(): HTMLElement | null {
-  if (!host) return null;
+  if (!temporaryHost(tabUrl)) return null;
   return h('section', { className: 'block' },
     h('label', { className: 'block-label', htmlFor: 'temp-tz' }, t('tempUse')),
     timezonePicker({ id: 'temp-tz', label: t('tempTzLabel'), compact: true, value: temporary ?? '', placeholder: t('tempPlaceholder'),

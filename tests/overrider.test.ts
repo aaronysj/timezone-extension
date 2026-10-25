@@ -74,20 +74,38 @@ it('configure never unregisters the temporary script, but still drops stale time
   expect(unregistered).toEqual([['timezone-global']]);
 });
 
-it('apply on a temporary tab installs through the marker even when config resolves to nothing', async () => {
+it('apply gives the tab\'s temporary zone to the marked origin only, over config, and restores native elsewhere', async () => {
   const { executed } = stubChrome();
-  const off: Config = { mode: 'off', timezone: 'Asia/Tokyo', rules: [] };
-  await new Overrider().apply(1, off, true);
-  expect(executed.map((e) => [e.func, e.args])).toEqual([[installTimezone, [null]]]);
-  await new Overrider().apply(1, { ...off, mode: 'global' }, true);
-  expect(executed[1]!.args).toEqual(['Asia/Tokyo']);
+  (globalThis as any).chrome.webNavigation.getAllFrames = async () => [
+    { frameId: 0, parentFrameId: -1, url: 'https://example.com/', documentId: 'top' },
+    { frameId: 1, parentFrameId: 0, url: 'about:blank', documentId: 'inherited' },
+    { frameId: 2, parentFrameId: 0, url: 'https://example.com/embed', documentId: 'same-origin' },
+    { frameId: 3, parentFrameId: 0, url: 'https://example.com:8443/', documentId: 'other-port' },
+    { frameId: 4, parentFrameId: 0, url: 'https://other.com/', documentId: 'cross-origin' },
+  ];
+  const off: Config = { mode: 'off', timezone: 'Europe/London', rules: [] };
+  const entry = { host: 'example.com', timezone: 'Asia/Tokyo' };
+  await new Overrider(async () => entry).apply(1, off);
+  const by = (id: string) => executed.find((e) => (e as any).target.documentIds[0] === id)!;
+  for (const id of ['top', 'inherited', 'same-origin']) expect([by(id).func, by(id).args]).toEqual([installTimezone, ['Asia/Tokyo']]);
+  for (const id of ['other-port', 'cross-origin']) expect(by(id).func).toBe(restoreNative);
+  executed.length = 0;
+  await new Overrider(async () => entry).apply(1, { ...off, mode: 'global' });
+  expect(by('top').args).toEqual(['Asia/Tokyo']);
+  expect(by('cross-origin').args).toEqual(['Europe/London']);
 });
 
-it('status reports the page marker alongside the applied zone', async () => {
+it('apply ignores an entry for another host, so a tab that moved on follows config', async () => {
+  const { executed } = stubChrome();
+  await new Overrider(async () => ({ host: 'a.com', timezone: 'Asia/Tokyo' })).apply(1, { mode: 'global', timezone: 'Europe/London', rules: [] });
+  expect(executed.map((e) => [e.func, e.args])).toEqual([[installTimezone, ['Europe/London']]]);
+});
+
+it('status only reports the applied zone; a page marker is not consulted', async () => {
   stubChrome();
   (globalThis as any).chrome.scripting.executeScript = async ({ func }: { func: () => unknown }) => {
     const context = vm.createContext({ sessionStorage: { getItem: () => 'Asia/Tokyo' } });
     return [{ documentId: 'd', result: vm.runInContext(`(${func.toString()})()`, context) }];
   };
-  expect(await new Overrider().status(1)).toEqual({ applied: null, temporary: 'Asia/Tokyo' });
+  expect(await new Overrider().status(1)).toEqual({ applied: null });
 });

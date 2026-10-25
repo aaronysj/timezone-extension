@@ -17,8 +17,8 @@
 - `src/background/overrider.ts` — registers those scripts and applies configuration changes to existing frame documents.
 - `src/content/timezone.ts` — self-contained Date/Intl shim; Chrome serializes it for live updates. Keep all runtime dependencies inside the function.
 - `scripts/build-content.mjs` — builds the standalone engine and bundled per-zone bootstraps. Runtime script registration uses package files rather than remote/generated executable code.
-- `src/background/temporary.ts` — per-tab temporary override: writes the sessionStorage marker and keeps the single `temporary-timezone` registration (see Page API coverage).
-  `src/background/status.ts` merges the page probe with config for `getStatus`.
+- `src/background/temporary.ts` — per-tab temporary override: the `temporaryTabs` entries, the sessionStorage marker and the single `temporary-timezone` registration (see Page API coverage);
+  `src/shared/temporary.ts` holds the entry type/host rules shared with the popup. `src/background/status.ts` merges the page probe, the entry and config for `getStatus`.
 - `src/background/index.ts` — wiring: navigation/tab events -> resolve -> `overrider.apply`.
 - `src/popup`, `src/options` — vanilla TS DOM UI, helpers in `src/ui/dom.ts`. Config lives in `chrome.storage.local` key `config`.
 - Toolbar icon reflects `config.mode` globally (`off` grey / `global` teal / `rules` indigo; `updateIcon` in
@@ -43,12 +43,17 @@
 - Workers retain their native timezone. Cached native methods and already-created Intl formatters may retain their original behavior. Keep this limitation visible in Settings and store descriptions.
 - Temporary per-tab override (popup, any mode): a content script can only match URLs, never tabs, and the per-tab alternative is `chrome.debugger`, so the tab is
   marked in the page's `sessionStorage` key `timezone-override.temporary` (IANA zone; isolated per tab+origin, kept across reloads, gone with the tab, readable at `document_start`).
-  Only the background writes it, via `executeScript` into the top frame. `installTimezone` takes a valid marker over its argument and `restoreNative` leaves it alone,
-  so config flows (`apply`, `applyAll`, `onCommitted`) need no special case: each frame reads its own origin's marker, same-origin/inherited frames follow, cross-origin frames keep config.
-  One registered script `temporary-timezone` (engine only, no zone bootstrap; hosts of marked tabs from `chrome.storage.session`, `persistAcrossSessions: false`) makes reloads work from `document_start`.
-  Its id must not start with `timezone-`, or `Overrider.configure` unregisters it. Other tabs on the same host run it but find no marker. Readers validate the marker with `Intl.DateTimeFormat` and `try/catch` (page-tamperable, throws in sandboxed frames).
-  `getStatus` probes the page first; a marker makes `desired` `{ timezone, temporary: true }`, outranking config even when mode is off. The toolbar icon stays global.
-- Temporary override limits: the marker is page-visible and `sessionStorage.clear()` drops it at the next load; "Duplicate tab" copies it; the first activation is injected after load (rendered content and cached Date/Intl stay, a reload makes it complete);
-  workers stay native; it does not survive a browser restart or session restore; stale entries after navigating to another host are harmless and removed with the tab or on "End".
-  e2e verifies the real-browser behavior, including that the marked origin embedded as an iframe under another origin does not see the marker (sessionStorage is partitioned by top-level site).
+  **The background's entry is the source of truth**: `chrome.storage.session` key `temporaryTabs` maps tabId -> `{ host, timezone }` (`TemporaryTabs`), and a tab only has an override
+  while its page host equals the entry's host (`temporaryZone`). The marker is just a transport for reloads and is never trusted by anything else: `Overrider.apply` and `getStatus` use the
+  entry (explicit zones; the marked origin and its same-origin/inherited frames follow, cross-origin frames keep config), `installTimezone`/`restoreNative` never read the marker, and stale or forged markers
+  (after End, a host switch, session restore, a page writing the key) are inert. Only the background writes it, via `executeScript` into the top frame, after the entry is registered (a refused marker rolls the entry back).
+  One registered script `temporary-timezone` (engine only, no zone bootstrap; hosts of entries, `persistAcrossSessions: false`) makes reloads work from `document_start`: it is the only reader of the marker
+  (`content/main.ts`; config scripts carry a pending zone and ignore it). Its id must not start with `timezone-`, or `Overrider.configure` unregisters it. Other tabs on the same host run it but find no marker.
+  The marker is validated with `Intl.DateTimeFormat` and `try/catch` (page-tamperable, throws in sandboxed frames). `TemporaryTabs.sync` runs at every worker start (extension reloads clear session storage but keep the
+  registration) and prunes closed tabs; `tabs.onReplaced` moves the entry. A desired temporary zone outranks config even when mode is off; the toolbar icon stays global.
+  `getStatus` skips the page probe for pages that run natively (`needsProbe`), since the popup polls every second.
+- Temporary override limits: the marker is page-visible, and a page can only change its own Date/Intl with it, which it could do anyway; `sessionStorage.clear()` only costs the document_start path (the commit-time apply re-installs from the entry, late), and "Duplicate tab" copies the marker but has no entry, so the commit-time apply puts it back on config;
+  the first activation is injected after load (rendered content and cached Date/Intl stay, a reload makes it complete); workers stay native; it does not survive a browser restart or session restore (entry and registration are gone, the restored marker is inert);
+  a stale marker left on an earlier host of the same tab is inert unless another tab keeps that host registered, in which case the first scripts see it until the commit-time apply corrects it;
+  it is removed with the tab or on "End" (only the current origin's marker can be cleaned). e2e verifies the real-browser behavior, including that the marked origin embedded as an iframe under another origin does not see the marker (sessionStorage is partitioned by top-level site).
 - Config changes update open documents; Off restores native behavior. Refresh existing pages for consistent results when their scripts cached old APIs.

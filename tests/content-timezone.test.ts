@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import vm from 'node:vm';
 import { spawnSync } from 'node:child_process';
-import { installTimezone, restoreNative } from '../src/content/timezone';
+import { installTimezone, markedZone, restoreNative } from '../src/content/timezone';
 
 // The oracle runs the real Date implementation in the requested OS timezone.
 const scenarios = `(() => {
@@ -69,54 +69,52 @@ describe('temporary per-tab marker', () => {
   const zoneOf = (context: vm.Context) => vm.runInContext('Intl.DateTimeFormat().resolvedOptions().timeZone', context);
   const install = (context: vm.Context, zone: string | null) => vm.runInContext(`(${installTimezone.toString()})(${JSON.stringify(zone)})`, context);
   const restore = (context: vm.Context) => vm.runInContext(`(${restoreNative.toString()})()`, context);
+  const marked = (context: vm.Context) => vm.runInContext(`(${markedZone.toString()})()`, context);
 
-  it('installs the marker zone instead of the initial one', () => {
-    const context = realm('Asia/Tokyo');
-    expect(install(context, 'America/New_York')).toBe('Asia/Tokyo');
-    expect(zoneOf(context)).toBe('Asia/Tokyo');
+  it('reads a valid marker zone', () => {
+    expect(marked(realm('Asia/Tokyo'))).toBe('Asia/Tokyo');
   });
-  it('installs from the marker alone, and installs nothing without either', () => {
-    const marked = realm('Asia/Tokyo');
-    install(marked, null);
-    expect(zoneOf(marked)).toBe('Asia/Tokyo');
-    const bare = realm(null);
+  it.each([['not/a-zone'], ['Mars/Base'], [''], ['{"timeZone":"UTC"}'], [null]])('ignores the page-tamperable marker %j', (value) => {
+    expect(marked(realm(value))).toBeNull();
+  });
+  it('reads nothing without sessionStorage or when reading it throws', () => {
+    for (const value of [undefined, new DOMException('denied', 'SecurityError')]) expect(marked(realm(value))).toBeNull();
+  });
+  it('never lets the page marker influence live updates: a forged marker changes nothing', () => {
+    const context = realm('UTC');
+    install(context, 'America/New_York');
+    expect(zoneOf(context)).toBe('America/New_York');
+    install(context, 'Europe/London');
+    expect(zoneOf(context)).toBe('Europe/London');
+    restore(context);
+    expect(zoneOf(context)).toBe(SYSTEM);
+    const bare = realm('UTC');
     expect(install(bare, null)).toBeNull();
     expect(vm.runInContext('Date.toString().includes("[native code]")', bare)).toBe(true);
   });
-  it.each([['not/a-zone'], ['Mars/Base'], [''], ['{"timeZone":"UTC"}']])('ignores the page-tamperable marker %j', (value) => {
-    const context = realm(value);
-    install(context, 'Europe/London');
-    expect(zoneOf(context)).toBe('Europe/London');
+});
+
+describe('document_start entry (content/main.ts)', () => {
+  const pending = Symbol.for('timezone-override.pending');
+  const locked = Symbol.for('timezone-override.temporary');
+  const run = async (state: { pending?: string; marker: string | null; locked?: boolean }) => {
+    const install = vi.fn();
+    vi.resetModules();
+    vi.doMock('../src/content/timezone', () => ({ installTimezone: install, markedZone: () => state.marker }));
+    const root = globalThis as Record<symbol, unknown>;
+    if (state.pending !== undefined) root[pending] = state.pending;
+    if (state.locked) root[locked] = true;
+    try { await import('../src/content/main'); } finally { delete root[pending]; delete root[locked]; vi.doUnmock('../src/content/timezone'); }
+    return install.mock.calls.map((call) => call[0]);
+  };
+  it('config scripts ignore the page marker', async () => {
+    expect(await run({ pending: 'America/New_York', marker: 'Asia/Tokyo' })).toEqual(['America/New_York']);
   });
-  it('behaves as before without sessionStorage or when reading it throws', () => {
-    for (const value of [undefined, new DOMException('denied', 'SecurityError')]) {
-      const context = realm(value);
-      install(context, 'Europe/London');
-      expect(zoneOf(context)).toBe('Europe/London');
-      restore(context);
-      expect(zoneOf(context)).toBe(SYSTEM);
-    }
+  it('the temporary-only script installs the marker zone and nothing without one', async () => {
+    expect(await run({ marker: 'Asia/Tokyo' })).toEqual(['Asia/Tokyo']);
+    expect(await run({ marker: null })).toEqual([]);
   });
-  it('lets the marker win over later config updates, and restoreNative leaves it alone', () => {
-    const context = realm('Asia/Tokyo');
-    install(context, null);
-    install(context, 'America/New_York');
-    expect(zoneOf(context)).toBe('Asia/Tokyo');
-    restore(context);
-    expect(zoneOf(context)).toBe('Asia/Tokyo');
-  });
-  it('restoreNative restores native behavior when the marker is absent, invalid or removed', () => {
-    for (const value of [null, 'not/a-zone']) {
-      const context = realm(value);
-      install(context, 'America/New_York');
-      expect(zoneOf(context)).toBe('America/New_York');
-      restore(context);
-      expect(zoneOf(context)).toBe(SYSTEM);
-    }
-    const context = vm.createContext({ stored: 'Asia/Tokyo', sessionStorage: { getItem: () => (context as any).stored } });
-    install(context, null);
-    context.stored = null;
-    restore(context);
-    expect(zoneOf(context)).toBe(SYSTEM);
+  it('the marker zone survives whichever script runs second', async () => {
+    expect(await run({ pending: 'America/New_York', marker: 'Asia/Tokyo', locked: true })).toEqual([]);
   });
 });

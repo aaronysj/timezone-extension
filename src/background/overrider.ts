@@ -1,5 +1,6 @@
 import type { Config } from '../shared/config';
 import { resolveTimezone } from '../shared/resolve';
+import { type TemporaryEntry, temporaryHost } from '../shared/temporary';
 import { installTimezone, restoreNative } from '../content/timezone';
 import { registrations } from './registrations';
 
@@ -11,6 +12,8 @@ async function shippedZoneFiles(): Promise<Set<string> | null> {
 /** Registers early page scripts and updates open documents without debugger sessions. */
 export class Overrider {
   private failures = new Map<number, { documentId: string; error: string }>();
+  /** `temporary` is the tab's override, which outranks config for the frames that share the marked origin. */
+  constructor(private temporary: (tabId: number) => Promise<TemporaryEntry | undefined> = async () => undefined) {}
   async configure(config: Config): Promise<void> {
     const old = await chrome.scripting.getRegisteredContentScripts();
     const previous = old.filter((script) => script.id.startsWith('timezone-'));
@@ -39,9 +42,8 @@ export class Overrider {
     await Promise.all(tabs.filter((tab) => tab.id !== undefined && !tab.discarded).map((tab) => this.apply(tab.id!, config).catch(() => {})));
   }
 
-  /** `temporary`: the tab has a page marker that may need a live install, which restoreNative never does. */
-  async apply(tabId: number, config: Config, temporary = false): Promise<void> {
-    const frames = await chrome.webNavigation.getAllFrames({ tabId });
+  async apply(tabId: number, config: Config): Promise<void> {
+    const [frames, temporary] = await Promise.all([chrome.webNavigation.getAllFrames({ tabId }), this.temporary(tabId)]);
     const byId = new Map(frames?.map((frame) => [frame.frameId, frame]));
     const effectiveUrl = (id: number, visited = new Set<number>()): string => {
       const frame = byId.get(id);
@@ -50,14 +52,18 @@ export class Overrider {
       if (/^blob:https?:/.test(frame.url)) return frame.url.slice(5);
       return /^(about:|data:)/.test(frame.url) && frame.parentFrameId >= 0 ? effectiveUrl(frame.parentFrameId, visited) : frame.url;
     };
+    const origin = (url: string) => { try { return new URL(url).origin; } catch { return ''; } };
+    const topOrigin = origin(effectiveUrl(0));
     await Promise.all((frames ?? []).map(async (frame) => {
-      if (!/^https?:/.test(effectiveUrl(frame.frameId))) return;
-      const timezone = resolveTimezone(effectiveUrl(frame.frameId), config)?.timezone ?? null;
+      const url = effectiveUrl(frame.frameId);
+      if (!/^https?:/.test(url)) return;
+      // The marker lives in the sessionStorage of the top frame's origin, which same-origin frames share and cross-origin frames do not.
+      const override = temporary && temporaryHost(url) === temporary.host && origin(url) === topOrigin ? temporary.timezone : null;
+      const timezone = override ?? resolveTimezone(url, config)?.timezone ?? null;
       try {
         // No timezone: never touch the page unless our controller is already there, then only switch it to native.
-        // Each frame reads the temporary marker from its own origin's storage, so config never needs to know about it.
         const target = { tabId, documentIds: [frame.documentId] };
-        if (timezone || temporary) await chrome.scripting.executeScript({ target, world: 'MAIN', func: installTimezone, args: [timezone ?? null], injectImmediately: true });
+        if (timezone) await chrome.scripting.executeScript({ target, world: 'MAIN', func: installTimezone, args: [timezone], injectImmediately: true });
         else await chrome.scripting.executeScript({ target, world: 'MAIN', func: restoreNative, injectImmediately: true });
         if (frame.frameId === 0) this.failures.delete(tabId);
       } catch (error) {
@@ -66,22 +72,16 @@ export class Overrider {
     }));
   }
 
-  async status(tabId: number): Promise<{ applied: string | null; temporary: string | null; error?: string }> {
+  async status(tabId: number): Promise<{ applied: string | null; error?: string }> {
     try {
       // Without injectImmediately Chrome waits for document_idle, so a still-loading page stalls the popup.
       const [result] = await chrome.scripting.executeScript({ target: { tabId }, world: 'MAIN', injectImmediately: true, func: () => {
         const controller = (globalThis as typeof globalThis & { [key: symbol]: unknown })[Symbol.for('timezone-override.controller')];
-        let temporary: string | null = null;
-        try {
-          temporary = sessionStorage.getItem('timezone-override.temporary') || null;
-          if (temporary) new Intl.DateTimeFormat('en', { timeZone: temporary });
-        } catch { temporary = null; }
-        return { applied: controller ? Intl.DateTimeFormat().resolvedOptions().timeZone : null, temporary };
+        return controller ? Intl.DateTimeFormat().resolvedOptions().timeZone : null;
       } });
       const failure = this.failures.get(tabId);
-      return { applied: result?.result?.applied ?? null, temporary: result?.result?.temporary ?? null,
-        ...(failure?.documentId === result?.documentId ? { error: failure?.error } : {}) };
-    } catch (error) { return { applied: null, temporary: null, error: String(error) }; }
+      return { applied: result?.result ?? null, ...(failure?.documentId === result?.documentId ? { error: failure?.error } : {}) };
+    } catch (error) { return { applied: null, error: String(error) }; }
   }
 
   forget(tabId: number): void { this.failures.delete(tabId); }

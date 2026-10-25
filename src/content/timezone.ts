@@ -1,40 +1,32 @@
 /*
- * Per-tab temporary override: key `timezone-override.temporary` in the page's sessionStorage, written only by the background.
- * sessionStorage is isolated per tab+origin, survives reloads and is readable synchronously at document_start.
- * Every self-contained function that reads it (below, Overrider.status, temporary.ts) inlines the reader: Chrome serializes them one by one.
+ * Per-tab temporary override: the background owns it and applies it with explicit zones. The only page-side trace is the
+ * sessionStorage key `timezone-override.temporary` (isolated per tab+origin, survives reloads, readable synchronously at
+ * document_start), which the temporary-only registration reads through `markedZone` so reloads apply before page scripts.
+ * Nothing else trusts it: live updates and status come from the background's own entry.
  */
 
-/** Self-contained: switches an already installed controller back to native behavior; never installs one. A valid temporary marker wins over config, so it is left alone. */
-export function restoreNative(): void {
-  const root = globalThis as typeof globalThis & { [key: symbol]: { set(zone: string | null): string | null } | undefined };
-  const controller = root[Symbol.for('timezone-override.controller')];
-  if (!controller) return;
+/** The valid zone in the page marker, or null. Sandboxed frames and disabled storage throw; the page may also have tampered with the value. */
+export function markedZone(): string | null {
   try {
-    // Sandboxed frames and disabled storage throw; the page may also have tampered with the value.
     const zone = sessionStorage.getItem('timezone-override.temporary');
-    if (zone) { new Intl.DateTimeFormat('en', { timeZone: zone }); return; }
-  } catch { /* No usable marker: fall through to native. */ }
-  controller.set(null);
+    if (!zone) return null;
+    new Intl.DateTimeFormat('en', { timeZone: zone });
+    return zone;
+  } catch { return null; }
 }
 
-/**
- * Self-contained: Chrome serializes this function when updating an already open page.
- * A valid temporary marker replaces `initial`; with neither, nothing is installed (and an existing controller goes native).
- */
+/** Self-contained: switches an already installed controller back to native behavior; never installs one. */
+export function restoreNative(): void {
+  const root = globalThis as typeof globalThis & { [key: symbol]: { set(zone: string | null): string | null } | undefined };
+  root[Symbol.for('timezone-override.controller')]?.set(null);
+}
+
+/** Self-contained: Chrome serializes this function when updating an already open page. With no zone nothing is installed (and an existing controller goes native). */
 export function installTimezone(initial: string | null): string | null {
   const key = Symbol.for('timezone-override.controller');
   const root = globalThis as typeof globalThis & { [key: symbol]: { set(zone: string | null): string | null } };
-  const marked = (): string | null => {
-    try {
-      const zone = sessionStorage.getItem('timezone-override.temporary');
-      if (!zone) return null;
-      new Intl.DateTimeFormat('en', { timeZone: zone });
-      return zone;
-    } catch { return null; }
-  };
-  const target = marked() ?? initial;
-  if (root[key]) return root[key].set(target);
-  if (target === null) return null;
+  if (root[key]) return root[key].set(initial);
+  if (initial === null) return null;
 
   const NativeDate = Date;
   const NativeFormat = Intl.DateTimeFormat;
@@ -51,7 +43,7 @@ export function installTimezone(initial: string | null): string | null {
     zone = next;
     return zone;
   };
-  set(target);
+  set(initial);
 
   const utc = (year: number, month: number, day: number, hour = 0, minute = 0, second = 0, ms = 0) => {
     const date = new NativeDate(0);

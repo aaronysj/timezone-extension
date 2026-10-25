@@ -35,7 +35,9 @@ beforeEach(() => {
   vi.stubGlobal('chrome', {
     i18n: chineseI18n,
     tabs: { query: async () => [{ id: 1, url: site }], reload: vi.fn() },
-    storage: { local: {
+    storage: { session: {
+      get: async () => ({ temporaryTabs: temporaryZone ? { 1: { host: new URL(site).hostname, timezone: temporaryZone } } : {} }),
+    }, local: {
       get: async () => ({ config: structuredClone(stored) }),
       set: async ({ config }: { config: Config }) => {
         if (failure) throw new Error('storage quota');
@@ -636,14 +638,40 @@ describe('temporary tab override', () => {
     expect(document.activeElement?.id).toBe('temp-tz');
     expect(text()).not.toContain(chineseI18n.getMessage('statusTemporary'));
   });
-  it('shows the background error instead of pretending the override applied', async () => {
+  it('shows the background error instead of pretending the override applied, and puts the picker back', async () => {
+    let failing = true;
     const send = chrome.runtime.sendMessage as (req: unknown) => Promise<unknown>;
-    vi.stubGlobal('chrome', { ...chrome, runtime: { ...chrome.runtime, sendMessage: async (req: { type: string }) => req.type === 'setTemporary' ? { error: 'Error: Page storage is unavailable' } : send(req) } });
+    vi.stubGlobal('chrome', { ...chrome, runtime: { ...chrome.runtime, sendMessage: async (req: { type: string }) => req.type === 'setTemporary' && failing ? { error: 'Error: Page storage is unavailable' } : send(req) } });
     await import('../src/popup/main');
     await flush();
     await pick('temp-tz', '东京');
     expect(text()).toContain(chineseI18n.getMessage('statusFailed'));
     expect(text()).toContain('Page storage is unavailable');
     expect(document.getElementById('temp-clear')).toBeNull();
+    expect(input('temp-tz').value).toBe('');
+    expect(document.activeElement?.id).toBe('temp-tz');
+    // Picking the same zone again must go through instead of being treated as unchanged.
+    failing = false;
+    sent.length = 0;
+    await pick('temp-tz', '东京');
+    expect(sent).toContainEqual({ type: 'setTemporary', tabId: 1, timezone: 'Asia/Tokyo' });
+    expect(input('temp-tz').value).toBe('东京');
+    expect(text()).toContain(chineseI18n.getMessage('statusTemporary'));
+  });
+  it.each([['https://my_service.internal/'], [`https://${'a'.repeat(64)}.example/`]])('is hidden where the backend cannot register it (%s)', async (url) => {
+    site = url;
+    await import('../src/popup/main');
+    await flush();
+    expect(document.querySelector('.now-host')).not.toBeNull();
+    expect(document.getElementById('temp-tz')).toBeNull();
+  });
+  it('shows the temporary zone on the first paint, before the page status answers', async () => {
+    temporaryZone = 'Asia/Tokyo';
+    const sendMessage = vi.fn(() => new Promise(() => {}));
+    vi.stubGlobal('chrome', { ...chrome, runtime: { ...chrome.runtime, sendMessage } });
+    await import('../src/popup/main');
+    await flush();
+    expect(document.querySelector('.now-city')?.getAttribute('title')).toBe('Asia/Tokyo');
+    expect(input('temp-tz').value).toBe('东京');
   });
 });

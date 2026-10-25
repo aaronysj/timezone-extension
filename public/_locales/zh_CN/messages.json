@@ -618,7 +618,7 @@
     "message": "还有未完成的网站编辑。请切回「按规则」完成，或放弃这些编辑后再保存。"
   },
   "coverageNote": {
-    "message": "修改网页 Date 和 Intl API 的时区；iframe 按自身网址匹配规则。Worker、已缓存的原生 API 和已有 Intl 格式化器仍使用原时区。已打开的网页建议刷新后使用。仅限单个标签页的时区保存在该页面的 sessionStorage 中，关闭标签页或重启浏览器后失效。"
+    "message": "修改网页 Date 和 Intl API 的时区；iframe 按自身网址匹配规则。Worker、已缓存的原生 API 和已有 Intl 格式化器仍使用原时区。已打开的网页建议刷新后使用。仅限单个标签页的时区会在关闭标签页或重启浏览器后失效。"
   },
   "statusTemporary": {
     "message": "临时生效"
@@ -643,5 +643,14 @@
   },
   "tempClear": {
     "message": "结束临时使用"
+  },
+  "tempErrPage": {
+    "message": "临时时区仅适用于主机名规范的 http(s) 网页。"
+  },
+  "tempErrStorage": {
+    "message": "该页面不允许使用存储，无法为此标签页保留临时时区。"
+  },
+  "tempErrZone": {
+    "message": "未知时区：$1"
   }
 }
