@@ -618,6 +618,42 @@
     "message": "未完了のサイト編集があります。「ルール別」で完了するか、編集を破棄してから保存してください。"
   },
   "coverageNote": {
-    "message": "ページの Date と Intl API に適用し、iframe は自身の URL でルールを判定します。Worker、保存済みのネイティブ API、既存の Intl フォーマッターは元のタイムゾーンを使用します。開いているページは再読み込みしてください。"
+    "message": "ページの Date と Intl API に適用し、iframe は自身の URL でルールを判定します。Worker、保存済みのネイティブ API、既存の Intl フォーマッターは元のタイムゾーンを使用します。開いているページは再読み込みしてください。1つのタブだけに設定したタイムゾーンは、タブを閉じるかブラウザーを再起動すると終了します。"
+  },
+  "statusTemporary": {
+    "message": "一時的に適用中"
+  },
+  "explainTemporary": {
+    "message": "このタブは設定ではなく、一時的なタイムゾーンを使用しています。"
+  },
+  "tempUse": {
+    "message": "このタブだけで一時的に使用"
+  },
+  "tempTzLabel": {
+    "message": "このタブだけのタイムゾーン"
+  },
+  "tempPlaceholder": {
+    "message": "タイムゾーンを選択"
+  },
+  "tempHint": {
+    "message": "このタブを閉じると終了します。表示済みの時刻は再読み込み後に更新されます。"
+  },
+  "tempReload": {
+    "message": "ページを再読み込み"
+  },
+  "tempClear": {
+    "message": "一時的な使用を終了"
+  },
+  "tempErrPage": {
+    "message": "一時的なタイムゾーンは、標準的なホスト名を持つ http(s) ページでのみ使えます。"
+  },
+  "tempErrStorage": {
+    "message": "このページはストレージの使用を許可していないため、このタブに一時的なタイムゾーンを保持できません。"
+  },
+  "tempErrZone": {
+    "message": "不明なタイムゾーン: $1"
+  },
+  "tempErrLoading": {
+    "message": "ページを読み込み中です。完了してからもう一度お試しください。"
   }
 }

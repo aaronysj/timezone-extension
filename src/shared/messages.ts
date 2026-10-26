@@ -1,12 +1,16 @@
 import type { Resolution } from './resolve';
 
-export type Request = { type: 'getStatus'; tabId: number } | { type: 'retry'; tabId: number };
+export type Request = { type: 'getStatus'; tabId: number } | { type: 'retry'; tabId: number }
+  /** `timezone: null` ends the tab's temporary override. */
+  | { type: 'setTemporary'; tabId: number; timezone: string | null };
 
 export interface TabStatus {
   /** What the current config says this tab should run under. */
   desired: Resolution | null;
   /** Timezone observed through the current page's Intl API. */
   applied: string | null;
+  /** This tab's temporary override as the background holds it, which `desired` follows. */
+  temporary: string | null;
   error?: string;
 }
 

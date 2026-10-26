@@ -6,12 +6,13 @@ export function timezoneFile(zone: string): string {
   return `timezones/${canonical.replace(/[^a-zA-Z0-9-]/g, '_')}.js`;
 }
 
-const patterns = (rule: Rule): string[] => {
-  const host = normalizePattern(rule.pattern);
+/** Match patterns for a normalized host, including the trailing-dot FQDN variant (not valid for bracketed IPv6). */
+export function hostPatterns(host: string, suffix = false): string[] {
   if (!host) return [];
-  const prefix = rule.match === 'suffix' && !host.startsWith('[') ? '*.' : '';
+  const prefix = suffix && !host.startsWith('[') ? '*.' : '';
   return [`*://${prefix}${host}/*`, ...(!host.startsWith('[') ? [`*://${prefix}${host}./*`] : [])];
-};
+}
+const patterns = (rule: Rule): string[] => hostPatterns(normalizePattern(rule.pattern), rule.match === 'suffix');
 
 /** Compile the same precedence as resolveTimezone into mutually exclusive URL matches. */
 export function registrations(config: Config): chrome.scripting.RegisteredContentScript[] {

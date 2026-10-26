@@ -4,11 +4,14 @@ import { createRequire } from 'node:module';
 import { fileName, tzdataNames } from './timezone-names.mjs';
 
 const watching = process.argv.includes('--watch');
-await build({ configFile: false, mode: watching ? 'development' : 'production', build: {
-  outDir: 'dist', emptyOutDir: false, target: 'chrome125',
-  watch: watching ? {} : null, sourcemap: watching, minify: !watching,
-  lib: { entry: 'src/content/main.ts', name: 'TimezoneOverride', formats: ['iife'], fileName: () => 'timezone-content.js' },
-} });
+// IIFE builds take one entry each. Separate files: Chrome injects a given file once per document.
+for (const [entry, file] of [['main', 'timezone-content.js'], ['temporary', 'timezone-temporary.js']]) {
+  await build({ configFile: false, mode: watching ? 'development' : 'production', build: {
+    outDir: 'dist', emptyOutDir: false, target: 'chrome125',
+    watch: watching ? {} : null, sourcemap: watching, minify: !watching,
+    lib: { entry: `src/content/${entry}.ts`, name: 'TimezoneOverride', formats: ['iife'], fileName: () => file },
+  } });
+}
 const zones = new Set([...Intl.supportedValuesOf('timeZone'), 'UTC']);
 for (let hours = -14; hours <= 12; hours++) {
   const zone = `Etc/GMT${hours >= 0 ? '+' : ''}${hours}`;
