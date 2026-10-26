@@ -1,18 +1,18 @@
 # Chrome Web Store release 0.2.0
 
-## 0.3.0 准备状态
+## 0.3.0 发布状态
 
-已基于当前代码准备 0.3.0 包，包含当前标签页临时时区覆盖。隐私政策已更新到公开 Gist；Chrome Web Store 和 Edge Add-ons 尚未收到 0.3.0 提交。
+0.3.0 已从提交 `96aca5049de3c7dccc1157b91df3cafc65932e7f` 打包、验证，并提交到 Microsoft Edge Add-ons 审核。Partner Center 显示 0.3.0「In review」、0.2.1「Live」；微软预计审核需 7 个工作日。公开范围为 241 个市场。
 
 - Chrome 包：`timezone-override-0.3.0.zip`，385414 bytes；SHA-256：`a7308e74c6c74bb937f4708afefc4a1f5601e9a42ca145f0c411e93176831559`。
 - Edge 包：`edge/timezone-override-edge-0.3.0.zip`，385414 bytes；SHA-256 相同。
 - `npm test`：223 项通过；`npm run build` 通过；Chrome for Testing 140.0.7339.207 E2E：全部检查通过。
 - 两份 ZIP 内容一致；manifest 为 0.3.0；未包含 `debugger` 权限、源码或 sourcemap。
-- 提交阻塞：Chrome 商店后台页面被当前浏览器控制拒绝访问；Edge 后台要求 Microsoft 账户登录，当前停在登录页面。
+- Chrome Web Store 0.3.0 尚未提交：Chrome Web Store 控制台导航被浏览器控制返回 `Not allowed`，当前环境没有配置商店提交 API。
 
 ## 当前状态
 
-0.2.0 已于 2026-09-29（America/Los_Angeles）成功提交 Chrome Web Store 审核，当前状态为“待审核”，已勾选审核通过后自动发布；尚未上架。用户完成代码 review 后授权继续发布，0.1.0 的审核已撤回。
+0.2.0 曾于 2026-09-29（America/Los_Angeles）提交 Chrome Web Store 审核。0.3.0 Chrome 提交仍待办；Edge 0.3.0 已送审，0.2.1 继续 Live。0.1.0 的审核已撤回。
 
 已保存新版英文与简体中文说明、单一用途、scripting/storage/tabs/webNavigation/网站访问权限理由、无远程代码和无收集数据声明，以及 457 字符审核测试步骤。已核对免费、公开、所有地区分发；商店软件包显示版本 0.2.0，权限列表没有 debugger。Google 提示所有网站权限可能触发深入审核并延迟发布时间；该权限用于全局覆盖与用户自定义域名规则。
 
@@ -80,4 +80,4 @@
 
 ## 后续
 
-等待 Google 审核。审核通过后自动发布；若收到拒绝或补充资料通知，按实际审核意见处理。审核通过前不能声称已经上架。
+Chrome 控制台恢复可访问后，提交 0.3.0。等待 Microsoft 审核结果；审核通过前，Edge 用户仍在使用 0.2.1。
