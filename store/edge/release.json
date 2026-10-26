@@ -55,5 +55,18 @@
       "store/edge/screenshot-rules-1280x800.png",
       "store/edge/screenshot-picker-1280x800.png"
     ]
+  },
+  "nextRelease": {
+    "version": "0.3.0",
+    "status": "Prepared locally; not submitted",
+    "package": "timezone-override-edge-0.3.0.zip",
+    "size": 385414,
+    "sha256": "a7308e74c6c74bb937f4708afefc4a1f5601e9a42ca145f0c411e93176831559",
+    "validation": {
+      "unitTests": 223,
+      "build": "passed",
+      "e2e": "all checks passed on Chrome for Testing 140.0.7339.207"
+    },
+    "blocker": "Microsoft Partner Center requires account sign-in in Chrome before submission."
   }
 }

@@ -1,5 +1,15 @@
 # Chrome Web Store release 0.2.0
 
+## 0.3.0 准备状态
+
+已基于当前代码准备 0.3.0 包，包含当前标签页临时时区覆盖。隐私政策已更新到公开 Gist；Chrome Web Store 和 Edge Add-ons 尚未收到 0.3.0 提交。
+
+- Chrome 包：`timezone-override-0.3.0.zip`，385414 bytes；SHA-256：`a7308e74c6c74bb937f4708afefc4a1f5601e9a42ca145f0c411e93176831559`。
+- Edge 包：`edge/timezone-override-edge-0.3.0.zip`，385414 bytes；SHA-256 相同。
+- `npm test`：223 项通过；`npm run build` 通过；Chrome for Testing 140.0.7339.207 E2E：全部检查通过。
+- 两份 ZIP 内容一致；manifest 为 0.3.0；未包含 `debugger` 权限、源码或 sourcemap。
+- 提交阻塞：Chrome 商店后台页面被当前浏览器控制拒绝访问；Edge 后台要求 Microsoft 账户登录，当前停在登录页面。
+
 ## 当前状态
 
 0.2.0 已于 2026-09-29（America/Los_Angeles）成功提交 Chrome Web Store 审核，当前状态为“待审核”，已勾选审核通过后自动发布；尚未上架。用户完成代码 review 后授权继续发布，0.1.0 的审核已撤回。
