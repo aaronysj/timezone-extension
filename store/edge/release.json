@@ -55,7 +55,11 @@
   "previousLiveVersion": "0.2.1",
   "chromeSubmission": {
     "version": "0.3.0",
-    "status": "Not submitted",
-    "blocker": "Chrome Web Store developer console navigation returned Not allowed in browser control; no Chrome submission API is configured."
+    "status": "Pending review",
+    "submittedAt": "2026-10-25",
+    "visibility": "Public",
+    "regions": "All",
+    "autoPublishAfterReview": true,
+    "verification": "Chrome Web Store dashboard showed status 待审核 after submission; auto-publish was checked."
   }
 }

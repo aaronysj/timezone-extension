@@ -8,7 +8,7 @@
 - Edge 包：`edge/timezone-override-edge-0.3.0.zip`，385414 bytes；SHA-256 相同。
 - `npm test`：223 项通过；`npm run build` 通过；Chrome for Testing 140.0.7339.207 E2E：全部检查通过。
 - 两份 ZIP 内容一致；manifest 为 0.3.0；未包含 `debugger` 权限、源码或 sourcemap。
-- Chrome Web Store 0.3.0 尚未提交：Chrome Web Store 控制台导航被浏览器控制返回 `Not allowed`，当前环境没有配置商店提交 API。
+- Chrome Web Store 0.3.0 已提交，后台状态「待审核」；已勾选审核通过后自动发布。
 
 ## 当前状态
 
@@ -80,4 +80,4 @@
 
 ## 后续
 
-Chrome 控制台恢复可访问后，提交 0.3.0。等待 Microsoft 审核结果；审核通过前，Edge 用户仍在使用 0.2.1。
+等待 Google 与 Microsoft 的审核结果；审核通过前，Edge 用户仍在使用 0.2.1。
