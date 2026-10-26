@@ -4,8 +4,6 @@ export interface Resolution {
   timezone: string;
   /** The include rule that decided the result; undefined in global mode. */
   rule?: Rule;
-  /** Set by this tab's temporary override, which outranks every config rule. */
-  temporary?: boolean;
 }
 
 /**

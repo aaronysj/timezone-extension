@@ -1,6 +1,6 @@
 import type { Config } from '../shared/config';
 import { resolveTimezone } from '../shared/resolve';
-import { type TemporaryEntry, temporaryHost } from '../shared/temporary';
+import { type TemporaryEntry, loadTemporaryTabs } from '../shared/temporary';
 import { installTimezone, restoreNative } from '../content/timezone';
 import { registrations } from './registrations';
 
@@ -12,8 +12,8 @@ async function shippedZoneFiles(): Promise<Set<string> | null> {
 /** Registers early page scripts and updates open documents without debugger sessions. */
 export class Overrider {
   private failures = new Map<number, { documentId: string; error: string }>();
-  /** `temporary` is the tab's override, which outranks config for the frames that share the marked origin. */
-  constructor(private temporary: (tabId: number) => Promise<TemporaryEntry | undefined> = async () => undefined) {}
+  /** `temporary` loads the tabs' overrides, which outrank config for the frames that share the marked origin. */
+  constructor(private temporary: () => Promise<Record<string, TemporaryEntry>> = loadTemporaryTabs) {}
   async configure(config: Config): Promise<void> {
     const old = await chrome.scripting.getRegisteredContentScripts();
     const previous = old.filter((script) => script.id.startsWith('timezone-'));
@@ -36,14 +36,17 @@ export class Overrider {
     if (failed) throw failed.reason;
   }
 
+  private overrides(): Promise<Record<string, TemporaryEntry>> { return this.temporary().catch(() => ({})); }
+
   /** Never awaited by configuration: injection into a frozen tab waits until it thaws. */
   async applyAll(config: Config): Promise<void> {
-    const tabs = await chrome.tabs.query({});
-    await Promise.all(tabs.filter((tab) => tab.id !== undefined && !tab.discarded).map((tab) => this.apply(tab.id!, config).catch(() => {})));
+    const [tabs, temporary] = await Promise.all([chrome.tabs.query({}), this.overrides()]);
+    await Promise.all(tabs.filter((tab) => tab.id !== undefined && !tab.discarded).map((tab) => this.apply(tab.id!, config, temporary).catch(() => {})));
   }
 
-  async apply(tabId: number, config: Config): Promise<void> {
-    const [frames, temporary] = await Promise.all([chrome.webNavigation.getAllFrames({ tabId }), this.temporary(tabId)]);
+  async apply(tabId: number, config: Config, overrides?: Record<string, TemporaryEntry>): Promise<void> {
+    const [frames, tabs] = await Promise.all([chrome.webNavigation.getAllFrames({ tabId }), overrides ?? this.overrides()]);
+    const temporary = tabs[tabId];
     const byId = new Map(frames?.map((frame) => [frame.frameId, frame]));
     const effectiveUrl = (id: number, visited = new Set<number>()): string => {
       const frame = byId.get(id);
@@ -57,8 +60,8 @@ export class Overrider {
     await Promise.all((frames ?? []).map(async (frame) => {
       const url = effectiveUrl(frame.frameId);
       if (!/^https?:/.test(url)) return;
-      // The marker lives in the sessionStorage of the top frame's origin, which same-origin frames share and cross-origin frames do not.
-      const override = temporary && temporaryHost(url) === temporary.host && origin(url) === topOrigin ? temporary.timezone : null;
+      // The marker lives in the sessionStorage of the recorded origin, which that origin's frames under the same top page share and others do not.
+      const override = temporary && origin(url) === temporary.origin && topOrigin === temporary.origin ? temporary.timezone : null;
       const timezone = override ?? resolveTimezone(url, config)?.timezone ?? null;
       try {
         // No timezone: never touch the page unless our controller is already there, then only switch it to native.

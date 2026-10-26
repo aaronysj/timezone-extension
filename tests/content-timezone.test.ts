@@ -69,7 +69,12 @@ describe('temporary per-tab marker', () => {
   const zoneOf = (context: vm.Context) => vm.runInContext('Intl.DateTimeFormat().resolvedOptions().timeZone', context);
   const install = (context: vm.Context, zone: string | null) => vm.runInContext(`(${installTimezone.toString()})(${JSON.stringify(zone)})`, context);
   const restore = (context: vm.Context) => vm.runInContext(`(${restoreNative.toString()})()`, context);
-  const marked = (context: vm.Context) => vm.runInContext(`(${markedZone.toString()})()`, context);
+  /** markedZone is bundled with main.ts rather than serialized, so it runs against stubbed globals here. */
+  const marked = (context: vm.Context) => {
+    const storage = (context as { sessionStorage?: unknown }).sessionStorage;
+    vi.stubGlobal('sessionStorage', storage);
+    try { return markedZone(); } finally { vi.unstubAllGlobals(); }
+  };
 
   it('reads a valid marker zone', () => {
     expect(marked(realm('Asia/Tokyo'))).toBe('Asia/Tokyo');
@@ -94,27 +99,33 @@ describe('temporary per-tab marker', () => {
   });
 });
 
-describe('document_start entry (content/main.ts)', () => {
+describe('document_start entries (content/main.ts, content/temporary.ts)', () => {
   const pending = Symbol.for('timezone-override.pending');
-  const locked = Symbol.for('timezone-override.temporary');
-  const run = async (state: { pending?: string; marker: string | null; locked?: boolean }) => {
-    const install = vi.fn();
-    vi.resetModules();
-    vi.doMock('../src/content/timezone', () => ({ installTimezone: install, markedZone: () => state.marker }));
-    const root = globalThis as Record<symbol, unknown>;
-    if (state.pending !== undefined) root[pending] = state.pending;
-    if (state.locked) root[locked] = true;
-    try { await import('../src/content/main'); } finally { delete root[pending]; delete root[locked]; vi.doUnmock('../src/content/timezone'); }
+  const locked = Symbol.for('timezone-override.temporary-lock');
+  const root = globalThis as Record<symbol, unknown>;
+  const install = vi.fn();
+  /** Runs the entries in order against one page, as Chrome would inject them. */
+  const run = async (marker: string | null, ...steps: ('config' | 'temporary')[]) => {
+    install.mockClear();
+    try {
+      for (const step of steps) {
+        vi.resetModules();
+        vi.doMock('../src/content/timezone', () => ({ installTimezone: install, markedZone: () => marker }));
+        if (step === 'config') root[pending] = 'America/New_York';
+        await import(step === 'config' ? '../src/content/main' : '../src/content/temporary');
+      }
+    } finally { delete root[pending]; delete root[locked]; vi.doUnmock('../src/content/timezone'); }
     return install.mock.calls.map((call) => call[0]);
   };
   it('config scripts ignore the page marker', async () => {
-    expect(await run({ pending: 'America/New_York', marker: 'Asia/Tokyo' })).toEqual(['America/New_York']);
+    expect(await run('Asia/Tokyo', 'config')).toEqual(['America/New_York']);
   });
   it('the temporary-only script installs the marker zone and nothing without one', async () => {
-    expect(await run({ marker: 'Asia/Tokyo' })).toEqual(['Asia/Tokyo']);
-    expect(await run({ marker: null })).toEqual([]);
+    expect(await run('Asia/Tokyo', 'temporary')).toEqual(['Asia/Tokyo']);
+    expect(await run(null, 'temporary')).toEqual([]);
   });
   it('the marker zone survives whichever script runs second', async () => {
-    expect(await run({ pending: 'America/New_York', marker: 'Asia/Tokyo', locked: true })).toEqual([]);
+    expect(await run('Asia/Tokyo', 'temporary', 'config')).toEqual(['Asia/Tokyo']);
+    expect(await run('Asia/Tokyo', 'config', 'temporary')).toEqual(['America/New_York', 'Asia/Tokyo']);
   });
 });

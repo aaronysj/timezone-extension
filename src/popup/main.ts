@@ -4,7 +4,7 @@ import { type SiteScope, rulePatternError, scopeLabel, siteScopes } from '../sha
 import { bundleLocale, intlLocale, localizeDocument, setLanguage, t } from '../shared/i18n';
 import { type TabStatus, sendRequest } from '../shared/messages';
 import { hostnameOf, normalizePattern, resolveTimezone, ruleForHost } from '../shared/resolve';
-import { loadTemporaryTabs, temporaryHost, temporaryZone } from '../shared/temporary';
+import { loadTemporaryTabs, temporaryOrigin, temporaryZone } from '../shared/temporary';
 import { cityLabel, dateLabel, dayDifference, offsetLabel, systemTimezone, timeDifference } from '../shared/timezone';
 import { h, languageSelect, modeLabel, modeSwitch, replaceKeepingFocus, saveNotice } from '../ui/dom';
 import { timezonePicker } from '../ui/tzpicker';
@@ -211,7 +211,7 @@ function siteControls(): HTMLElement | null {
 
 /** Available in every mode: the override lives in this tab only and outranks config. */
 function temporaryControls(): HTMLElement | null {
-  if (!temporaryHost(tabUrl)) return null;
+  if (!temporaryOrigin(tabUrl)) return null;
   return h('section', { className: 'block' },
     h('label', { className: 'block-label', htmlFor: 'temp-tz' }, t('tempUse')),
     timezonePicker({ id: 'temp-tz', label: t('tempTzLabel'), compact: true, value: temporary ?? '', placeholder: t('tempPlaceholder'),

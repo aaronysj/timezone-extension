@@ -45,7 +45,7 @@ const testScript = (other, step) => `
   })();
 `;
 
-const server = http.createServer(async (req, res) => {
+const handler = async (req, res) => {
   const url = new URL(req.url, 'http://x');
   if (url.pathname === '/report') {
     let body = '';
@@ -74,18 +74,23 @@ const server = http.createServer(async (req, res) => {
     res.setHeader('content-type', 'application/javascript');
     return res.end("parent.postMessage({frame: Intl.DateTimeFormat().resolvedOptions().timeZone}, '*')");
   }
-  const { port } = server.address();
-  const other = req.headers.host.startsWith('localhost') ? `127.0.0.1:${port}` : `localhost:${port}`;
+  const { localPort } = req.socket;
+  const other = req.headers.host.startsWith('localhost') ? `127.0.0.1:${localPort}` : `localhost:${localPort}`;
   if (url.pathname === '/test.js') {
     res.setHeader('content-type', 'application/javascript');
     return res.end(testScript(other, url.searchParams.get('s')));
   }
   res.end(`<!doctype html><script src="/test.js?s=${url.searchParams.get('s')}"></script><iframe src="http://${other}/frame"></iframe><iframe srcdoc='<script src="/inherited.js"></script>'></iframe>`);
-});
+};
+const server = http.createServer(handler);
 await new Promise((r) => server.listen(0, '127.0.0.1', r));
 const { port } = server.address();
+// Same host, another port: a different origin with its own sessionStorage.
+const server2 = http.createServer(handler);
+await new Promise((r) => server2.listen(0, '127.0.0.1', r));
 const LOCAL = `http://localhost:${port}`;
 const IP = `http://127.0.0.1:${port}`;
+const LOCAL2 = `http://localhost:${server2.address().port}`;
 
 const report = (step) => new Promise((r) => reportWaiters.set(step, r));
 async function proceed(step, value) {
@@ -158,7 +163,7 @@ function expectEq(name, actual, expected) {
   console.log(`${pass ? 'PASS' : 'FAIL'} ${name}: ${actual}${pass ? '' : ` (expected ${expected})`}`);
 }
 
-const watchdog = setTimeout(() => { console.log('TIMEOUT'); browser.kill(); process.exit(1); }, 120000);
+const watchdog = setTimeout(() => { console.log('TIMEOUT'); browser.kill(); process.exit(1); }, 240000);
 try {
   expectEq('no debugger permission', manifest.permissions.includes('debugger'), false);
   const missing = await evalSW(`(async () => {
@@ -229,7 +234,7 @@ try {
   expectAll('temporary: refresh applies from document_start; srcdoc follows, cross-origin iframe keeps config', await report('t-reload'), 'Asia/Tokyo', SYSTEM_TZ);
 
   expectEq('temporary: getStatus reports the override as desired while config is off', await statusOf(tabA),
-    JSON.stringify({ desired: { timezone: 'Asia/Tokyo', temporary: true }, applied: 'Asia/Tokyo', temporary: 'Asia/Tokyo' }));
+    JSON.stringify({ desired: { timezone: 'Asia/Tokyo' }, applied: 'Asia/Tokyo', temporary: 'Asia/Tokyo' }));
 
   await cdp('Target.createTarget', { url: `${LOCAL}/p?s=t-other` });
   expectAll('temporary: another tab on the same host stays on the system timezone', await report('t-other'), SYSTEM_TZ);
@@ -266,6 +271,38 @@ try {
   for (let i = 0; i < 20; i++, await sleep(100)) if ((leftover = await registered()) === 'timezone-rule-0') break;
   expectEq('temporary: closing the tab removes the registration', leftover, 'timezone-rule-0');
   expectEq('temporary: session store is empty after closing', await evalSW(`chrome.storage.session.get('temporaryTabs').then((r) => JSON.stringify(r.temporaryTabs))`), '{}');
+
+  // ---- the override follows the origin the marker was written to, and stale markers are inert ----
+  await cdp('Target.createTarget', { url: `${LOCAL}/p?s=o1` });
+  await report('o1');
+  const tabO = await tabIdOf('o1');
+  expectEq('temporary origin: setTemporary on the first origin', await setTemporary(tabO, 'Asia/Tokyo'), null);
+  await proceed('o1', { url: `${LOCAL2}/p?s=o2` });
+  expectAll('temporary origin: same host on another port is another page and keeps config', await report('o2'), 'America/New_York', SYSTEM_TZ);
+  expectEq('temporary origin: getStatus does not claim a temporary override there', JSON.parse(await statusOf(tabO)).temporary, null);
+  await proceed('o2', { url: `${LOCAL}/p?s=o3` });
+  expectAll('temporary origin: returning to the marked origin resumes from document_start', await report('o3'), 'Asia/Tokyo', SYSTEM_TZ);
+  await proceed('o3', { url: `${LOCAL}/p?s=o3b` });
+  expectAll('temporary origin: same-origin navigation under a config rule keeps it from document_start', await report('o3b'), 'Asia/Tokyo', SYSTEM_TZ);
+  await proceed('o3b', { url: `${LOCAL2}/p?s=o3c` });
+  await report('o3c');
+  await proceed('o3c', { url: `${LOCAL}/p?s=o3d` });
+  expectAll('temporary origin: a second round trip through the other port resumes it again', await report('o3d'), 'Asia/Tokyo', SYSTEM_TZ);
+  expectEq('temporary origin: getStatus reports it again', JSON.parse(await statusOf(tabO)).temporary, 'Asia/Tokyo');
+  await proceed('o3d', { url: `${IP}/p?s=o4` });
+  expectAll('temporary origin: another host keeps config', await report('o4'), SYSTEM_TZ, 'America/New_York');
+  expectEq('temporary origin: End while on another host succeeds', await setTemporary(tabO, null), null);
+  expectEq('temporary origin: End unregisters the script', await registered(), 'timezone-rule-0');
+  await proceed('o4', { url: `${LOCAL}/p?s=o5` });
+  expectAll('temporary origin: Back to the old origin after End ignores the stale marker', await report('o5'), 'America/New_York', SYSTEM_TZ);
+  expectEq('temporary origin: the stale marker is still in the page, and inert', await markerOf(tabO), 'Asia/Tokyo');
+  expectEq('temporary origin: getStatus is not temporary after End', JSON.parse(await statusOf(tabO)).temporary, null);
+  await proceed('o5', { live: 'o5-live' });
+  expectEq('temporary origin: live config updates are not blocked by the stale marker', (await report('o5-live')).live, 'America/New_York');
+  const originTab = (await cdp('Target.getTargets')).result.targetInfos.find((target) => target.url.includes('s=o5'));
+  await cdp('Target.closeTarget', { targetId: originTab.targetId });
+
+  expectEq('temporary: tabs.onReplaced is handled', await evalSW('chrome.tabs.onReplaced.hasListeners()'), true);
   await cdp('Target.closeTarget', { targetId: optionsTarget });
 
   // Chrome freezes background tabs (Memory Saver); injecting there waits for a thaw and must not stall later changes.
@@ -302,6 +339,7 @@ try {
   clearTimeout(watchdog);
   browser.kill();
   server.close();
+  server2.close();
 }
 console.log(results.every(Boolean) ? 'ALL PASS' : 'SOME FAILED');
 process.exit(results.every(Boolean) ? 0 : 1);

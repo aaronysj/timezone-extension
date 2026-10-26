@@ -36,7 +36,7 @@ beforeEach(() => {
     i18n: chineseI18n,
     tabs: { query: async () => [{ id: 1, url: site }], reload: vi.fn() },
     storage: { session: {
-      get: async () => ({ temporaryTabs: temporaryZone ? { 1: { host: new URL(site).hostname, timezone: temporaryZone } } : {} }),
+      get: async () => ({ temporaryTabs: temporaryZone ? { 1: { origin: new URL(site).origin, timezone: temporaryZone } } : {} }),
     }, local: {
       get: async () => ({ config: structuredClone(stored) }),
       set: async ({ config }: { config: Config }) => {
@@ -48,7 +48,7 @@ beforeEach(() => {
     runtime: { openOptionsPage: vi.fn(), sendMessage: async (req: { type: string; timezone?: string | null }) => {
       sent.push(req);
       if (req.type === 'setTemporary') { temporaryZone = req.timezone ?? null; return null; }
-      const desired = temporaryZone ? { timezone: temporaryZone, temporary: true } : resolveTimezone(site, stored);
+      const desired = temporaryZone ? { timezone: temporaryZone } : resolveTimezone(site, stored);
       return { desired, temporary: temporaryZone, applied: appliedOverride ?? (statusFailure ? null : desired?.timezone ?? null),
         ...(statusFailure ? { error: 'Cannot access contents of the page. Extension host permission is withheld.' } : {}) };
     } },

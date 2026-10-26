@@ -1,6 +1,6 @@
 import { type Config, DEFAULT_CONFIG, loadConfig, onConfigChanged } from '../shared/config';
 import type { Request, TabStatus } from '../shared/messages';
-import { temporaryHost, temporaryZone } from '../shared/temporary';
+import { temporaryOrigin, temporaryZone } from '../shared/temporary';
 import { isValidTimezone } from '../shared/timezone';
 import { Overrider } from './overrider';
 import { needsProbe, tabStatus } from './status';
@@ -8,7 +8,7 @@ import { TemporaryTabs } from './temporary';
 import { setLanguage, t } from '../shared/i18n';
 
 const temporary = new TemporaryTabs();
-const overrider = new Overrider((tabId) => temporary.get(tabId).catch(() => undefined));
+const overrider = new Overrider();
 let config: Config = DEFAULT_CONFIG;
 let configurationError: string | undefined;
 let ready: Promise<void> = Promise.resolve();
@@ -46,7 +46,10 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   overrider.forget(tabId);
   void temporary.update(tabId, null).catch(() => {});
 });
-chrome.tabs.onReplaced.addListener((added, removed) => void temporary.replace(removed, added).catch(() => {}));
+chrome.tabs.onReplaced.addListener((added, removed) => {
+  overrider.forget(removed);
+  void temporary.replace(removed, added).then(() => ready).then(() => overrider.apply(added, config)).catch(() => {});
+});
 // A reload of the extension clears the session state but keeps the registration; reconcile every time the worker starts.
 void temporary.sync().catch(() => {});
 
@@ -66,10 +69,13 @@ async function handle(req: Request): Promise<unknown> {
       await overrider.apply(req.tabId, config).catch(() => {});
       return null;
     }
-    const host = temporaryHost(tab.url);
-    if (!host) throw new Error(t('tempErrPage'));
+    // Same URL source as the popup and getStatus; the marker lands in the committed document, so it must be the same origin.
+    const origin = temporaryOrigin(tab.pendingUrl ?? tab.url);
+    if (!origin) throw new Error(t('tempErrPage'));
     if (!isValidTimezone(timezone)) throw new Error(t('tempErrZone', timezone));
-    await temporary.start(req.tabId, { host, timezone });
+    const frame = await chrome.webNavigation.getFrame({ tabId: req.tabId, frameId: 0 });
+    if (!frame || temporaryOrigin(frame.url) !== origin) throw new Error(t('tempErrLoading'));
+    await temporary.start(req.tabId, { origin, timezone }, frame.documentId);
     await overrider.apply(req.tabId, config);
     return null;
   }

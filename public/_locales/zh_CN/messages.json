@@ -652,5 +652,8 @@
   },
   "tempErrZone": {
     "message": "未知时区：$1"
+  },
+  "tempErrLoading": {
+    "message": "页面仍在加载，请在加载完成后重试。"
   }
 }

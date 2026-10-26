@@ -1,5 +1,6 @@
 import { t } from '../shared/i18n';
-import { type TemporaryEntry, TEMPORARY_STORE_KEY, loadTemporaryTabs } from '../shared/temporary';
+import { TEMPORARY_MARKER_KEY } from '../content/timezone';
+import { type TemporaryEntry, TEMPORARY_STORE_KEY, loadTemporaryTabs, temporaryHost } from '../shared/temporary';
 import { hostPatterns } from './registrations';
 
 /** Deliberately not `timezone-` prefixed: Overrider.configure unregisters every script with that prefix. */
@@ -9,16 +10,18 @@ export const TEMPORARY_SCRIPT_ID = 'temporary-timezone';
  * Writes or removes the page marker in the tab's top frame; false when the page's storage is unusable (sandboxed, disabled).
  * Self-contained: Chrome serializes it.
  */
-export function writeMarker(timezone: string | null): boolean {
+export function writeMarker(timezone: string | null, key: string): boolean {
   try {
-    if (timezone === null) sessionStorage.removeItem('timezone-override.temporary');
-    else sessionStorage.setItem('timezone-override.temporary', timezone);
+    if (timezone === null) sessionStorage.removeItem(key);
+    else sessionStorage.setItem(key, timezone);
     return true;
   } catch { return false; }
 }
 
-export async function setMarker(tabId: number, timezone: string | null): Promise<void> {
-  const [result] = await chrome.scripting.executeScript({ target: { tabId, frameIds: [0] }, world: 'MAIN', func: writeMarker, args: [timezone], injectImmediately: true });
+/** Pinned to one document, so a tab that navigated since the origin was recorded gets an error instead of a marker on the wrong page. `documentId` is omitted only to clean up wherever the tab is now. */
+export async function setMarker(tabId: number, timezone: string | null, documentId?: string): Promise<void> {
+  const target = documentId ? { tabId, documentIds: [documentId] } : { tabId, frameIds: [0] };
+  const [result] = await chrome.scripting.executeScript({ target, world: 'MAIN', func: writeMarker, args: [timezone, TEMPORARY_MARKER_KEY], injectImmediately: true });
   if (!result?.result) throw new Error(t('tempErrStorage'));
 }
 
@@ -36,10 +39,9 @@ export class TemporaryTabs {
   }
 
   /** Marks the tab, rolling back if the page refuses the marker, so a failure never leaves a half-applied override. */
-  async start(tabId: number, entry: TemporaryEntry): Promise<void> {
-    const previous = await this.get(tabId);
-    await this.update(tabId, entry);
-    try { await setMarker(tabId, entry.timezone); } catch (error) {
+  async start(tabId: number, entry: TemporaryEntry, documentId: string): Promise<void> {
+    const previous = await this.update(tabId, entry);
+    try { await setMarker(tabId, entry.timezone, documentId); } catch (error) {
       await this.update(tabId, previous ?? null).catch(() => {});
       throw error;
     }
@@ -51,12 +53,16 @@ export class TemporaryTabs {
     await setMarker(tabId, null).catch(() => {});
   }
 
-  update(tabId: number, entry: TemporaryEntry | null): Promise<void> {
-    return this.mutate((tabs) => {
-      if (!entry && !(tabId in tabs)) return false; // Most closed tabs never had an override.
+  /** Resolves to the entry it replaced, read inside the queue so it is never stale. */
+  async update(tabId: number, entry: TemporaryEntry | null): Promise<TemporaryEntry | undefined> {
+    let previous: TemporaryEntry | undefined;
+    await this.mutate((tabs) => {
+      previous = tabs[tabId];
+      if (!entry && !previous) return false; // Most closed tabs never had an override.
       if (entry) tabs[tabId] = entry; else delete tabs[tabId];
       return true;
     });
+    return previous;
   }
 
   /** The tab id changes when a prerendered page replaces the tab. */
@@ -74,36 +80,46 @@ export class TemporaryTabs {
    * `storage.session` but keep dynamic registrations, which would otherwise outlive every entry.
    */
   sync(): Promise<void> {
-    return this.mutate(async (tabs) => {
+    return this.serialize(async () => {
+      const tabs = await loadTemporaryTabs();
       const open = new Set((await chrome.tabs.query({})).map((tab) => String(tab.id)));
-      for (const id of Object.keys(tabs)) if (!open.has(id)) delete tabs[id];
-      return true;
+      const gone = Object.keys(tabs).filter((id) => !open.has(id));
+      for (const id of gone) delete tabs[id];
+      await this.register(tabs);
+      if (gone.length) await chrome.storage.session.set({ [TEMPORARY_STORE_KEY]: tabs });
     });
   }
 
   /** Serialized so concurrent changes cannot race. The registration is changed first: if it fails the stored state is untouched and a retry starts clean. */
-  private mutate(change: (tabs: Record<string, TemporaryEntry>) => boolean | Promise<boolean>): Promise<void> {
-    const run = this.queue.then(async () => {
+  private mutate(change: (tabs: Record<string, TemporaryEntry>) => boolean): Promise<void> {
+    return this.serialize(async () => {
       const tabs = await loadTemporaryTabs();
-      if (!(await change(tabs))) return;
-      await this.register([...new Set(Object.values(tabs).map((entry) => entry.host))].sort());
+      if (!change(tabs)) return;
+      await this.register(tabs);
       await chrome.storage.session.set({ [TEMPORARY_STORE_KEY]: tabs });
     });
+  }
+
+  private serialize(task: () => Promise<void>): Promise<void> {
+    const run = this.queue.then(task);
     this.queue = run.catch(() => {});
     return run;
   }
 
-  private async register(hosts: string[]): Promise<void> {
-    const exists = (await chrome.scripting.getRegisteredContentScripts({ ids: [TEMPORARY_SCRIPT_ID] })).length > 0;
-    if (!hosts.length) {
-      if (exists) await chrome.scripting.unregisterContentScripts({ ids: [TEMPORARY_SCRIPT_ID] });
+  /** Makes the registration cover exactly the hosts of the entries; a registration that already does is left alone. */
+  private async register(tabs: Record<string, TemporaryEntry>): Promise<void> {
+    const matches = [...new Set(Object.values(tabs).map((entry) => temporaryHost(entry.origin)!))].sort().flatMap((host) => hostPatterns(host));
+    const [existing] = await chrome.scripting.getRegisteredContentScripts({ ids: [TEMPORARY_SCRIPT_ID] });
+    if (!matches.length) {
+      if (existing) await chrome.scripting.unregisterContentScripts({ ids: [TEMPORARY_SCRIPT_ID] });
       return;
     }
+    if (existing && JSON.stringify(existing.matches) === JSON.stringify(matches)) return;
     const script: chrome.scripting.RegisteredContentScript = {
-      id: TEMPORARY_SCRIPT_ID, matches: hosts.flatMap((host) => hostPatterns(host)), js: ['timezone-content.js'],
+      id: TEMPORARY_SCRIPT_ID, matches, js: ['timezone-temporary.js'],
       world: 'MAIN', runAt: 'document_start', allFrames: true, matchOriginAsFallback: true, persistAcrossSessions: false,
     };
-    if (exists) await chrome.scripting.updateContentScripts([script]);
+    if (existing) await chrome.scripting.updateContentScripts([script]);
     else await chrome.scripting.registerContentScripts([script]);
   }
 }

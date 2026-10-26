@@ -1,14 +1,16 @@
 /*
  * Per-tab temporary override: the background owns it and applies it with explicit zones. The only page-side trace is the
- * sessionStorage key `timezone-override.temporary` (isolated per tab+origin, survives reloads, readable synchronously at
+ * sessionStorage key `TEMPORARY_MARKER_KEY` (isolated per tab+origin, survives reloads, readable synchronously at
  * document_start), which the temporary-only registration reads through `markedZone` so reloads apply before page scripts.
  * Nothing else trusts it: live updates and status come from the background's own entry.
  */
 
+export const TEMPORARY_MARKER_KEY = 'timezone-override.temporary';
+
 /** The valid zone in the page marker, or null. Sandboxed frames and disabled storage throw; the page may also have tampered with the value. */
 export function markedZone(): string | null {
   try {
-    const zone = sessionStorage.getItem('timezone-override.temporary');
+    const zone = sessionStorage.getItem(TEMPORARY_MARKER_KEY);
     if (!zone) return null;
     new Intl.DateTimeFormat('en', { timeZone: zone });
     return zone;

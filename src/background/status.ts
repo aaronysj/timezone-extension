@@ -4,7 +4,7 @@ import { type Resolution, hostnameOf, resolveTimezone } from '../shared/resolve'
 
 /** Merges the page probe with config. `temporary` is the background's own entry for this tab and outranks config, even when the mode is off. */
 export function tabStatus(url: string | undefined, config: Config, probe: { applied: string | null; error?: string }, temporary: string | null, configurationError?: string): TabStatus {
-  const desired: Resolution | null = temporary ? { timezone: temporary, temporary: true } : url ? resolveTimezone(url, config) : null;
+  const desired: Resolution | null = temporary ? { timezone: temporary } : url ? resolveTimezone(url, config) : null;
   if (!desired) return { desired: null, applied: null, temporary: null };
   const status = { ...probe };
   try {

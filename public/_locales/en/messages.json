@@ -652,5 +652,8 @@
   },
   "tempErrZone": {
     "message": "Unknown timezone: $1"
+  },
+  "tempErrLoading": {
+    "message": "The page is still loading. Try again once it has finished."
   }
 }
