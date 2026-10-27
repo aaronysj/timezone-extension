@@ -1,15 +1,13 @@
 {
   "status": "In review",
-  "sourceCommit": "96aca5049de3c7dccc1157b91df3cafc65932e7f",
-  "version": "0.3.0",
-  "package": "timezone-override-edge-0.3.0.zip",
-  "size": 385414,
-  "sha256": "a7308e74c6c74bb937f4708afefc4a1f5601e9a42ca145f0c411e93176831559",
+  "sourceCommit": "4761faaa34074798c783975eefcb67c9de6cd663",
+  "version": "0.4.0",
+  "package": "timezone-override-edge-0.4.0.zip",
+  "size": 378571,
+  "sha256": "91b94c09b46f8a3118344784b6baf38b96b84774498cd658d33d1928935f1198",
   "validation": {
-    "unitTests": 151,
     "build": "passed",
-    "e2e": "20 checks passed on Chrome for Testing 140.0.7339.207",
-    "chrome155": "worker selection corrected; page navigation timed out, unresolved"
+    "e2e": "all checks passed on Chrome for Testing 156.0.8078.47"
   },
   "registration": {
     "country": "China",
@@ -38,7 +36,7 @@
   "edgeStoreId": "0RDCKCJ5HRCT",
   "edgeCrxId": "aioacidgmnjpdcmlmhelhgmecpmljobg",
   "submission": {
-    "version": "0.3.0",
+    "version": "0.4.0",
     "status": "In review",
     "submittedAt": "2026-10-26",
     "reviewEstimate": "7 business days, as shown by Microsoft",
@@ -50,13 +48,13 @@
       "ja",
       "ko"
     ],
-    "browserVerification": "Partner Center overview showed 0.3.0 In review and 0.2.1 Live"
+    "browserVerification": "Partner Center overview showed 0.4.0 In review and 0.2.1 Live; the pending 0.3.0 submission was canceled before submitting 0.4.0"
   },
   "previousLiveVersion": "0.2.1",
   "chromeSubmission": {
-    "version": "0.3.0",
+    "version": "0.4.0",
     "status": "Pending review",
-    "submittedAt": "2026-10-25",
+    "submittedAt": "2026-10-26",
     "visibility": "Public",
     "regions": "All",
     "autoPublishAfterReview": true,

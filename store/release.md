@@ -1,5 +1,14 @@
 # Chrome Web Store release 0.2.0
 
+## 0.4.0 发布状态
+
+0.4.0 已从 `master` 提交 `4761faaa34074798c783975eefcb67c9de6cd663` 构建，并提交 Chrome Web Store 与 Microsoft Edge Add-ons 审核。Chrome Web Store 显示「待审核」，已勾选审核通过后自动发布；Edge Partner Center 显示 0.4.0「In review」、0.2.1「Live」。提交 Edge 0.4.0 前撤回了仍在审核中的 0.3.0，以便提交最新版本。
+
+- Chrome 包：`timezone-override-0.4.0.zip`，378571 bytes；SHA-256：`91b94c09b46f8a3118344784b6baf38b96b84774498cd658d33d1928935f1198`。
+- Edge 包：`edge/timezone-override-edge-0.4.0.zip`，378571 bytes；SHA-256 相同。
+- `npm run build`：通过；Chrome for Testing 156.0.8078.47 E2E：全部检查通过。
+- 两份 ZIP 内容一致；manifest 为 0.4.0；未包含 `debugger` 权限、源码或 sourcemap。
+
 ## 0.3.0 发布状态
 
 0.3.0 已从提交 `96aca5049de3c7dccc1157b91df3cafc65932e7f` 打包、验证，并提交到 Microsoft Edge Add-ons 审核。Partner Center 显示 0.3.0「In review」、0.2.1「Live」；微软预计审核需 7 个工作日。公开范围为 241 个市场。
@@ -12,7 +21,7 @@
 
 ## 当前状态
 
-0.2.0 曾于 2026-09-29（America/Los_Angeles）提交 Chrome Web Store 审核。0.3.0 Chrome 提交仍待办；Edge 0.3.0 已送审，0.2.1 继续 Live。0.1.0 的审核已撤回。
+Chrome 0.4.0 待审核，审核通过后自动发布。Edge 0.4.0 正在审核；当前 Edge 线上版本为 0.2.1。Edge 0.3.0 的待审提交已于 2026-10-26 撤回。0.2.0 曾于 2026-09-29（America/Los_Angeles）提交 Chrome Web Store 审核；0.1.0 的审核已撤回。
 
 已保存新版英文与简体中文说明、单一用途、scripting/storage/tabs/webNavigation/网站访问权限理由、无远程代码和无收集数据声明，以及 457 字符审核测试步骤。已核对免费、公开、所有地区分发；商店软件包显示版本 0.2.0，权限列表没有 debugger。Google 提示所有网站权限可能触发深入审核并延迟发布时间；该权限用于全局覆盖与用户自定义域名规则。
 
