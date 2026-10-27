@@ -6,7 +6,7 @@ import { type TabStatus, sendRequest } from '../shared/messages';
 import { hostnameOf, normalizePattern, resolveTimezone, ruleForHost } from '../shared/resolve';
 import { loadTemporaryTabs, temporaryOrigin, temporaryZone } from '../shared/temporary';
 import { cityLabel, dateLabel, dayDifference, offsetLabel, systemTimezone, timeDifference } from '../shared/timezone';
-import { h, languageSelect, modeLabel, modeSwitch, replaceKeepingFocus, saveNotice } from '../ui/dom';
+import { h, languageSelect, modeSwitch, replaceKeepingFocus, saveNotice } from '../ui/dom';
 import { timezonePicker } from '../ui/tzpicker';
 
 localizeDocument('extName');
@@ -165,7 +165,6 @@ async function refreshStatus() {
     const explanation = !known ? t('explainUnknown')
       : editor.state === 'error' ? t('explainUnsaved')
       : error ? (res.applied ? t('explainStillZone', cityLabel(shownZone), errorHelp()) : t('explainStillSystem', errorHelp()))
-      : applied && override ? t('explainTemporary')
       : '';
     replaceKeepingFocus(now, nowView(state, explanation, error));
   }
@@ -173,9 +172,8 @@ async function refreshStatus() {
 }
 
 function siteControls(): HTMLElement | null {
-  if (config.mode === 'off') return h('p', { className: 'hint' }, t('popupOffHint', modeLabel('rules'), modeLabel('global')));
+  if (config.mode === 'off') return null;
   if (config.mode === 'global') return h('section', { className: 'block' },
-    h('label', { className: 'block-label', htmlFor: 'global-tz' }, t('globalUse')),
     timezonePicker({ id: 'global-tz', label: t('globalTzLabel'), compact: true, value: config.timezone, onCommit: (timezone) => void editor.update({ ...config, timezone }) }));
   if (!host) return null;
   const rule = scopeRule();
@@ -195,11 +193,11 @@ function siteControls(): HTMLElement | null {
   const overridden = effective && effective.id !== rule?.id;
   // "Use system timezone" only matters when another rule would still change this site.
   const fallback = tabUrl ? resolveTimezone(tabUrl, { ...config, rules: config.rules.filter((r) => r.id !== rule?.id) }) : null;
-  return h('section', { className: 'block' },
-    h('label', { className: 'block-label', htmlFor: 'site-tz' }, t(rule?.action === 'exclude' ? 'siteTzExcluded' : rule ? (rule.enabled ? 'siteTz' : 'siteTzDisabled') : 'siteTzNew')),
+  // The scope select under the picker is its caption: it names exactly which hosts change.
+  return h('section', { className: `block site${rule && !rule.enabled ? ' is-disabled' : ''}` },
     warning ? null : timezonePicker({ id: 'site-tz', label: t('siteTz'), compact: true, value: rule?.action === 'include' ? rule.timezone ?? config.timezone : '',
-      placeholder: t('siteTzPlaceholder'), onCommit: (tz) => void setSite('include', tz) }),
-    h('div', { className: 'scope-row' }, h('label', { className: 'scope-label', htmlFor: 'site-scope' }, t('scopeField')), select),
+      placeholder: t(rule?.action === 'exclude' ? 'useSystem' : 'siteTzPlaceholder'), onCommit: (tz) => void setSite('include', tz) }),
+    select,
     warning ? h('p', { className: 'warn', role: 'alert' }, t('warnBroadRule', warning)) : null,
     overridden ? h('p', { className: 'warn' }, blocked ? t('warnExcludedBy', effective.pattern) : t('warnOverriddenBy', scopeLabel(effective))) : null,
     overridden ? h('button', { id: 'edit-effective', className: 'link', textContent: t('editEffective'), onclick: () => { selected = effectiveScope(); followEffective = true; focusAfter = 'site-tz'; render(); } }) : null,
@@ -216,7 +214,6 @@ function temporaryControls(): HTMLElement | null {
     h('label', { className: 'block-label', htmlFor: 'temp-tz' }, t('tempUse')),
     timezonePicker({ id: 'temp-tz', label: t('tempTzLabel'), compact: true, value: temporary ?? '', placeholder: t('tempPlaceholder'),
       onCommit: (timezone) => void setTemporary(timezone) }),
-    temporary ? h('p', { className: 'hint' }, t('tempHint')) : null,
     temporary ? h('div', { className: 'block-actions' },
       h('button', { id: 'temp-reload', className: 'link', textContent: t('tempReload'), onclick: () => { if (tab?.id !== undefined) void chrome.tabs.reload(tab.id); } }),
       h('button', { id: 'temp-clear', className: 'link', textContent: t('tempClear'), onclick: () => void setTemporary(null) })) : null);
@@ -229,9 +226,8 @@ function render() {
     followEffective = true;
     void editor.update({ ...config, mode });
   }), now, ...[siteControls(), temporaryControls()].filter((el): el is HTMLElement => el !== null),
-    h('div', { className: 'popup-language' }, h('label', { htmlFor: 'popup-language' }, t('languageLabel')),
-      languageSelect('popup-language', config.language, (language) => void editor.update({ ...config, language }))),
-    h('footer', {}, h('button', { id: 'open-settings', className: 'link', textContent: t('openSettings'), onclick: () => chrome.runtime.openOptionsPage() }), feedback)], focusAfter);
+    h('footer', {}, h('button', { id: 'open-settings', className: 'link', textContent: t('openSettings'), onclick: () => chrome.runtime.openOptionsPage() }), feedback,
+      languageSelect('popup-language', config.language, (language) => void editor.update({ ...config, language })))], focusAfter);
   focusAfter = undefined;
 }
 onConfigChanged((next: Config) => editor.receive(next));

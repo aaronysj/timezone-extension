@@ -72,10 +72,3 @@ export function saveNotice(editor: ConfigEditor): HTMLElement {
     t(editor.state === 'saving' ? 'saveSaving' : editor.state === 'saved' ? 'saveSaved' : editor.state === 'error' ? 'saveError' : 'saveIdle'),
     editor.state === 'error' ? h('button', { id: 'retry-save', type: 'button', textContent: t('saveRetry'), onclick: () => void editor.retry() }) : null);
 }
-
-const MODE_HINTS: Record<Mode, MessageKey> = {
-  off: 'modeHintOff',
-  global: 'modeHintGlobal',
-  rules: 'modeHintRules',
-};
-export const modeHint = (mode: Mode): string => t(MODE_HINTS[mode]);

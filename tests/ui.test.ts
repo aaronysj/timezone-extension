@@ -14,6 +14,7 @@ let sent: unknown[];
 let listeners: ((changes: unknown, area: string) => void)[];
 const input = (id: string) => document.getElementById(id) as HTMLInputElement;
 const text = () => document.body.textContent!;
+const unsaved = () => !document.querySelector('.save-bar')!.classList.contains('is-settled');
 const flush = async () => { for (let i = 0; i < 10; i++) await Promise.resolve(); };
 const change = (id: string, value: string) => { const el = input(id); el.value = value; el.dispatchEvent(new Event('change', { bubbles: true })); };
 
@@ -222,18 +223,17 @@ describe('options regressions', () => {
     expect(document.querySelector('.rules')).toBeNull();
     expect(document.getElementById('tester')).toBeNull();
     expect(document.getElementById('add-site')).toBeNull();
-    expect(document.querySelector('.hero-purpose')?.textContent).toContain('所有网站使用的时间');
-    expect((document.querySelector('.pending-state') as HTMLElement).hidden).toBe(false);
+    expect(unsaved()).toBe(true);
     expect(input('default-tz').ariaLabel).toBe('所有网站时区');
     expect(text()).not.toContain('草稿');
-    expect(text()).toContain('网站规则会保留');
+    expect(document.getElementById('activate-rules')).not.toBeNull();
     expect(writes).not.toHaveBeenCalled();
     expect(stored.mode).toBe('rules');
     input('save-settings').click();
     await flush();
     expect(stored.mode).toBe('global');
     expect(stored.rules).toEqual(original);
-    expect((document.querySelector('.pending-state') as HTMLElement).hidden).toBe(true);
+    expect(unsaved()).toBe(false);
     input('activate-rules').click();
     expect(document.querySelectorAll('.rule')).toHaveLength(original.length);
     expect(document.activeElement?.id).toBe('mode-rules');
@@ -253,7 +253,7 @@ describe('options regressions', () => {
     input('discard-settings').click();
     expect(input('mode-rules').ariaPressed).toBe('true');
     expect(input('rule-parent-scope').textContent).toContain('含子域名');
-    expect((document.querySelector('.pending-state') as HTMLElement).hidden).toBe(true);
+    expect(unsaved()).toBe(false);
   });
   it('makes unfinished rule fields recoverable instead of failing validation in a hidden section', async () => {
     await import('../src/options/main');
@@ -304,13 +304,12 @@ describe('options regressions', () => {
     expect(stored.mode).toBe('global');
     expect(stored.rules).toEqual(original);
   });
-  it('shows the system clock and retains rules when switching off', async () => {
+  it('retains rules when switching off', async () => {
     await import('../src/options/main');
     input('mode-off').click();
     expect(document.querySelector('.rules')).toBeNull();
-    expect(document.querySelector('.hero-purpose')?.textContent).toContain('本机时间');
-    expect((document.querySelector('.big-clock') as HTMLElement).dataset.tz).toBe(Intl.DateTimeFormat().resolvedOptions().timeZone);
-    expect(text()).toContain('已配置的网站规则会保留');
+    input('activate-rules').click();
+    expect(document.querySelectorAll('.rule')).toHaveLength(stored.rules.length);
   });
   it('stages language changes, discards them, then saves and localizes all controls', async () => {
     await import('../src/options/main');
@@ -461,7 +460,7 @@ describe('options regressions', () => {
     await flush();
     expect(document.activeElement?.id).toBe('rule-parent-enabled');
     expect(input('mode-rules').ariaPressed).toBe('true');
-    expect((document.querySelector('.pending-state') as HTMLElement).hidden).toBe(false);
+    expect(unsaved()).toBe(true);
     expect(stored.rules[0]!.enabled).toBe(true);
   });
   it('defaults added rules to exact and retains failed edits for retry', async () => {
@@ -542,7 +541,7 @@ describe.each(['en', 'zh_CN', 'ja', 'ko', 'de'])('localized UI flows: %s', (loca
     expect(stored.mode).toBe('global');
     expect(text()).toContain(i18n.getMessage('saveAppliedDone'));
     expect(document.querySelector('.rules')).toBeNull();
-    expect(text()).toContain(i18n.getMessage('rulesRetainedGlobal'));
+    expect(input('activate-rules').textContent).toBe(i18n.getMessage('manageRules'));
     input('mode-rules').click();
     input('add-site').value = 'bad domain';
     input('add-site').dispatchEvent(new Event('input', { bubbles: true }));
@@ -587,7 +586,7 @@ describe('temporary tab override', () => {
     expect(input('temp-tz').placeholder).toBe(chineseI18n.getMessage('tempPlaceholder'));
     expect(document.querySelector('label[for="temp-tz"]')?.textContent).toBe(chineseI18n.getMessage('tempUse'));
     expect(document.getElementById('temp-clear')).toBeNull();
-    expect(text()).not.toContain(chineseI18n.getMessage('tempHint'));
+    expect(document.getElementById('temp-reload')).toBeNull();
   });
   it('sits after the site controls and before the language selector', async () => {
     await import('../src/popup/main');
@@ -609,9 +608,8 @@ describe('temporary tab override', () => {
     expect(stored).toEqual(before);
     expect(input('temp-tz').value).toBe('东京');
     expect(document.activeElement?.id).toBe('temp-tz');
-    expect(text()).toContain(chineseI18n.getMessage('tempHint'));
+    expect(document.getElementById('temp-reload')).not.toBeNull();
     expect(text()).toContain(chineseI18n.getMessage('statusTemporary'));
-    expect(text()).toContain(chineseI18n.getMessage('explainTemporary'));
     expect(document.querySelector('.now-city')?.getAttribute('title')).toBe('Asia/Tokyo');
     expect(document.querySelector('.state.ok')).not.toBeNull();
   });

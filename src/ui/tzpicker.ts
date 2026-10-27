@@ -26,7 +26,6 @@ export function timezonePicker(opts: {
   /** Optional shortlist before the user starts searching. */
   suggestions?: string[];
   selected?: string;
-  commitHint?: string;
   onCommit: (tz: string) => void;
 }): HTMLElement {
   const listId = `tzp-${++seq}`;
@@ -110,7 +109,7 @@ export function timezonePicker(opts: {
     search('');
     input.placeholder = t('pickerPlaceholder');
     input.select();
-    help.textContent = opts.commitHint ?? t('pickerOpenHelp');
+    help.textContent = '';
   }
 
   function close() {

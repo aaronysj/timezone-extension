@@ -29,15 +29,6 @@
   "modeGroupLabel": {
     "message": "Scope"
   },
-  "modeHintOff": {
-    "message": "No page's timezone is changed."
-  },
-  "modeHintGlobal": {
-    "message": "All sites use the selected timezone."
-  },
-  "modeHintRules": {
-    "message": "Only sites listed in rules are changed; exclusions take priority."
-  },
   "saveSaving": {
     "message": "Saving…"
   },
@@ -67,9 +58,6 @@
   },
   "pickerNoMatch": {
     "message": "No timezone matches \"$1\""
-  },
-  "pickerOpenHelp": {
-    "message": "Click a result or press Enter to apply; Esc to cancel."
   },
   "pickerClickToSearch": {
     "message": "Click to search city or timezone"
@@ -155,12 +143,6 @@
   "localTimeLabel": {
     "message": "Current local time"
   },
-  "popupOffHint": {
-    "message": "Choose \"$1\" to set this site, or \"$2\" to change every site."
-  },
-  "globalUse": {
-    "message": "All sites use"
-  },
   "globalTzLabel": {
     "message": "Timezone for all sites"
   },
@@ -170,23 +152,11 @@
   "scopeOptionSuffix": {
     "message": "Incl. subdomains · $1"
   },
-  "scopeField": {
-    "message": "Applies to"
-  },
   "warnBroadRule": {
     "message": "An existing rule is too broad: $1 Remove it and set it again."
   },
-  "siteTzExcluded": {
-    "message": "This rule uses the system timezone"
-  },
   "siteTz": {
     "message": "Site timezone"
-  },
-  "siteTzDisabled": {
-    "message": "Rule disabled · Site timezone"
-  },
-  "siteTzNew": {
-    "message": "Set a timezone for this site"
   },
   "siteTzPlaceholder": {
     "message": "Choose a timezone to apply"
@@ -263,9 +233,6 @@
   "addSite": {
     "message": "Add site"
   },
-  "addSubdomains": {
-    "message": "Also change this site's subdomains"
-  },
   "undo": {
     "message": "Undo"
   },
@@ -273,7 +240,7 @@
     "message": "Site rules"
   },
   "rulesEmpty": {
-    "message": "No site rules yet. An added domain gets the default timezone on that host only; check \"Include subdomains\" to cover them too."
+    "message": "No site rules yet."
   },
   "testerOnlyHttp": {
     "message": "Only http/https pages can be changed."
@@ -293,50 +260,20 @@
   "testerNoMatch": {
     "message": "$1 matches no rule; no change."
   },
-  "optionsHeroHint": {
-    "message": "Changes reach web pages only after you click \"$1\"."
-  },
-  "generalTitle": {
-    "message": "General"
-  },
-  "defaultTzHint": {
-    "message": "Search a city, timezone ID or offset, e.g. \"Tokyo\" or \"+8\"."
-  },
   "effectDefault": {
     "message": "Use default timezone"
   },
   "excludeTitle": {
     "message": "Don't change this site's timezone"
   },
-  "addedDraftExact": {
-    "message": "Site added (unsaved): $1, this host only."
-  },
-  "addedDraftSuffix": {
-    "message": "Site added (unsaved): $1, including subdomains."
-  },
   "pendingDelete": {
     "message": "Pending deletion: $1"
-  },
-  "rulesHint": {
-    "message": "Each site can use the default, a custom, or the system timezone. System-timezone rules take priority."
-  },
-  "colEnabled": {
-    "message": "On"
   },
   "colSite": {
     "message": "Site"
   },
-  "colTimezone": {
-    "message": "Timezone"
-  },
-  "colLocalTime": {
-    "message": "Local time"
-  },
   "testerLabel": {
     "message": "Check website settings"
-  },
-  "testerIdle": {
-    "message": "Enter a URL to preview the timezone and rule it will get after saving."
   },
   "addPendingError": {
     "message": "Click \"$1\" first, or clear the field before saving."
@@ -362,9 +299,6 @@
   "saveAppliedDone": {
     "message": "Saved and applied"
   },
-  "saveClean": {
-    "message": "Settings saved"
-  },
   "loadLatest": {
     "message": "Load latest settings"
   },
@@ -386,18 +320,6 @@
   "scopeExactShort": {
     "message": "Exact match"
   },
-  "scopeExactOption": {
-    "message": "This domain only (exact match)"
-  },
-  "scopeSuffixOption": {
-    "message": "Include all subdomains"
-  },
-  "scopeExactExample": {
-    "message": "Only matches $1"
-  },
-  "scopeSuffixExample": {
-    "message": "Matches $1 and all its subdomains"
-  },
   "ruleScopeLabel": {
     "message": "Match scope for $1"
   },
@@ -412,9 +334,6 @@
   },
   "ruleMoreLabel": {
     "message": "More actions for $1"
-  },
-  "pickerDraftHelp": {
-    "message": "Choose a timezone, then Save and apply to activate it."
   },
   "cityShanghai": {
     "message": "Shanghai"
@@ -575,9 +494,6 @@
   "languageAuto": {
     "message": "Follow browser"
   },
-  "languageSaveHint": {
-    "message": "Applies to the popup and settings after you save."
-  },
   "languageEnglish": {
     "message": "English"
   },
@@ -589,24 +505,6 @@
   },
   "languageKorean": {
     "message": "한국어"
-  },
-  "heroGlobalTime": {
-    "message": "Time used by all sites"
-  },
-  "heroDefaultTime": {
-    "message": "Time in the default timezone"
-  },
-  "heroSystemTime": {
-    "message": "Time on this device"
-  },
-  "settingsUnsaved": {
-    "message": "Unsaved"
-  },
-  "rulesRetainedGlobal": {
-    "message": "All sites use the timezone selected above. Your site rules are kept and apply when you switch back to By rules."
-  },
-  "rulesRetainedOff": {
-    "message": "When off, websites use the system timezone. Your site rules are kept."
   },
   "manageRules": {
     "message": "Switch to By rules"
@@ -623,9 +521,6 @@
   "statusTemporary": {
     "message": "Temporary"
   },
-  "explainTemporary": {
-    "message": "This tab is using a temporary timezone instead of your settings."
-  },
   "tempUse": {
     "message": "This tab only, temporarily"
   },
@@ -634,9 +529,6 @@
   },
   "tempPlaceholder": {
     "message": "Choose a timezone"
-  },
-  "tempHint": {
-    "message": "Ends when this tab is closed. Times already on the page update after a reload."
   },
   "tempReload": {
     "message": "Reload page"
