@@ -29,15 +29,6 @@
   "modeGroupLabel": {
     "message": "生效范围"
   },
-  "modeHintOff": {
-    "message": "不修改任何页面的时区。"
-  },
-  "modeHintGlobal": {
-    "message": "所有网站统一使用选定的时区。"
-  },
-  "modeHintRules": {
-    "message": "只修改规则里列出的网站，排除规则优先。"
-  },
   "saveSaving": {
     "message": "正在保存…"
   },
@@ -67,9 +58,6 @@
   },
   "pickerNoMatch": {
     "message": "没有匹配「$1」的时区"
-  },
-  "pickerOpenHelp": {
-    "message": "点击结果或按回车应用；Esc 取消。"
   },
   "pickerClickToSearch": {
     "message": "点击搜索城市或时区"
@@ -155,12 +143,6 @@
   "localTimeLabel": {
     "message": "当前当地时间"
   },
-  "popupOffHint": {
-    "message": "选择「$1」为当前网站设置，或选择「$2」统一修改。"
-  },
-  "globalUse": {
-    "message": "所有网站使用"
-  },
   "globalTzLabel": {
     "message": "所有网站时区"
   },
@@ -170,23 +152,11 @@
   "scopeOptionSuffix": {
     "message": "含子域名 · $1"
   },
-  "scopeField": {
-    "message": "适用范围"
-  },
   "warnBroadRule": {
     "message": "已有规则范围过宽：$1请移除后重新设置。"
   },
-  "siteTzExcluded": {
-    "message": "此规则使用系统时区"
-  },
   "siteTz": {
     "message": "网站时区"
-  },
-  "siteTzDisabled": {
-    "message": "规则已停用 · 网站时区"
-  },
-  "siteTzNew": {
-    "message": "为此网站设置时区"
   },
   "siteTzPlaceholder": {
     "message": "选择时区并应用"
@@ -263,9 +233,6 @@
   "addSite": {
     "message": "添加网站"
   },
-  "addSubdomains": {
-    "message": "同时修改该网站的子域名"
-  },
   "undo": {
     "message": "撤销"
   },
@@ -273,7 +240,7 @@
     "message": "网站规则"
   },
   "rulesEmpty": {
-    "message": "还没有网站规则。添加域名后，仅该主机会使用默认时区；也可明确勾选包含子域名。"
+    "message": "还没有网站规则。"
   },
   "testerOnlyHttp": {
     "message": "只能修改 http/https 网页。"
@@ -293,50 +260,20 @@
   "testerNoMatch": {
     "message": "$1 没有命中任何规则，不修改。"
   },
-  "optionsHeroHint": {
-    "message": "编辑完成后点击「$1」，网页时区才会改变。"
-  },
-  "generalTitle": {
-    "message": "基础设置"
-  },
-  "defaultTzHint": {
-    "message": "搜索城市、时区 ID 或偏移，例如「东京」或「+8」。"
-  },
   "effectDefault": {
     "message": "使用默认时区"
   },
   "excludeTitle": {
     "message": "不修改这个网站的时区"
   },
-  "addedDraftExact": {
-    "message": "已添加网站（未保存）：$1，仅此域名。"
-  },
-  "addedDraftSuffix": {
-    "message": "已添加网站（未保存）：$1，包含子域名。"
-  },
   "pendingDelete": {
     "message": "待删除：$1"
-  },
-  "rulesHint": {
-    "message": "每个网站可以使用默认、指定或系统时区。系统时区规则优先。"
-  },
-  "colEnabled": {
-    "message": "启用"
   },
   "colSite": {
     "message": "网站"
   },
-  "colTimezone": {
-    "message": "时区设置"
-  },
-  "colLocalTime": {
-    "message": "当地时间"
-  },
   "testerLabel": {
     "message": "检查网站设置"
-  },
-  "testerIdle": {
-    "message": "输入网址，预览保存后会使用的时区和规则。"
   },
   "addPendingError": {
     "message": "请先点击「$1」，或清空输入后保存。"
@@ -362,9 +299,6 @@
   "saveAppliedDone": {
     "message": "已保存并应用"
   },
-  "saveClean": {
-    "message": "设置已保存"
-  },
   "loadLatest": {
     "message": "载入最新设置"
   },
@@ -386,18 +320,6 @@
   "scopeExactShort": {
     "message": "仅此域名"
   },
-  "scopeExactOption": {
-    "message": "仅此域名（精确匹配）"
-  },
-  "scopeSuffixOption": {
-    "message": "包含所有子域名"
-  },
-  "scopeExactExample": {
-    "message": "仅匹配 $1"
-  },
-  "scopeSuffixExample": {
-    "message": "匹配 $1 及其所有子域名"
-  },
   "ruleScopeLabel": {
     "message": "$1 的匹配范围"
   },
@@ -412,9 +334,6 @@
   },
   "ruleMoreLabel": {
     "message": "$1 的更多操作"
-  },
-  "pickerDraftHelp": {
-    "message": "选择时区后，点击「保存并应用」使设置生效。"
   },
   "cityShanghai": {
     "message": "北京"
@@ -575,9 +494,6 @@
   "languageAuto": {
     "message": "跟随浏览器"
   },
-  "languageSaveHint": {
-    "message": "保存后同时应用到弹窗和设置页。"
-  },
   "languageEnglish": {
     "message": "English"
   },
@@ -589,24 +505,6 @@
   },
   "languageKorean": {
     "message": "한국어"
-  },
-  "heroGlobalTime": {
-    "message": "所有网站使用的时间"
-  },
-  "heroDefaultTime": {
-    "message": "默认时区的时间"
-  },
-  "heroSystemTime": {
-    "message": "本机时间"
-  },
-  "settingsUnsaved": {
-    "message": "未保存"
-  },
-  "rulesRetainedGlobal": {
-    "message": "所有网站统一使用上方时区。网站规则会保留，切回「按规则」后生效。"
-  },
-  "rulesRetainedOff": {
-    "message": "关闭模式下，网站使用系统时区。已配置的网站规则会保留。"
   },
   "manageRules": {
     "message": "切换到「按规则」"
@@ -623,9 +521,6 @@
   "statusTemporary": {
     "message": "临时生效"
   },
-  "explainTemporary": {
-    "message": "此标签页正在使用临时时区，而非设置中的时区。"
-  },
   "tempUse": {
     "message": "仅此标签页临时使用"
   },
@@ -634,9 +529,6 @@
   },
   "tempPlaceholder": {
     "message": "选择时区"
-  },
-  "tempHint": {
-    "message": "关闭此标签页后失效。页面上已显示的时间需刷新后才会更新。"
   },
   "tempReload": {
     "message": "刷新页面"

@@ -1,7 +1,7 @@
 import { type Config, type Rule, loadConfig, onConfigChanged } from '../shared/config';
 import { hostnameOf, normalizePattern, resolveTimezone, ruleForHost } from '../shared/resolve';
-import { cityLabel, dateLabel, dayDifference, isValidTimezone, offsetLabel, systemTimezone } from '../shared/timezone';
-import { h, languageSelect, modeHint, modeSwitch, replaceKeepingFocus } from '../ui/dom';
+import { cityLabel, isValidTimezone, offsetLabel, systemTimezone } from '../shared/timezone';
+import { h, languageSelect, modeSwitch, replaceKeepingFocus } from '../ui/dom';
 import { timezonePicker } from '../ui/tzpicker';
 import { icon } from '../ui/icons';
 import { attachPopover } from '../ui/popover';
@@ -75,36 +75,6 @@ function tick() {
     const tz = el.dataset.tz!;
     if (offsetLabel(tz)) el.textContent = timeIn(tz, 'seconds' in el.dataset);
   }
-  const date = root.querySelector('.hero-date');
-  if (date) date.textContent = [dateLabel(headerTimezone()), dayDifference(headerTimezone())].filter(Boolean).join(' · ');
-}
-
-// ---- header: explain what the displayed time means in the selected mode ----
-
-const headerTimezone = () => config.mode === 'off' ? systemTimezone() : config.timezone;
-
-function hero(): HTMLElement {
-  const off = config.mode === 'off';
-  const timezone = headerTimezone();
-  return h(
-    'header',
-    { className: `hero${off ? ' is-off' : ''}` },
-    h(
-      'div',
-      { className: 'hero-copy' },
-      h('h1', {}, t('optionsTitle')),
-      h('p', {}, t('optionsHeroHint', t('saveApply'))),
-    ),
-    h(
-      'div',
-      { className: 'hero-clock' },
-      clock(timezone, 'big-clock'),
-      h('div', { className: 'hero-purpose' }, t(off ? 'heroSystemTime' : config.mode === 'global' ? 'heroGlobalTime' : 'heroDefaultTime'),
-        h('span', { className: 'pending-state', hidden: !hasChanges() }, t('settingsUnsaved'))),
-      h('span', { className: 'hero-zone', title: timezone }, `${cityLabel(timezone)} · ${offsetLabel(timezone)}`),
-      h('span', { className: 'hero-date' }, dateLabel(timezone)),
-    ),
-  );
 }
 
 function general(): HTMLElement {
@@ -112,30 +82,22 @@ function general(): HTMLElement {
   return h(
     'section',
     { className: 'panel general' },
-    h('h2', {}, t('generalTitle')),
     h(
       'div',
       { className: 'field' },
       h('span', { className: 'field-label' }, t('modeGroupLabel')),
-      h('div', {}, modeSwitch(config.mode, (mode) => void stage({ ...config, mode })), h('p', { className: 'muted' }, modeHint(config.mode))),
+      h('div', {}, modeSwitch(config.mode, (mode) => void stage({ ...config, mode }))),
     ),
     h(
       'div',
       { className: 'field' },
       h('label', { className: 'field-label', htmlFor: 'default-tz' }, timezoneLabel),
-      h(
-        'div',
-        {},
-        timezonePicker({ id: 'default-tz', label: timezoneLabel, value: config.timezone, compact: true, onCommit: (timezone) => void stage({ ...config, timezone }) }),
-        h('p', { className: 'muted' }, t('defaultTzHint')),
-      ),
+      h('div', {}, timezonePicker({ id: 'default-tz', label: timezoneLabel, value: config.timezone, compact: true, onCommit: (timezone) => void stage({ ...config, timezone }) })),
     ),
-    h('div', { className: 'field language-field' },
+    h('div', { className: 'field' },
       h('label', { className: 'field-label', htmlFor: 'settings-language' }, t('languageLabel')),
-      h('div', {}, languageSelect('settings-language', config.language, (language) => stage({ ...config, language })),
-        h('p', { className: 'muted' }, t('languageSaveHint')))),
+      h('div', {}, languageSelect('settings-language', config.language, (language) => stage({ ...config, language })))),
     retainedRules(),
-    h('p', { className: 'muted' }, t('coverageNote')),
   );
 }
 
@@ -163,21 +125,21 @@ function ruleRow(rule: Rule): HTMLElement {
       id: `${prefix}-scope-${match}`, type: 'button', className: 'scope-option',
       ariaPressed: String(rule.match === match),
       onclick: () => commit({ match }, scope.id),
-    }, h('span', {}, h('strong', {}, t(match === 'exact' ? 'scopeExactOption' : 'scopeSuffixOption')),
-      h('small', {}, t(match === 'exact' ? 'scopeExactExample' : 'scopeSuffixExample', rule.pattern))),
+    }, h('span', {}, t(match === 'exact' ? 'scopeExact' : 'scopeSuffix', rule.pattern)),
       rule.match === match ? icon('check') : null)));
   attachPopover(scope, scopePopup);
 
   const zone = h('button', {
     id: `${prefix}-zone`, type: 'button', className: `zone-trigger${effect === 'exclude' ? ' system-zone' : ''}`,
     ariaLabel: t('ruleEffectLabel', rule.pattern), title: tz,
-  }, h('span', { className: 'zone-label' }, effect === 'exclude' ? t('useSystem') : cityLabel(tz)),
+  }, effect === 'default' ? icon('globe') : effect === 'exclude' ? icon('monitor') : null,
+    h('span', { className: 'zone-label' }, effect === 'exclude' ? t('useSystem') : cityLabel(tz)),
     h('span', { className: 'zone-offset' }, offsetLabel(tz)), icon('caret'));
   const zonePopup = h('div', { id: `${prefix}-zone-popup`, className: 'rule-popover zone-popover' },
     h('div', { className: 'zone-presets' },
       h('button', { id: `${prefix}-default`, type: 'button', ariaPressed: String(effect === 'default'), onclick: () => commit({ action: 'include', timezone: undefined }) }, icon('globe'), h('span', {}, t('effectDefault'), h('small', {}, `${cityLabel(config.timezone)} · ${offsetLabel(config.timezone)}`)), effect === 'default' ? icon('check') : null),
       h('button', { id: `${prefix}-system`, type: 'button', ariaPressed: String(effect === 'exclude'), title: t('excludeTitle'), onclick: () => commit({ action: 'exclude', timezone: undefined }) }, icon('monitor'), h('span', {}, t('useSystem'), h('small', {}, `${cityLabel(systemTimezone())} · ${offsetLabel(systemTimezone())}`)), effect === 'exclude' ? icon('check') : null)),
-    timezonePicker({ id: `${prefix}-tz`, label: t('ruleCustomTzLabel', rule.pattern), value: '', compact: true, suggestions: [tz, 'Asia/Tokyo', systemTimezone()], selected: effect === 'custom' ? tz : undefined, commitHint: t('pickerDraftHelp'),
+    timezonePicker({ id: `${prefix}-tz`, label: t('ruleCustomTzLabel', rule.pattern), value: '', compact: true, suggestions: [tz, 'Asia/Tokyo', systemTimezone()], selected: effect === 'custom' ? tz : undefined,
       onCommit: (timezone) => commit({ action: 'include', timezone }) }));
   attachPopover(zone, zonePopup, `${prefix}-tz`);
 
@@ -227,8 +189,7 @@ function ruleRow(rule: Rule): HTMLElement {
       onchange: (event) => commit({ enabled: (event.target as HTMLInputElement).checked }, `${prefix}-enabled`) }),
     h('div', { className: 'rule-site' }, h('strong', { className: 'domain-name', title: rule.pattern }, rule.pattern), scope,
       ruleErrors.has(rule.id) && editingRuleId !== rule.id ? h('p', { className: 'field-error', role: 'alert' }, ruleErrors.get(rule.id)) : null),
-    h('div', { className: 'rule-effect' }, zone,
-      effect === 'default' ? h('span', { className: 'zone-source' }, t('effectDefault')) : null),
+    h('div', { className: 'rule-effect' }, zone),
     clock(tz, 'rule-time'), h('div', { className: 'rule-actions' }, edit, more),
     scopePopup, zonePopup, editPopup, morePopup);
   row.dataset.id = rule.id;
@@ -257,17 +218,16 @@ function addForm(): HTMLElement {
     const rule: Rule = { id: crypto.randomUUID(), enabled: true, action: 'include', match, pattern };
     flashId = rule.id;
     addDraft = '';
-    addMessage = t(match === 'exact' ? 'addedDraftExact' : 'addedDraftSuffix', pattern);
+    addMessage = '';
     void stage({ ...config, rules: [...config.rules, rule] });
   } }, h('div', { className: 'add' }, input, h('button', { id: 'add-site-submit', type: 'submit', className: 'primary', textContent: t('addSite') })),
-    h('label', { className: 'subdomains' }, h('input', { id: 'add-subdomains', type: 'checkbox', checked: addSubdomains, onchange: (e) => { addSubdomains = (e.target as HTMLInputElement).checked; } }), t('addSubdomains')),
+    h('label', { className: 'subdomains' }, h('input', { id: 'add-subdomains', type: 'checkbox', checked: addSubdomains, onchange: (e) => { addSubdomains = (e.target as HTMLInputElement).checked; } }), t('includeSubdomains')),
     error, h('p', { className: 'muted', role: 'status' }, addMessage));
 }
 
 function retainedRules(): HTMLElement | null {
   if (config.mode === 'rules') return null;
   return h('div', { className: 'mode-summary' },
-    h('p', { className: 'muted' }, t(config.mode === 'global' ? 'rulesRetainedGlobal' : 'rulesRetainedOff')),
     h('div', { className: 'mode-summary-actions' },
       h('button', { id: 'activate-rules', textContent: t('manageRules'), onclick: () => {
         rulesSaveBlocked = false;
@@ -312,15 +272,10 @@ function rulesSection(): HTMLElement {
   return h(
     'section',
     { className: 'panel rules' },
-    h(
-      'div',
-      { className: 'panel-head' },
-      h('h2', {}, t('rulesTitle')),
-      h('p', { className: 'muted' }, t('rulesHint')),
-    ),
+    h('h2', {}, t('rulesTitle')),
     addForm(),
     config.rules.length
-      ? h('div', { className: 'rules-table' }, h('div', { className: 'rule-columns', ariaHidden: 'true' }, h('span', { className: 'column-enabled' }, t('colEnabled')), h('span', {}, t('colSite')), h('span', {}, t('colTimezone')), h('span', {}, t('colLocalTime')), h('span')), h('ul', { className: 'rule-list' }, ...config.rules.map(ruleRow)))
+      ? h('ul', { className: 'rule-list' }, ...config.rules.map(ruleRow))
       : h('p', { className: 'empty' }, t('rulesEmpty')),
     undoBar(),
   );
@@ -349,7 +304,7 @@ function verdict(): { text: string; tone: 'ok' | 'muted' | 'warn'; ruleId?: stri
 function renderTester() {
   const v = verdict();
   testerResult.className = `tester-result ${v?.tone ?? 'muted'}`;
-  testerResult.textContent = v?.text ?? t('testerIdle');
+  testerResult.textContent = v?.text ?? '';
   for (const row of root.querySelectorAll<HTMLElement>('.rule')) row.classList.toggle('is-hit', row.dataset.id === v?.ruleId);
 }
 
@@ -429,12 +384,12 @@ async function saveSettings(overwrite = false) {
 function renderActions() {
   const saving = editor.state === 'saving';
   const dirty = hasChanges();
-  const pending = root.querySelector<HTMLElement>('.pending-state');
-  if (pending) pending.hidden = !dirty;
-  const message = t(saving ? 'saveApplying' : editor.conflict ? 'saveConflict'
-    : editor.state === 'error' ? 'saveFailedDraft'
-    : dirty ? 'saveDirty'
-    : editor.state === 'saved' ? 'saveAppliedDone' : 'saveClean');
+  const message = saving ? t('saveApplying') : editor.conflict ? t('saveConflict')
+    : editor.state === 'error' ? t('saveFailedDraft')
+    : dirty ? t('saveDirty')
+    : editor.state === 'saved' ? t('saveAppliedDone') : '';
+  // Only pending work floats over the page; a settled bar just ends it.
+  actions.classList.toggle('is-settled', !saving && !dirty && !editor.conflict && editor.state !== 'error');
   replaceKeepingFocus(actions, [
     h('p', { className: `save-message ${editor.state === 'error' ? 'err' : editor.conflict ? 'warn' : 'muted'}`, role: 'status', ariaLive: 'polite' }, message),
     h('div', { className: 'save-buttons' },
@@ -448,8 +403,8 @@ function render() {
   // Language changes join the explicit transaction, including discard and failed saves.
   if (!editor.dirty && !hasPendingFields()) setLanguage(config.language);
   localizeDocument('optionsTitle');
-  replaceKeepingFocus(root, [hero(), h('fieldset', { className: 'settings-fields', disabled: editor.state === 'saving', ariaLabel: t('pendingSettingsLabel') }, general(),
-    ...(config.mode === 'rules' ? [rulesSection(), testerSection()] : [])), actions], focusAfter);
+  replaceKeepingFocus(root, [h('h1', {}, t('optionsTitle')), h('fieldset', { className: 'settings-fields', disabled: editor.state === 'saving', ariaLabel: t('pendingSettingsLabel') }, general(),
+    ...(config.mode === 'rules' ? [rulesSection(), testerSection()] : [])), actions, h('p', { className: 'coverage' }, t('coverageNote'))], focusAfter);
   renderActions();
   focusAfter = undefined;
   renderTester();

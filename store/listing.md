@@ -1,4 +1,4 @@
-# Chrome Web Store listing — 0.2.0
+# Chrome Web Store listing — 0.3.0
 
 ## English description
 
@@ -10,10 +10,11 @@ Timezone Override lets you choose the timezone websites see, either for all site
 • Off: return to your device's timezone.
 • Search timezones by city, IANA timezone ID, or UTC offset.
 • Check the current tab's applied timezone and local time from the toolbar popup.
+• Temporarily override only the current tab, across reloads, and end the override at any time.
 • Preview which rule matches a URL in Settings before saving your changes.
 • Interface available in English, Simplified Chinese, Japanese, and Korean.
 
-Uses bundled page scripts to change Date and default Intl timezone behavior before website scripts run. No debugger permission or Chrome debugging banner is required. Each iframe follows the rule for its own URL. Workers and previously cached native APIs or already-created Intl formatters keep their original timezone; reload existing pages for consistent results. This is page API emulation, not browser-wide native timezone emulation.
+Uses bundled page scripts to change Date and default Intl timezone behavior before website scripts run. No debugger permission or Chrome debugging banner is required. Each iframe follows the rule for its own URL. A temporary override applies to the current tab's page origin and survives reloads while the tab remains open. Workers and previously cached native APIs or already-created Intl formatters keep their original timezone; reload existing pages for consistent results. This is page API emulation, not browser-wide native timezone emulation.
 
 No account, analytics, or external service is required. Settings and domain rules are stored locally. Page URLs are processed locally to match your rules and are not sent to the developer or third parties.
 
@@ -29,10 +30,11 @@ Timezone Override 可为所有网站统一设置时区，也可按域名分别�
 • 关闭：恢复使用设备时区。
 • 支持按城市、IANA 时区标识和 UTC 偏移搜索时区。
 • 在工具栏弹窗中查看当前标签页实际应用的时区与当地时间。
+• 仅为当前标签页临时覆盖时区，刷新后仍有效，也可随时结束。
 • 在设置页输入网址，预览匹配的规则，再保存并应用修改。
 • 支持 English、简体中文、日本語和 한국어 界面。
 
-通过随扩展打包的网页脚本，在网站脚本执行前修改 Date 和默认 Intl 时区行为，无需 debugger 权限，不会出现 Chrome 调试提示。iframe 按自身网址匹配规则。Worker、已缓存的原生 API 和已有 Intl 格式化器仍使用原时区；已打开的网页建议刷新后使用。这是网页 API 模拟，并非浏览器级原生时区覆盖。
+通过随扩展打包的网页脚本，在网站脚本执行前修改 Date 和默认 Intl 时区行为，无需 debugger 权限，不会出现 Chrome 调试提示。iframe 按自身网址匹配规则。临时时区仅作用于当前标签页的网站来源，标签页关闭前刷新仍有效。Worker、已缓存的原生 API 和已有 Intl 格式化器仍使用原时区；已打开的网页建议刷新后使用。这是网页 API 模拟，并非浏览器级原生时区覆盖。
 
 无需账号、分析服务或外部服务。设置和域名规则保存在本机。网页网址仅在本机用于匹配规则，不会发送给开发者或第三方。
 
@@ -52,6 +54,6 @@ Timezone Override 可为所有网站统一设置时区，也可按域名分别�
 
 ## Reviewer instructions
 
-No account is needed. Chrome 125+ required. Open https://example.com, select All sites and Asia/Tokyo. Reload; in DevTools verify Intl.DateTimeFormat().resolvedOptions().timeZone is Asia/Tokyo and new Date().getTimezoneOffset() is -540. No debugging banner should appear. Add an example.com rule with America/New_York; save, then verify. Exclude example.com, or select Off, to restore system time. Each frame follows its own URL. Workers retain system time.
+No account is needed. Chrome 125+ required. Open https://example.com, select All sites and Asia/Tokyo. Reload; in DevTools verify Intl.DateTimeFormat().resolvedOptions().timeZone is Asia/Tokyo and new Date().getTimezoneOffset() is -540. No debugging banner should appear. Add an example.com rule with America/New_York; save, then verify. Exclude example.com, or select Off, to restore system time. In the popup, choose “This tab only, temporarily” and Asia/Tokyo; verify it overrides the configured rule and survives a reload. Choose “End temporary use” to clear it. Each frame follows its own URL. Workers retain system time.
 
 All executable code is bundled. Persistent MAIN-world document_start scripts override page Date and default Intl APIs. No debugger API, network interception, analytics, remote code, or automatic page reload is used. Existing Intl instances and cached native APIs may keep their original behavior until the page is refreshed.

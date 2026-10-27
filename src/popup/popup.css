@@ -34,28 +34,25 @@ main, main > *, .now > *, .block > *, .tzp { min-width: 0; }
 
 .block { display: grid; gap: 6px; --tzp-width: 100%; }
 .block-label { color: var(--muted); font-size: 12px; }
-.block-label:not(:first-child) { margin-top: 4px; }
 main select, main .tzp-input { width: 100%; min-width: 0; min-height: 38px; background: var(--fill); border-color: transparent; border-radius: 8px; padding: 8px 10px; }
 main select { text-overflow: ellipsis; }
 main .tzp-input { padding-right: 82px; }
 main .tzp-offset { right: 10px; top: 19px; }
-.scope-row { display: flex; align-items: center; gap: 8px; }
-.scope-label { flex: none; color: var(--muted); font-size: 12px; }
-main .scope-row select { flex: 1; min-height: 30px; padding: 4px 8px; background: none; color: var(--muted); font-size: 12px; }
-main .scope-row select:hover { background: var(--fill); }
+/* The scope select reads as the site picker's caption. */
+main #site-scope { justify-self: start; width: auto; max-width: 100%; min-height: 28px; padding: 2px 4px; margin-left: -4px; background: none; color: var(--muted); font-size: 12px; }
+main #site-scope:hover { background: var(--fill); color: var(--fg); }
+.site.is-disabled .tzp-input { color: var(--muted); }
 .block-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 0 16px; }
 .block .warn { margin: 0; font-size: 12px; overflow-wrap: anywhere; }
 .block > .link { justify-self: start; }
-.hint { margin: 0; padding: 0 2px; color: var(--muted); font-size: 12px; }
 
 button.link { min-height: 30px; border: 0; padding: 4px 0; background: none; color: var(--muted); font-size: 12px; white-space: nowrap; }
 button.link:hover { color: var(--accent); }
 .now-status button.link { min-height: 0; padding: 0; color: var(--accent); }
-footer { padding-top: 5px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+footer { padding-top: 5px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .feedback { min-width: 0; }
-.popup-language { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.popup-language label { color: var(--muted); font-size: 12px; }
-.popup-language .language-select { width: 180px; max-width: 70%; min-height: 34px; padding-block: 6px; }
+main footer .language-select { width: auto; min-height: 30px; margin-left: auto; padding: 4px 6px; background: none; color: var(--muted); font-size: 12px; }
+main footer .language-select:hover { background: var(--fill); color: var(--fg); }
 
 /* Native popup height must include the open list. Limit results to a compact
    scrolling region rather than making the entire popup scroll. */

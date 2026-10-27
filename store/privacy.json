@@ -1,9 +1,9 @@
 {
-  "singlePurpose": "Let users change page Date and default Intl timezone behavior globally or according to local domain rules, without changing their operating system timezone.",
+  "singlePurpose": "Let users change webpage Date and default Intl timezone behavior globally, by domain rules, or temporarily for the current tab without changing the operating system timezone.",
   "permissions": {
-    "scripting": "Registers bundled MAIN-world content scripts at document_start to override page Date and default Intl timezone APIs. Also updates existing HTTP/HTTPS frame documents and reads the current default Intl timezone for popup status. All scripts are included in the extension package; no remote code is downloaded or executed.",
-    "storage": "Stores the selected mode, timezone, interface language, and domain rules in chrome.storage.local. No sync storage, browsing history, or server is used.",
-    "tabs": "Reads tab IDs and URLs locally to resolve domain rules, show current tab status, and apply configuration changes to already-open tabs. URLs and browsing history are not recorded or transmitted.",
+    "scripting": "Registers bundled MAIN-world document_start scripts for configured and temporary timezones. It updates eligible HTTP/HTTPS frame documents, restores temporary settings after reload, and reads the default Intl timezone for popup status. All executable code is included in the package; no remote code is downloaded or executed.",
+    "storage": "Stores the selected mode, timezone, interface language, and domain rules in chrome.storage.local. A temporary per-tab timezone is held in chrome.storage.session only while the tab is open. No sync storage, browsing history, or server is used.",
+    "tabs": "Reads tab IDs and URLs locally to resolve domain rules, show current tab status, apply configuration changes, and associate a temporary timezone with one tab and its current origin. URLs and browsing history are not recorded or transmitted.",
     "webNavigation": "Reads navigation events and frame URLs locally to apply each frame’s domain rule and update existing or inherited-origin frame documents. These URLs are not retained as browsing history or sent elsewhere.",
     "host_permissions": "Access to http://*/* and https://*/* is required because users can enable a global override or create rules for any website. Access is used only to run bundled timezone scripts in eligible page frames and inspect the default Intl timezone. The extension does not record or transmit page content, cookies, credentials, network traffic, or URLs."
   },

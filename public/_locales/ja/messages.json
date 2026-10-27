@@ -29,15 +29,6 @@
   "modeGroupLabel": {
     "message": "適用範囲"
   },
-  "modeHintOff": {
-    "message": "どのページのタイムゾーンも変更しません。"
-  },
-  "modeHintGlobal": {
-    "message": "すべてのサイトで選択したタイムゾーンを使用します。"
-  },
-  "modeHintRules": {
-    "message": "ルールに記載されたサイトのみ変更します。除外ルールが優先されます。"
-  },
   "saveSaving": {
     "message": "保存中…"
   },
@@ -67,9 +58,6 @@
   },
   "pickerNoMatch": {
     "message": "「$1」に一致するタイムゾーンはありません"
-  },
-  "pickerOpenHelp": {
-    "message": "結果をクリックするか Enter で適用、Esc でキャンセル。"
   },
   "pickerClickToSearch": {
     "message": "クリックして都市やタイムゾーンを検索"
@@ -155,12 +143,6 @@
   "localTimeLabel": {
     "message": "現在の現地時刻"
   },
-  "popupOffHint": {
-    "message": "「$1」でこのサイトを設定するか、「$2」ですべてのサイトを変更します。"
-  },
-  "globalUse": {
-    "message": "すべてのサイトで使用"
-  },
   "globalTzLabel": {
     "message": "すべてのサイトのタイムゾーン"
   },
@@ -170,23 +152,11 @@
   "scopeOptionSuffix": {
     "message": "サブドメイン含む · $1"
   },
-  "scopeField": {
-    "message": "適用先"
-  },
   "warnBroadRule": {
     "message": "既存のルールの範囲が広すぎます：$1削除してから設定し直してください。"
   },
-  "siteTzExcluded": {
-    "message": "このルールはシステムのタイムゾーンを使用します"
-  },
   "siteTz": {
     "message": "サイトのタイムゾーン"
-  },
-  "siteTzDisabled": {
-    "message": "ルール無効 · サイトのタイムゾーン"
-  },
-  "siteTzNew": {
-    "message": "このサイトのタイムゾーンを設定"
   },
   "siteTzPlaceholder": {
     "message": "タイムゾーンを選んで適用"
@@ -263,9 +233,6 @@
   "addSite": {
     "message": "サイトを追加"
   },
-  "addSubdomains": {
-    "message": "このサイトのサブドメインも変更"
-  },
   "undo": {
     "message": "元に戻す"
   },
@@ -273,7 +240,7 @@
     "message": "サイトのルール"
   },
   "rulesEmpty": {
-    "message": "サイトのルールはまだありません。追加したドメインはそのホストのみにデフォルトのタイムゾーンを適用します。サブドメインも対象にするには「サブドメインを含む」をオンにしてください。"
+    "message": "サイトのルールはまだありません。"
   },
   "testerOnlyHttp": {
     "message": "変更できるのは http/https ページのみです。"
@@ -293,50 +260,20 @@
   "testerNoMatch": {
     "message": "$1 はどのルールにも一致しないため、変更しません。"
   },
-  "optionsHeroHint": {
-    "message": "編集後に「$1」をクリックすると、ページのタイムゾーンが変わります。"
-  },
-  "generalTitle": {
-    "message": "基本設定"
-  },
-  "defaultTzHint": {
-    "message": "都市、タイムゾーン ID、オフセットで検索できます（例：「Tokyo」「+8」）。"
-  },
   "effectDefault": {
     "message": "デフォルトのタイムゾーンを使用"
   },
   "excludeTitle": {
     "message": "このサイトのタイムゾーンは変更しません"
   },
-  "addedDraftExact": {
-    "message": "サイトを追加（未保存）：$1、このドメインのみ。"
-  },
-  "addedDraftSuffix": {
-    "message": "サイトを追加（未保存）：$1、サブドメインを含む。"
-  },
   "pendingDelete": {
     "message": "削除予定：$1"
-  },
-  "rulesHint": {
-    "message": "各サイトでデフォルト、指定、またはシステムのタイムゾーンを使用できます。システムのタイムゾーンのルールが優先されます。"
-  },
-  "colEnabled": {
-    "message": "有効"
   },
   "colSite": {
     "message": "サイト"
   },
-  "colTimezone": {
-    "message": "タイムゾーン設定"
-  },
-  "colLocalTime": {
-    "message": "現地時刻"
-  },
   "testerLabel": {
     "message": "サイトの設定を確認"
-  },
-  "testerIdle": {
-    "message": "URL を入力すると、保存後に使用されるタイムゾーンとルールをプレビューできます。"
   },
   "addPendingError": {
     "message": "先に「$1」をクリックするか、入力を消去してから保存してください。"
@@ -362,9 +299,6 @@
   "saveAppliedDone": {
     "message": "保存して適用しました"
   },
-  "saveClean": {
-    "message": "設定は保存済みです"
-  },
   "loadLatest": {
     "message": "最新の設定を読み込む"
   },
@@ -386,18 +320,6 @@
   "scopeExactShort": {
     "message": "完全一致"
   },
-  "scopeExactOption": {
-    "message": "このドメインのみ（完全一致）"
-  },
-  "scopeSuffixOption": {
-    "message": "すべてのサブドメインを含む"
-  },
-  "scopeExactExample": {
-    "message": "$1 のみに一致"
-  },
-  "scopeSuffixExample": {
-    "message": "$1 とすべてのサブドメインに一致"
-  },
   "ruleScopeLabel": {
     "message": "$1 の一致範囲"
   },
@@ -412,9 +334,6 @@
   },
   "ruleMoreLabel": {
     "message": "$1 のその他の操作"
-  },
-  "pickerDraftHelp": {
-    "message": "タイムゾーンを選択し、「保存して適用」で有効にします。"
   },
   "cityShanghai": {
     "message": "上海"
@@ -575,9 +494,6 @@
   "languageAuto": {
     "message": "ブラウザに合わせる"
   },
-  "languageSaveHint": {
-    "message": "保存後、ポップアップと設定画面の両方に適用されます。"
-  },
   "languageEnglish": {
     "message": "English"
   },
@@ -589,24 +505,6 @@
   },
   "languageKorean": {
     "message": "한국어"
-  },
-  "heroGlobalTime": {
-    "message": "すべてのサイトで使用する時刻"
-  },
-  "heroDefaultTime": {
-    "message": "デフォルトのタイムゾーンの時刻"
-  },
-  "heroSystemTime": {
-    "message": "この端末の時刻"
-  },
-  "settingsUnsaved": {
-    "message": "未保存"
-  },
-  "rulesRetainedGlobal": {
-    "message": "すべてのサイトで上記のタイムゾーンを使用します。サイトのルールは保持され、「ルール別」に戻すと適用されます。"
-  },
-  "rulesRetainedOff": {
-    "message": "オフの場合、サイトはシステムのタイムゾーンを使用します。サイトのルールは保持されます。"
   },
   "manageRules": {
     "message": "「ルール別」に切り替え"
@@ -623,9 +521,6 @@
   "statusTemporary": {
     "message": "一時的に適用中"
   },
-  "explainTemporary": {
-    "message": "このタブは設定ではなく、一時的なタイムゾーンを使用しています。"
-  },
   "tempUse": {
     "message": "このタブだけで一時的に使用"
   },
@@ -634,9 +529,6 @@
   },
   "tempPlaceholder": {
     "message": "タイムゾーンを選択"
-  },
-  "tempHint": {
-    "message": "このタブを閉じると終了します。表示済みの時刻は再読み込み後に更新されます。"
   },
   "tempReload": {
     "message": "ページを再読み込み"

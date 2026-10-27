@@ -1,6 +1,6 @@
 # Timezone Override Privacy Policy
 
-Applies to version 0.2.0 and later. Last updated: September 29, 2026.
+Applies to version 0.3.0 and later. Last updated: October 25, 2026.
 
 ## Purpose
 
@@ -8,13 +8,13 @@ Timezone Override changes webpage Date and default Intl timezone behavior, globa
 
 ## Data processed on your device
 
-The extension reads tab URLs, frame URLs, and navigation events locally to decide which timezone rule applies. It does not record or store your browsing history. Your mode, timezone, interface language, and domain rules are stored in Chrome's local extension storage.
+The extension reads tab URLs, frame URLs, and navigation events locally to decide which timezone rule applies. It does not record or store your browsing history. Your mode, timezone, interface language, and domain rules are stored in Chrome's local extension storage. A temporary per-tab override is held in session storage for the life of the tab and a same-origin sessionStorage marker lets the page script restore it after reload. The marker contains only the IANA timezone name and is removed when the override ends or the tab closes.
 
 These settings and rules are not synchronized by the extension or sent to a server. You can remove rules in Settings. Uninstalling the extension removes its local extension data.
 
 ## Website access
 
-The extension uses Chrome's scripting API and HTTP/HTTPS website access to execute bundled timezone scripts in eligible page frames. It reads the default Intl timezone to display the current tab's status. Version 0.2.0 does not use the debugger API, display Chrome's debugging banner, or automatically reload pages. It does not record page contents, passwords, cookies, network traffic, or form entries.
+The extension uses Chrome's scripting API and HTTP/HTTPS website access to execute bundled timezone scripts in eligible page frames. It reads the default Intl timezone to display the current tab's status. It does not use the debugger API, display Chrome's debugging banner, or automatically reload pages. It does not record page contents, passwords, cookies, network traffic, or form entries.
 
 ## Collection, sharing, and remote services
 

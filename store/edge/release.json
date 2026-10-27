@@ -1,10 +1,10 @@
 {
   "status": "In review",
-  "sourceCommit": "bee0423",
-  "version": "0.2.1",
-  "package": "timezone-override-edge-0.2.1.zip",
-  "size": 345718,
-  "sha256": "4ce7bd75592f162177bad192d28874c343d009b2d3d65e667e198d3f526da6f9",
+  "sourceCommit": "96aca5049de3c7dccc1157b91df3cafc65932e7f",
+  "version": "0.3.0",
+  "package": "timezone-override-edge-0.3.0.zip",
+  "size": 385414,
+  "sha256": "a7308e74c6c74bb937f4708afefc4a1f5601e9a42ca145f0c411e93176831559",
   "validation": {
     "unitTests": 151,
     "build": "passed",
@@ -38,8 +38,9 @@
   "edgeStoreId": "0RDCKCJ5HRCT",
   "edgeCrxId": "aioacidgmnjpdcmlmhelhgmecpmljobg",
   "submission": {
-    "version": "0.2.1",
+    "version": "0.3.0",
     "status": "In review",
+    "submittedAt": "2026-10-26",
     "reviewEstimate": "7 business days, as shown by Microsoft",
     "visibility": "Public",
     "markets": 241,
@@ -49,11 +50,16 @@
       "ja",
       "ko"
     ],
-    "videoAddedToAllLanguages": true,
-    "proof": "store/edge/submitted-for-review-0.2.1.jpg",
-    "screenshots": [
-      "store/edge/screenshot-rules-1280x800.png",
-      "store/edge/screenshot-picker-1280x800.png"
-    ]
+    "browserVerification": "Partner Center overview showed 0.3.0 In review and 0.2.1 Live"
+  },
+  "previousLiveVersion": "0.2.1",
+  "chromeSubmission": {
+    "version": "0.3.0",
+    "status": "Pending review",
+    "submittedAt": "2026-10-25",
+    "visibility": "Public",
+    "regions": "All",
+    "autoPublishAfterReview": true,
+    "verification": "Chrome Web Store dashboard showed status 待审核 after submission; auto-publish was checked."
   }
 }

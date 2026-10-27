@@ -3,7 +3,6 @@ dist/
 *.zip
 store/*review*.png
 store/edge/*.jpg
-store/video/*.mp4
-store/video/*submitted*.png
+store/video/*
 .DS_Store
 .claude/
